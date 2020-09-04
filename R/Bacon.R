@@ -16,7 +16,10 @@
 #' @name rbacon
 NULL
 
-# do: ensure that agedepth uses info$depth.unit and same for age, adapt lowest section so that there is always a section below the lowermost dated depth, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, can ssize be predicted more accurately?,  why do we warn that "acc.shape cannot be equal to acc.mean"?
+# do: Maxage is passsed on to cpp, but doesn't do anything if e.g. Bacon(, MaxAge=6500), ensure that agedepth uses info$depth.unit and same for age, adapt lowest section so that there is always a section below the lowermost dated depth, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, can ssize be predicted more accurately?,  why do we warn that "acc.shape cannot be equal to acc.mean"?
+
+# add Quinn Asena's suggestion of @param autoAcceptSuggest If autoAcceptSuggest is TRUE all suggest prompts will be automatically answered "y". If FALSE readline prompts will be given (see suggest to automatically answer "n").
+
 
 # done: 
 

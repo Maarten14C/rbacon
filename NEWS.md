@@ -1,3 +1,7 @@
+# rbacon 2.4.4
+* updated kernel.cpp, to repair a bug in one of the moves ('hop')
+* ...
+
 # rbacon 2.4.3
 * replaced 'cat' with 'message' or 'warning' where possible
 * updated to the IntCal20 calibration curves (Reimer et al., 2020)
