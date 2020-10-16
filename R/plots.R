@@ -19,6 +19,7 @@
 #' @param yr.rev Deprecated - use age.rev instead
 #' @param plot.mean The mean ages of the proxy values can be added using \code{plot.mean=TRUE}.
 #' @param mean.col Colour of the weighted mean ages of the proxy values.
+#' @param rgb.scales Colour of the shades with which the age-model will be drawn. Defaults to greyscales: |code{rgb.scales(0,0,0)}. The three entries are for amounts of red, green and blue colours, respectively, so say redscales can be drawn using \code{rgb.scales(1,0,0)}.
 #' @param age.lim Minimum and maximum calendar age ranges, calculated automatically by default (\code{yr.lim=NULL}).
 #' @param yr.lim Deprecated - use age.lim instead
 #' @param proxy.lim Ranges of the proxy axis, calculated automatically by default (\code{proxy.lim=NULL}).
@@ -31,6 +32,7 @@
 #' @param BCAD The calendar scale of graphs and age output-files is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
 #' @param age.lab The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}).
 #' @param yr.lab Deprecated - use age.lab instead
+#' @param add Add to an existing plot (default \code{add=FALSE}). Handy for plotting multiple greyscales in a single plot.
 #' @param verbose Provide feedback on what is happening (default \code{verbose=TRUE}).
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A grey-scale graph of the proxy against calendar age.
@@ -46,7 +48,7 @@
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
 #' \url{https://projecteuclid.org/euclid.ba/1339616472}
 #' @export
-proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.res=age.res, grey.res=100, set=get('info'), dark=1, darkest=1, rotate.axes=FALSE, proxy.rev=FALSE, age.rev=FALSE, yr.rev=age.rev, plot.mean=FALSE, mean.col="red", age.lim=NULL, yr.lim=age.lim, proxy.lim=NULL, sep=",", xaxs="i", yaxs="i", xaxt="s", yaxt="s", bty="l", BCAD=set$BCAD, age.lab=ifelse(BCAD, "BC/AD", "cal yr BP"), yr.lab=age.lab, verbose=TRUE) {
+proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.res=age.res, grey.res=100, set=get('info'), dark=1, darkest=1, rotate.axes=FALSE, proxy.rev=FALSE, age.rev=FALSE, yr.rev=age.rev, plot.mean=FALSE, mean.col="red", rgb.scales=c(0,0,0), age.lim=NULL, yr.lim=age.lim, proxy.lim=NULL, sep=",", xaxs="i", yaxs="i", xaxt="s", yaxt="s", bty="l", BCAD=set$BCAD, age.lab=ifelse(BCAD, "BC/AD", "cal yr BP"), yr.lab=age.lab, add=FALSE, verbose=TRUE) {
   if(length(set$Tr)==0)
     stop("please first run agedepth()", call.=FALSE)
   proxies <- read.csv(paste(set$coredir, set$core, "/", set$core, "_proxies.csv", sep=""), header=TRUE, sep=sep)
@@ -117,11 +119,11 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.
   if(proxy.rev)
     proxy.lim <- proxy.lim[2:1]
   if(rotate.axes) {
-    image(proxyseq, age.seq, max.counts, xlim=proxy.lim, ylim=age.lim, col=grey(seq(1, 1-darkest, length=grey.res)), ylab=age.lab, xlab=proxy.lab, xaxs=xaxs, yaxs=yaxs, xaxt=xaxt, yaxt=yaxt)
+    image(proxyseq, age.seq, max.counts, xlim=proxy.lim, ylim=age.lim, col = rgb(rgb.scales[1], rgb.scales[2], rgb.scales[3], seq(0, darkest, length = grey.res)), ylab=age.lab, xlab=proxy.lab, xaxs=xaxs, yaxs=yaxs, xaxt=xaxt, yaxt=yaxt, add=add)
     if(plot.mean)
       lines(proxy[,2], pr.mn.ages, col=mean.col)
   } else {
-    image(age.seq, proxyseq, t(max.counts), xlim=age.lim, ylim=proxy.lim, col=grey(seq(1, 1-darkest, length=grey.res)), xlab=age.lab, ylab=proxy.lab, xaxs=xaxs, yaxs=yaxs, xaxt=xaxt, yaxt=yaxt)
+    image(age.seq, proxyseq, t(max.counts), xlim=age.lim, ylim=proxy.lim, col = rgb(rgb.scales[1], rgb.scales[2], rgb.scales[3], seq(0, darkest, length = grey.res)), xlab=age.lab, ylab=proxy.lab, xaxs=xaxs, yaxs=yaxs, xaxt=xaxt, yaxt=yaxt, add=add)
     if(plot.mean)
       lines(pr.mn.ages, proxy[,2], col=mean.col)
   }

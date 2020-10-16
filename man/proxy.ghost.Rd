@@ -20,6 +20,7 @@ proxy.ghost(
   yr.rev = age.rev,
   plot.mean = FALSE,
   mean.col = "red",
+  rgb.scales = c(0, 0, 0),
   age.lim = NULL,
   yr.lim = age.lim,
   proxy.lim = NULL,
@@ -32,6 +33,7 @@ proxy.ghost(
   BCAD = set$BCAD,
   age.lab = ifelse(BCAD, "BC/AD", "cal yr BP"),
   yr.lab = age.lab,
+  add = FALSE,
   verbose = TRUE
 )
 }
@@ -66,6 +68,8 @@ proxy.ghost(
 
 \item{mean.col}{Colour of the weighted mean ages of the proxy values.}
 
+\item{rgb.scales}{Colour of the shades with which the age-model will be drawn. Defaults to greyscales: |code{rgb.scales(0,0,0)}. The three entries are for amounts of red, green and blue colours, respectively, so say redscales can be drawn using \code{rgb.scales(1,0,0)}.}
+
 \item{age.lim}{Minimum and maximum calendar age ranges, calculated automatically by default (\code{yr.lim=NULL}).}
 
 \item{yr.lim}{Deprecated - use age.lim instead}
@@ -89,6 +93,8 @@ proxy.ghost(
 \item{age.lab}{The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}).}
 
 \item{yr.lab}{Deprecated - use age.lab instead}
+
+\item{add}{Add to an existing plot (default \code{add=FALSE}). Handy for plotting multiple greyscales in a single plot.}
 
 \item{verbose}{Provide feedback on what is happening (default \code{verbose=TRUE}).}
 }

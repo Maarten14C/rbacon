@@ -1,6 +1,7 @@
-# rbacon 2.4.4
-* updated kernel.cpp, to repair a bug in one of the moves ('hop')
-* ...
+# rbacon 2.5.0
+* updated kernel.cpp, to repair a bug in one of the moves ('hop'). This bug repair means we can add the updated MCMC code of version 2.4.0 again and accommodate code to run 210Pb-dated cores (via the package rplum) 
+* added option rgb.scales to draw shades of other colours than grey, e.g. red: rgb.scales(1,0,0), for the functions agedepth, accrate.depth.ghost, accrate.age.ghost, proxy.ghost and flux.age.ghost (based on an idea by Oliver Wilson).
+* added option 'add' to add proxy.ghost graphs to existing graphs (based on an idea by Oliver Wilson)
 
 # rbacon 2.4.3
 * replaced 'cat' with 'message' or 'warning' where possible

@@ -6,7 +6,8 @@
 #' @docType package
 #' @author Maarten Blaauw <maarten.blaauw@qub.ac.uk> J. Andres Christen <jac@cimat.mx> 
 #' @importFrom grDevices dev.cur dev.off pdf dev.copy2pdf grey rgb dev.list extendrange
-#' @importFrom graphics abline box curve hist image layout legend lines par plot points polygon segments rect axis mtext
+#' @importFrom base plot
+#' @importFrom graphics abline box curve hist image layout legend lines par points polygon segments rect axis mtext
 #' @importFrom stats approx dbeta density dgamma dnorm dunif lm quantile rnorm weighted.mean coef
 #' @importFrom utils read.csv read.table write.table packageName txtProgressBar setTxtProgressBar
 #' @importFrom Rcpp evalCpp
@@ -16,7 +17,11 @@
 #' @name rbacon
 NULL
 
-# do: Maxage is passsed on to cpp, but doesn't do anything if e.g. Bacon(, MaxAge=6500), ensure that agedepth uses info$depth.unit and same for age, adapt lowest section so that there is always a section below the lowermost dated depth, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, can ssize be predicted more accurately?,  why do we warn that "acc.shape cannot be equal to acc.mean"?
+# check why accrates.age.ghost goes wrong. white = black, black = white? Check why not all calibrated blobs of same size, they should be. 
+
+# add feature: check each time if any dates/rows were added to the dates file. If so, then read again. 
+
+# do: integrate with IntCal package, Maxage is passsed on to cpp, but doesn't do anything if e.g. Bacon(, MaxAge=6500), ensure that agedepth uses info$depth.unit and same for age, adapt lowest section so that there is always a section below the lowermost dated depth, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, can ssize be predicted more accurately?,  why do we warn that "acc.shape cannot be equal to acc.mean"?
 
 # add Quinn Asena's suggestion of @param autoAcceptSuggest If autoAcceptSuggest is TRUE all suggest prompts will be automatically answered "y". If FALSE readline prompts will be given (see suggest to automatically answer "n").
 
