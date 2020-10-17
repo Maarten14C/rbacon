@@ -6,29 +6,22 @@
 #' @docType package
 #' @author Maarten Blaauw <maarten.blaauw@qub.ac.uk> J. Andres Christen <jac@cimat.mx> 
 #' @importFrom grDevices dev.cur dev.off pdf dev.copy2pdf grey rgb dev.list extendrange
-#' @importFrom base plot
-#' @importFrom graphics abline box curve hist image layout legend lines par points polygon segments rect axis mtext
+#' @importFrom graphics abline box curve hist image layout legend lines par plot points polygon segments rect axis mtext
 #' @importFrom stats approx dbeta density dgamma dnorm dunif lm quantile rnorm weighted.mean coef
 #' @importFrom utils read.csv read.table write.table packageName txtProgressBar setTxtProgressBar
 #' @importFrom Rcpp evalCpp
 #' @importFrom coda gelman.diag mcmc.list as.mcmc
-
+#' @importFrom IntCal copyCalibrationCurve mix.curves pMC.age age.pMC
+#'
 #' @useDynLib rbacon
 #' @name rbacon
 NULL
 
-# check why accrates.age.ghost goes wrong. white = black, black = white? Check why not all calibrated blobs of same size, they should be. 
+# do: ensure that agedepth uses info$depth.unit and same for age, adapt lowest section so that there is always a section below the lowermost dated depth, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, can ssize be predicted more accurately?,  why do we warn that "acc.shape cannot be equal to acc.mean"?
 
-# add feature: check each time if any dates/rows were added to the dates file. If so, then read again. 
+# done: linked to IntCal package and removed local calibration curves, replaced greyscales option of agedepth() with a more versatile rgb.scale option, checks now warn if the dates file is newer than a run (which would indicate that dates might have been added/adapted/removed), 
 
-# do: integrate with IntCal package, Maxage is passsed on to cpp, but doesn't do anything if e.g. Bacon(, MaxAge=6500), ensure that agedepth uses info$depth.unit and same for age, adapt lowest section so that there is always a section below the lowermost dated depth, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, can ssize be predicted more accurately?,  why do we warn that "acc.shape cannot be equal to acc.mean"?
-
-# add Quinn Asena's suggestion of @param autoAcceptSuggest If autoAcceptSuggest is TRUE all suggest prompts will be automatically answered "y". If FALSE readline prompts will be given (see suggest to automatically answer "n").
-
-
-# done: 
-
-# for future versions: check updated src code (which has the rplum code) to see where the models get too fat, add vignette(s). produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, introduce write.Bacon function to write files only once user agrees with the model, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
+# for future versions: check for modification date of dets file (to see if any dates have been added/changed/removed), find a way to get rid of accrate.age.ghost's overly low accrates at core bottoms, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, introduce write.Bacon function to write files only once user agrees with the model, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
 #' @name Bacon
 #' @title Main age-depth modelling function
@@ -97,7 +90,7 @@ NULL
 #' @param cc3 For southern hemisphere 14C dates (SHCal20).
 #' @param cc4 Use an alternative curve (3 columns: cal BP, 14C age, error, separated by white spaces and saved as a plain-text file). See \code{ccdir}.
 #' @param ccdir Directory where the calibration curves for C14 dates \code{cc} are located. By default \code{ccdir=""} since they are loaded into R's memory.
-#' For example, use \code{ccdir="."} to choose current working directory, or \code{ccdir="Curves/"} to choose sub-folder \code{Curves/}. Note that all calibration curves should reside in the same directory. If you want to add a custom-built curve, put it in the directory where the default calibration curves are (probably \code{list.files(paste0(.libPaths(), "/rbacon/extdata/Curves/"))}).
+#' For example, use \code{ccdir="."} to choose current working directory, or \code{ccdir="Curves/"} to choose sub-folder \code{Curves/}. Note that all calibration curves should reside in the same directory. If you want to add a custom-built curve, put it in the directory where the default calibration curves are (probably \code{list.files(paste0(.libPaths(), "/IntCal/extdata"))}).
 #' Alternatively produce a new folder, and add your curve as well as the default calibration curves there (cc1, cc2 and cc3; e.g., \code{write.table(copyCalibrationCurve(1), "./3Col_intcal20.14C", sep="\t")}.)
 #' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages. \code{0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}
 #' @param delta.R Mean of core-wide age offsets (e.g., regional marine offsets).
@@ -180,13 +173,14 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   coredir <- assign_coredir(coredir, core, ask)
   if(core == "MSB2K" || core == "RLGH3") {
     dir.create(paste(coredir, core, "/", sep=""), showWarnings = FALSE, recursive = TRUE)
-    fileCopy <- system.file(paste("extdata/Cores/", core, sep=""), package="rbacon") # change to package rbacon
+    fileCopy <- system.file(paste0("extdata/Cores/", core), package="rbacon") # change to package rbacon
     file.copy(fileCopy, coredir, recursive = TRUE, overwrite=FALSE)
   }
 
   # set the calibration curve
   if(ccdir == "")
-    ccdir <- paste(system.file("extdata", package=packageName()), "/Curves/", sep="")
+   # ccdir <- paste0(system.file("extdata", package=packageName()), "/Curves/")
+    ccdir <- system.file("extdata", package="IntCal")
   ccdir <- .validateDirectoryName(ccdir)
 
   # default_settings.txt is located within system.file
@@ -345,11 +339,15 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   }
 
   ### produce files
-  info$prefix <- paste(coredir, core, "/", core, runname, "_", info$K, sep="")
+  info$prefix <- paste0(coredir, core, "/", core, runname, "_", info$K)
   info$coredir <- coredir
-  info$bacon.file <- paste(info$prefix, ".bacon", sep="")
-  if(!file.exists(outfile <- paste(info$prefix, ".out", sep="")))
+  info$bacon.file <- paste0(info$prefix, ".bacon")
+  if(!file.exists(outfile <- paste0(info$prefix, ".out")))
     file.create(outfile)
+  
+  ### if the dates file has been modified after the outfile, suggest to clean up 
+  if(file.mtime(outfile) < file.mtime(paste0(info$coredir, core, "/", core, ".csv")))
+    message("Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()")
 
   ### store values (again) for future manipulations
   if(BCAD)

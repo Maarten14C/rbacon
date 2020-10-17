@@ -175,7 +175,7 @@ assign_coredir <- function(coredir, core, ask=TRUE) {
   if(file.exists(csv.file)) {
     dets <- read.table(csv.file, header=TRUE, sep=sep)
     if(file.exists(dat.file)) # deal with old .dat files
-      if(file.info(csv.file)$mtime < file.info(dat.file)$mtime)
+      if(file.mtime(csv.file) < file.mtime(dat.file))
         message("Warning, the .dat file is newer than the .csv file! I will read the .csv file. From now on please modify ", csv.file, ", not ", dat.file) else
           message("Reading", csv.file)
     } else {

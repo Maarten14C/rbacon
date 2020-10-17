@@ -32,7 +32,6 @@ agedepth(
   age.res = 400,
   yr.res = age.res,
   date.res = 100,
-  grey.res = 100,
   rotate.axes = FALSE,
   rev.age = FALSE,
   rev.yr = rev.age,
@@ -61,7 +60,8 @@ agedepth(
   pb.lim = c(),
   hiatus.col = grey(0.5),
   hiatus.lty = "12",
-  greyscale = grey(seq(1, 0, length = grey.res)),
+  rgb.scale = c(0, 0, 0),
+  rgb.res = 100,
   slump.col = grey(0.8),
   normalise.dists = TRUE,
   same.heights = FALSE,
@@ -141,8 +141,6 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{date.res}{Date distributions are plotted using \code{date.res=100} points by default.}
 
-\item{grey.res}{Grey-scale resolution of the age-depth model. Default \code{grey.res=100}.}
-
 \item{rotate.axes}{By default, the age-depth model is plotted with the depths on the horizontal axis and ages on the vertical axis. This can be changed with \code{rotate.axes=TRUE}.}
 
 \item{rev.age}{The direction of the age axis, which can be reversed using \code{rev.age=TRUE}.}
@@ -199,7 +197,9 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{hiatus.lty}{The line type of the depths of any hiatuses. Default \code{hiatus.lty=12}.}
 
-\item{greyscale}{The function to produce a coloured representation of all age-models. Defaults to grey-scales: \code{greyscale=function(x) grey(1-x)}.}
+\item{rgb.scale}{The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}).}
+
+\item{rgb.res}{Resolution of the colour spectrum depicting the age-depth model. Default \code{rgb.res=100}.}
 
 \item{slump.col}{Colour of slumps. Defaults to \code{slump.col=grey(0.8)}.}
 

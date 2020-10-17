@@ -10,7 +10,8 @@ proxy.ghost(
   proxy.res = 250,
   age.res = 200,
   yr.res = age.res,
-  grey.res = 100,
+  rgb.scale = c(0, 0, 0),
+  rgb.res = 100,
   set = get("info"),
   dark = 1,
   darkest = 1,
@@ -20,7 +21,6 @@ proxy.ghost(
   yr.rev = age.rev,
   plot.mean = FALSE,
   mean.col = "red",
-  rgb.scales = c(0, 0, 0),
   age.lim = NULL,
   yr.lim = age.lim,
   proxy.lim = NULL,
@@ -33,8 +33,8 @@ proxy.ghost(
   BCAD = set$BCAD,
   age.lab = ifelse(BCAD, "BC/AD", "cal yr BP"),
   yr.lab = age.lab,
-  add = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  add = FALSE
 )
 }
 \arguments{
@@ -48,7 +48,9 @@ proxy.ghost(
 
 \item{yr.res}{Deprecated - use age.res instead}
 
-\item{grey.res}{Grey-scale resolution of the proxy graph. Default \code{grey.res=100}.}
+\item{rgb.scale}{The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}).}
+
+\item{rgb.res}{Resolution of the colour spectrum depicting the age-depth model. Default \code{rgb.res=100}.}
 
 \item{set}{Detailed information of the current run, stored within this session's memory as variable info.}
 
@@ -67,8 +69,6 @@ proxy.ghost(
 \item{plot.mean}{The mean ages of the proxy values can be added using \code{plot.mean=TRUE}.}
 
 \item{mean.col}{Colour of the weighted mean ages of the proxy values.}
-
-\item{rgb.scales}{Colour of the shades with which the age-model will be drawn. Defaults to greyscales: |code{rgb.scales(0,0,0)}. The three entries are for amounts of red, green and blue colours, respectively, so say redscales can be drawn using \code{rgb.scales(1,0,0)}.}
 
 \item{age.lim}{Minimum and maximum calendar age ranges, calculated automatically by default (\code{yr.lim=NULL}).}
 
@@ -94,9 +94,9 @@ proxy.ghost(
 
 \item{yr.lab}{Deprecated - use age.lab instead}
 
-\item{add}{Add to an existing plot (default \code{add=FALSE}). Handy for plotting multiple greyscales in a single plot.}
-
 \item{verbose}{Provide feedback on what is happening (default \code{verbose=TRUE}).}
+
+\item{add}{Add to an existing graph (default \code{add=FALSE}).}
 }
 \value{
 A grey-scale graph of the proxy against calendar age.

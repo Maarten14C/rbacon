@@ -1,7 +1,15 @@
 # rbacon 2.5.0
-* updated kernel.cpp, to repair a bug in one of the moves ('hop'). This bug repair means we can add the updated MCMC code of version 2.4.0 again and accommodate code to run 210Pb-dated cores (via the package rplum) 
-* added option rgb.scales to draw shades of other colours than grey, e.g. red: rgb.scales(1,0,0), for the functions agedepth, accrate.depth.ghost, accrate.age.ghost, proxy.ghost and flux.age.ghost (based on an idea by Oliver Wilson).
-* added option 'add' to add proxy.ghost graphs to existing graphs (based on an idea by Oliver Wilson)
+* updated src/kernel.cpp and src/twalk.h, to repair a bug in one of the moves ('hop'). This means we can now add the updated MCMC code of version 2.4.0 again and accommodate code to run 210Pb-dated cores (via the package rplum) 
+* Radiocarbon calibration curves are now loaded from the imported IntCal R package, and have been removed from the rbacon package to save space and remove duplication
+* Added option rgb.scale to draw shades of other colours than grey, e.g. red: rgb.scales(1,0,0), for the functions agedepth, accrate.depth.ghost, accrate.age.ghost, proxy.ghost and flux.age.ghost (based on an idea by Oliver Wilson).
+* Related to rgb.scale, the resolution of the colours has been renamed from grey.res to rgb.res
+* added option 'add' to add proxy.ghost graphs to existing plots (based on an idea by Oliver Wilson)
+* Repaired bug with greyscales accrate.age.ghost
+* if the file with the dates has been modified more recently than a loaded run (e.g., dates could have been added, removed or changed), then a warning is now given that Bacon.cleanup should be ran
+* Added a new function Bacon.d.Age to provide the depths belonging to a specific modelled age (kindly contributed by Timon Netzel)
+* STILL TO DO: check why the areas of calibrated blobs are not all the same size any more. Do we need to treat the blobs differently now with so much more detail in IntCal?
+* STILL TO DO: add section at bottom to ensure bottommost date always taken into account (possibly add option add.bottom)
+* STILL TO DO: look at suggested option to accept all suggestions
 
 # rbacon 2.4.3
 * replaced 'cat' with 'message' or 'warning' where possible
@@ -20,7 +28,6 @@
 * Added functions which are required to run the 'rplum' package (although 'rbacon' does not require 'rplum' to be installed)
 
 # rbacon 2.3.9.1
-
 * Added a new option calheight, which acts as a multiplier for the relative height of non-14C dates
 * Set default for y-axis to have no space added after the extreme values (yaxs="i"); x-axis has some space added by default (xaxs="r")
 * Added a bit of space to d.max and d.min in the main age-depth graph, to accommodate age blobs
@@ -33,7 +40,6 @@
 * Renamed info\$d to info\$elbows (internal; for better consistency with the naming of parameters within the Bacon paper)
 
 # rbacon 2.3.8
-
 * repaired a bug in cal.h which prevented the postbomb curve postbomb_SH3 from being used
 * repaired bug where the prior for the accumulation rate would not always be drawn entirely
 * Bacon.hist now takes alternative values for prob into account (e.g., prob=.68)
@@ -54,17 +60,14 @@
 * More consistent error messages
 
 # rbacon 2.3.7
-
 * adapted cpp code to allow for more than 10 hiatuses/boundaries (now limited to 50)
 * corrected bug causing a warning when a hiatus was set with multiple acc.mean priors provided
 * now ensures that hiatus or boundary depths are in the correct order (ascending in depth)
 
 # rbacon 2.3.6
-
 * further enhancements to memory usage in MCMC calculations (bacon.h)
 
 # rbacon 2.3.5
-
 * added function agemodel.it to extract single iterations of a Bacon age-depth model
 * added functions clam2bacon and bacon2clam to translate Bacon dates files into clam files et vice versa (inspired by a suggestion from Dewey Dunnington)
 * corrected behaviour of boundary and hiatus (especially if together with slumps)
@@ -79,14 +82,12 @@
 * enhancements in bacon.h of MCMC calculations and memory usage 
 
 # rbacon 2.3.4
-
 * faster drawing of greyscale plots (though still slower yet better than in version 2.3.1.1 and before)
 * added progress bar to functions that can be slow
 * repaired a bug in calculating how many dates fall within the model range
 * delta.R is now accepted as a header for the dates file
 
 # rbacon 2.3.3
-
 * added an option to include slumps (sort of - more testing still welcome). Example: Bacon(slump=c(50, 52, 60, 70)) for two slumps between 50-52 and 60-70 cm depth
 * date-files with .csv.txt extensions are now renamed to .csv (and informing us that it did so)
 * default darkness of age-depth greyscale now adapts to a ratio between most and least precise sections (so that very imprecise sections still show some grey)
@@ -96,7 +97,6 @@
 * added a commentary after each run, mentioning the proportion of dates that lie within the age-depth model's range (some sort of 'agreement')
 
 # rbacon 2.3.2
-
 * Added option boundary, which sets hiatus length to (close to) 0. This leaves the hiatus functionality more or less unchanged, and should cause less confusion with setting hiatus.depths even if no hiatus is desired.
 * Enhanced plotting and age calculation of depths close to hiatuses or boundaries.
 * Ensured more predictable behaviour if R is started in a non-writable directory (e.g. plain, non-Rstudio R on Windows). 
@@ -107,7 +107,6 @@
 * Added a `NEWS.md` file to track changes to the package.
 
 # rbacon 2.3.1.1
-
 * Now a CRAN R package (not called bacon since that name was already taken).
 * Default core directory now Bacon_runs. Other directories can be given, for more flexibility in workflows of users. 
 * Calibration curves can be put in a user-specified directory ccdir (hidden by default).
@@ -124,7 +123,6 @@
 * Repaired many sundry bugs.
 
 # Bacon 2.2
-
 * Updated to 14C calibration curves IntCal13, Marine13 and SHCal13.
 * Changed .hpd to _ages.txt since many users get tricked by the extension.
 * Changed from .dat files to .csv files as these are more documented and easier to open and edit by users.
