@@ -17,11 +17,11 @@
 #' @name rbacon
 NULL
 
-# do: ensure that agedepth uses info$depth.unit and same for age, adapt lowest section so that there is always a section below the lowermost dated depth, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, can ssize be predicted more accurately?,  why do we warn that "acc.shape cannot be equal to acc.mean"?
+# do: adapt lowest section so that there is always a section below the lowermost dated depth, 
 
-# done: linked to IntCal package and removed local calibration curves, replaced greyscales option of agedepth() with a more versatile rgb.scale option, checks now warn if the dates file is newer than a run (which would indicate that dates might have been added/adapted/removed), 
+# done: 
 
-# for future versions: check for modification date of dets file (to see if any dates have been added/changed/removed), find a way to get rid of accrate.age.ghost's overly low accrates at core bottoms, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, introduce write.Bacon function to write files only once user agrees with the model, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
+# for future versions: can ssize be predicted more accurately?, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, find a way to get rid of accrate.age.ghost's overly low accrates at core bottoms, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, introduce write.Bacon function to write files only once user agrees with the model, can we change from using files to using memory only?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
 #' @name Bacon
 #' @title Main age-depth modelling function
@@ -56,8 +56,9 @@ NULL
 #' @param prob Confidence interval to report. This should lie between 0 and 1, default 0.95 (95 \%).
 #' @param d.min Minimum depth of age-depth model (use this to extrapolate to depths higher than the top dated depth).
 #' @param d.max Maximum depth of age-depth model (use this to extrapolate to depths below the bottom dated depth).
+#' @param add.bottom Add a model section at the bottom of the core, in order to ensure the bottommost date is taken into account. Default \code{add.bottom=TRUE}. This is a new option and can cause age-models to differ from previous version. Please re-run the model if in doubt.
 #' @param d.by Depth intervals at which ages are calculated. Defaults to \code{d.by=1}.
-#' @param seed Seed used for C++ executions, if it is not assigned then the seed is set by system.
+#' @param seed Seed used for C++ executions. If it is not assigned (\code{seed=NA}) then the seed is set by system.
 #' @param depth.unit Units of the depths. Defaults to \code{depth.unit="cm"}.
 #' @param age.unit Units of the ages. Defaults to \code{age.unit="yr"}.
 #' @param unit Deprecated and replaced by \code{depth.unit}.
@@ -105,6 +106,7 @@ NULL
 #' For symmetry reasons, t.a must always be equal to t.b-1.
 #' @param normal By default, Bacon uses the student's t-distribution to treat the dates. Use \code{normal=TRUE} to use the normal/Gaussian distribution. This will generally give higher weight to the dates.
 #' @param suggest If initial analysis of the data indicates abnormally slow or fast accumulation rates, Bacon will suggest to change the prior.
+#' @param accept.suggestions Automatically accept the suggested values. Use with care. Default \code{accept.suggestions=FALSE}.
 #'  Also, if the length of the core would cause too few or too many sections with the default settings, Bacon will suggest an alternative section thickness \code{thick}.
 #'  Accept these suggested alternative settings by typing "y" (or "yes please" if you prefer to be polite), or leave as is by typing "n" (or anything else, really). To get rid of these suggestions, use \code{suggest=FALSE}.
 #' @param reswarn Bacon will warn you if the number of sections lies outside the safe range (default between 10 and 200 sections;
@@ -168,7 +170,7 @@ NULL
 #' Journal of Ecology 77: 1-23.
 #'
 #' @export
-Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=4, mem.mean=0.7, boundary=NA, hiatus.depths=NA, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", ccdir="", postbomb=0, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), BCAD=FALSE, ssize=2000, th0=c(), burnin=min(500, ssize), MinAge=c(), MaxAge=c(), MinYr=MinAge, MaxYr=MaxAge, cutoff=.001, plot.pdf=TRUE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, verbose=TRUE, ...) {
+Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=4, mem.mean=0.7, boundary=NA, hiatus.depths=NA, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", ccdir="", postbomb=0, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), BCAD=FALSE, ssize=2000, th0=c(), burnin=min(500, ssize), MinAge=c(), MaxAge=c(), MinYr=MinAge, MaxYr=MaxAge, cutoff=.001, plot.pdf=TRUE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, verbose=TRUE, ...) {
   # Check coredir and if required, copy example file in core directory
   coredir <- assign_coredir(coredir, core, ask)
   if(core == "MSB2K" || core == "RLGH3") {
@@ -179,7 +181,6 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
 
   # set the calibration curve
   if(ccdir == "")
-   # ccdir <- paste0(system.file("extdata", package=packageName()), "/Curves/")
     ccdir <- system.file("extdata", package="IntCal")
   ccdir <- .validateDirectoryName(ccdir)
 
@@ -208,13 +209,17 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     ballpacc <- abs(sugg - ballpacc) # get absolute differences between given acc.mean and suggested ones
     ballpacc <- ballpacc[ballpacc > 0] # do not suggest 0
     sugg <- sugg[order(ballpacc)[1]] # suggest rounded acc.rate with lowest absolute difference
-    if(!sugg %in% acc.mean) {
-      ans <- readline(message(" Ballpark estimates suggest changing the prior for acc.mean to ", sugg, " ", age.unit, "/", depth.unit, ". OK? (y/N) "))
-      if(tolower(substr(ans,1,1)) == "y")
-        acc.mean <- sugg else
-          message(" No problem, using the provided prior")
+    if(!sugg %in% acc.mean) 
+      if(accept.suggestions) { # new Oct '20
+        acc.mean <- sugg
+        message("Adapting acc.mean to ", sugg, " ", age.unit, "/", depth.unit)
+	  } else {
+        ans <- readline(message(" Ballpark estimates suggest changing the prior for acc.mean to ", sugg, " ", age.unit, "/", depth.unit, ". OK? (y/N) "))
+        if(tolower(substr(ans,1,1)) == "y")
+          acc.mean <- sugg else
+            message(" No problem, using the provided prior")
+      }
     }
-  }
 
   if(!is.na(boundary[1]))
     boundary <- sort(unique(boundary))
@@ -227,6 +232,8 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   info <- .Bacon.settings(core=core, coredir=coredir, dets=dets, thick=thick, remember=remember, d.min=d.min, d.max=d.max, d.by=d.by, depths.file=depths.file, slump=slump, acc.mean=acc.mean, acc.shape=acc.shape, mem.mean=mem.mean, mem.strength=mem.strength, boundary=boundary, hiatus.depths=hiatus.depths, hiatus.max=hiatus.max, BCAD=BCAD, cc=cc, postbomb=postbomb, cc1=cc1, cc2=cc2, cc3=cc3, cc4=cc4, depth.unit=depth.unit, normal=normal, t.a=t.a, t.b=t.b, delta.R=delta.R, delta.STD=delta.STD, prob=prob, defaults=defaults, runname=runname, ssize=ssize, dark=dark, MinAge=MinAge, MaxAge=MaxAge, cutoff=cutoff, age.res=age.res, after=after, age.unit=age.unit)
   .assign_to_global("info", info)
   info$coredir <- coredir
+  if(is.na(seed))
+    seed <-sample(1:1e6, 1) # sample an integer
   info$seed <- seed
   info$isplum <- FALSE
 
@@ -234,7 +241,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   if(any(info$acc.shape == info$acc.mean))
     stop("acc.shape cannot be equal to acc.mean", call.=FALSE)
   if(info$t.b - info$t.a != 1)
-    stop("t.b - t.a should always be 1, check the manual", call.=FALSE)
+    warning("t.b - t.a should always be 1, check the manual", call.=FALSE)
   if(min(acc.shape) < 1)
     warning("\nWarning, using values <1 for acc.shape might cause unexpected results\n", call.=TRUE)
 
@@ -273,6 +280,8 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     info$d.max <- max(depths)
 
   info$elbows <- seq(floor(info$d.min), ceiling(info$d.max), by=thick)
+  if(add.bottom)  # new October 2020
+    info$elbows <- c(info$elbow, max(info$elbow)+thick) # new October 2020
   info$K <- length(info$elbows)
   info$cK <- info$d.min+(info$thick*info$K) # the maximum depth to be used by the bacon model
 
@@ -298,14 +307,18 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
         if(info$K < min(reswarn)) {
           sugg <- pretty(thick*(info$K/min(reswarn)), 10)
           sugg <- min(sugg[sugg>0])
-          ans <- readline(message(" Warning, the current value for thick, ", thick, ", will result in very few age-model sections (", info$K, ", not very flexible). Suggested maximum value for thick: ", sugg, " OK? (y/n) "))
+          if(accept.suggestions) 
+            ans <- sugg else 
+              ans <- readline(message(" Warning, the current value for thick, ", thick, ", will result in very few age-model sections (", info$K, ", not very flexible). Suggested maximum value for thick: ", sugg, " OK? (y/n) "))
         } else
           if(info$K > max(reswarn)) {
             sugg <- max(pretty(thick*(info$K/max(reswarn))))
-            ans <- readline(message(" Warning, the current value for thick, ", thick, ", will result in very many age-model sections (", info$K, ", possibly hard to run). Suggested minimum value for thick: ", sugg, " OK? (y/n) "))
+            if(accept.suggestions) 
+              ans <- sugg else
+                ans <- readline(message(" Warning, the current value for thick, ", thick, ", will result in very many age-model sections (", info$K, ", possibly hard to run). Suggested minimum value for thick: ", sugg, " OK? (y/n) "))
           }
     if(tolower(substr(ans, 1, 1)) == "y") {
-      message(" OK, setting thick to ", sugg, "\n")
+      message(" Setting thick to ", sugg, "\n")
       thick <- sugg
       info$thick = thick #CHANGED: if the answer is "yes", the global thick value is not updated
       info$elbows <- seq(floor(info$d.min), ceiling(info$d.max), by=thick)
@@ -402,7 +415,9 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
       if(!ask)
         cook() else {
           prepare()
-          ans <- readline(message(" Run ", core, " with ", info$K, " sections? (Y/n) "))
+          if(accept.suggestions)
+            ans <- "y" else
+              ans <- readline(message(" Run ", core, " with ", info$K, " sections? (Y/n) "))
           ans <- tolower(substr(ans,1,1))[1]
           if(ans=="y" || ans=="")
             cook() else

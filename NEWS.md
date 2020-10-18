@@ -1,15 +1,16 @@
 # rbacon 2.5.0
 * updated src/kernel.cpp and src/twalk.h, to repair a bug in one of the moves ('hop'). This means we can now add the updated MCMC code of version 2.4.0 again and accommodate code to run 210Pb-dated cores (via the package rplum) 
 * Radiocarbon calibration curves are now loaded from the imported IntCal R package, and have been removed from the rbacon package to save space and remove duplication
-* Added option rgb.scale to draw shades of other colours than grey, e.g. red: rgb.scales(1,0,0), for the functions agedepth, accrate.depth.ghost, accrate.age.ghost, proxy.ghost and flux.age.ghost (based on an idea by Oliver Wilson).
+* Added option rgb.scale to draw shades of other colours than grey, e.g. red: rgb.scales(1,0,0), for the functions agedepth, accrate.depth.ghost, accrate.age.ghost, proxy.ghost and flux.age.ghost (based on an idea kindly provided by Oliver Wilson).
 * Related to rgb.scale, the resolution of the colours has been renamed from grey.res to rgb.res
 * added option 'add' to add proxy.ghost graphs to existing plots (based on an idea by Oliver Wilson)
 * Repaired bug with greyscales accrate.age.ghost
 * if the file with the dates has been modified more recently than a loaded run (e.g., dates could have been added, removed or changed), then a warning is now given that Bacon.cleanup should be ran
 * Added a new function Bacon.d.Age to provide the depths belonging to a specific modelled age (kindly contributed by Timon Netzel)
-* STILL TO DO: check why the areas of calibrated blobs are not all the same size any more. Do we need to treat the blobs differently now with so much more detail in IntCal?
-* STILL TO DO: add section at bottom to ensure bottommost date always taken into account (possibly add option add.bottom)
-* STILL TO DO: look at suggested option to accept all suggestions
+* Depth units are now respected better by the agedepth function
+* New option accept.suggestions, which automatically accepts suggestions regarding acc.rate and thick. Use with caution (this option was kindly suggested by Quinn Asena)
+* STILL TO DO: check why the areas of calibrated blobs are not all the same size any more. Do we need to treat the blobs differently now with so much more detail in IntCal? 
+* STILL TO DO: add section at bottom to ensure bottommost date always taken into account (possibly add option add.bottom). This should deal with the problem of the bottommost date being neglected
 
 # rbacon 2.4.3
 * replaced 'cat' with 'message' or 'warning' where possible

@@ -211,7 +211,7 @@ class twalk {
 		/*Dimension of the objective function domain*/
                 int n;                  //x, xp dimension
 
-				//parameters needed by methos simulations and one_move
+				//parameters needed by methods simulations and one_move
 				double acc;            //acceptance counter
 				int val;
 				kernel *ker;

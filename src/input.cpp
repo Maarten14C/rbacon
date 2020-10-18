@@ -206,7 +206,7 @@ Input::Input(char *datafile, int emaxnumofcurves, int maxm, std::string ccdir) {
 			if (numofpars == 11)
 				seed = 0; //automatic seed set with time()
 			else
-				seed = (unsigned long int) rpars[11];
+				seed = (unsigned long int) rpars[12]; // was rpars[11]
 
 
 			//Open the Bacon object
