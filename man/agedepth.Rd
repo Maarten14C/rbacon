@@ -7,7 +7,7 @@
 agedepth(
   set = get("info"),
   BCAD = set$BCAD,
-  depth.unit = "cm",
+  depth.unit = set$depth.unit,
   age.unit = "yr",
   unit = depth.unit,
   d.lab = c(),
@@ -37,11 +37,11 @@ agedepth(
   rev.yr = rev.age,
   rev.d = FALSE,
   maxcalc = 500,
-  height = 15,
+  height = 30,
   calheight = 1,
   mirror = TRUE,
   up = TRUE,
-  cutoff = 0.001,
+  cutoff = 0.1,
   plot.range = TRUE,
   panels = layout(1),
   range.col = grey(0.5),
@@ -88,7 +88,7 @@ agedepth(
 
 \item{BCAD}{The calendar scale of graphs and age output-files is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
 
-\item{depth.unit}{Units of the depths. Defaults to \code{depth.unit="cm"}.}
+\item{depth.unit}{Units of the depths. Defaults to the one provided in the Bacon() command, \code{depth.unit=set$depth.unit}.}
 
 \item{age.unit}{Units of the ages. Defaults to \code{age.unit="yr"}.}
 
@@ -159,7 +159,7 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{up}{Directions of distributions if they are plotted non-mirrored. Default \code{up=TRUE}.}
 
-\item{cutoff}{Avoid plotting very low probabilities of date distributions (default \code{cutoff=0.001}).}
+\item{cutoff}{Avoid plotting very low probabilities of date distributions (default \code{cutoff=0.1}).}
 
 \item{plot.range}{Whether or not to plot the curves showing the confidence ranges of the age-model. Defaults to (\code{plot.range=TRUE}).}
 

@@ -203,10 +203,10 @@ Input::Input(char *datafile, int emaxnumofcurves, int maxm, std::string ccdir) {
 			hiatus_pars[4][H] = 0.0; //hb, in this case, this one will be ignored
 
 			unsigned long int seed;
-			if (numofpars == 11)
-				seed = 0; //automatic seed set with time()
-			else
-				seed = (unsigned long int) rpars[12]; // was rpars[11]
+		//	if (numofpars == 11)  
+		//		seed = 0; //automatic seed set with time()
+		//	else
+				seed = (unsigned long int) rpars[12]; // was rpars[11]; Oct 2020
 
 
 			//Open the Bacon object

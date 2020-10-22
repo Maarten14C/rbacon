@@ -11,6 +11,7 @@ Bacon(
   prob = 0.95,
   d.min = NA,
   d.max = NA,
+  add.bottom = TRUE,
   d.by = 1,
   seed = NA,
   depths.file = FALSE,
@@ -40,6 +41,7 @@ Bacon(
   t.b = 4,
   normal = FALSE,
   suggest = TRUE,
+  accept.suggestions = FALSE,
   reswarn = c(10, 200),
   remember = TRUE,
   ask = TRUE,
@@ -57,7 +59,7 @@ Bacon(
   MaxAge = c(),
   MinYr = MinAge,
   MaxYr = MaxAge,
-  cutoff = 0.001,
+  cutoff = 0.1,
   plot.pdf = TRUE,
   dark = 1,
   date.res = 100,
@@ -84,9 +86,11 @@ Thinner (and thus more) sections will result in smoother age-models, but too man
 
 \item{d.max}{Maximum depth of age-depth model (use this to extrapolate to depths below the bottom dated depth).}
 
+\item{add.bottom}{Add a model section at the bottom of the core, in order to ensure the bottommost date is taken into account. Default \code{add.bottom=TRUE}. This is a new option and can cause age-models to differ from previous version. Please re-run the model if in doubt.}
+
 \item{d.by}{Depth intervals at which ages are calculated. Defaults to \code{d.by=1}.}
 
-\item{seed}{Seed used for C++ executions, if it is not assigned then the seed is set by system.}
+\item{seed}{Seed used for C++ executions. If it is not assigned (\code{seed=NA}) then the seed is set by system.}
 
 \item{depths.file}{By default, Bacon will calculate the ages for the depths \code{d.min} to \code{d.max} in steps of \code{d.by}.
 If \code{depths.file=TRUE}, Bacon will read a file containing the depths for which you require ages.
@@ -160,7 +164,9 @@ For symmetry reasons, t.a must always be equal to t.b-1.}
 
 \item{normal}{By default, Bacon uses the student's t-distribution to treat the dates. Use \code{normal=TRUE} to use the normal/Gaussian distribution. This will generally give higher weight to the dates.}
 
-\item{suggest}{If initial analysis of the data indicates abnormally slow or fast accumulation rates, Bacon will suggest to change the prior.
+\item{suggest}{If initial analysis of the data indicates abnormally slow or fast accumulation rates, Bacon will suggest to change the prior.}
+
+\item{accept.suggestions}{Automatically accept the suggested values. Use with care. Default \code{accept.suggestions=FALSE}.
 Also, if the length of the core would cause too few or too many sections with the default settings, Bacon will suggest an alternative section thickness \code{thick}.
 Accept these suggested alternative settings by typing "y" (or "yes please" if you prefer to be polite), or leave as is by typing "n" (or anything else, really). To get rid of these suggestions, use \code{suggest=FALSE}.}
 

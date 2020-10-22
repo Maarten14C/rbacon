@@ -106,7 +106,7 @@ add.dates <- function(mn, sdev, depth, cc=1, above=1e-6, ex=10, normal=TRUE, nor
 #' @param calheight Multiplier for the heights of the distributions of dates on the calendar scale. Defaults to \code{calheight=1}.
 #' @param mirror Plot the dates as 'blobs'. Set to \code{mirror=FALSE} to plot simple distributions.
 #' @param up Directions of distributions if they are plotted non-mirrored. Default \code{up=TRUE}.
-#' @param cutoff Avoid plotting very low probabilities of date distributions (default \code{cutoff=0.001}).
+#' @param cutoff Avoid plotting very low probabilities of date distributions (default \code{cutoff=0.1}).
 #' @param date.res Date distributions are plotted using \code{date.res=100} points by default.
 #' @param C14.col Colour of the calibrated distributions of the dates. Default is semi-transparent blue: \code{rgb(0,0,1,.35)}.
 #' @param C14.border Colours of the borders of calibrated 14C dates. Default is transparent dark blue: cal.col
@@ -131,8 +131,8 @@ add.dates <- function(mn, sdev, depth, cc=1, above=1e-6, ex=10, normal=TRUE, nor
 #' \url{https://projecteuclid.org/euclid.ba/1339616472}
 #' @export
 ### produce plots of the calibrated distributions
-calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, rev.yr=rev.age, age.lim=c(), yr.lim=age.lim, date.res=100, d.lab=c(), age.lab=c(), yr.lab=age.lab, height=15, calheight=1, mirror=TRUE, up=TRUE, cutoff=.001, C14.col=rgb(0,0,1,.5), C14.border=rgb(0,0,1,.75), cal.col=rgb(0,.5,.5,.5), cal.border=rgb(0,.5,.5,.75), dates.col=c(), slump.col=grey(0.8), new.plot=TRUE, plot.dists=TRUE, same.heights=FALSE, normalise.dists=TRUE) {
-  height <- length(set$d.min:set$d.max) * height/50
+calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, rev.yr=rev.age, age.lim=c(), yr.lim=age.lim, date.res=100, d.lab=c(), age.lab=c(), yr.lab=age.lab, height=30, calheight=1, mirror=TRUE, up=TRUE, cutoff=.1, C14.col=rgb(0,0,1,.5), C14.border=rgb(0,0,1,.75), cal.col=rgb(0,.5,.5,.5), cal.border=rgb(0,.5,.5,.75), dates.col=c(), slump.col=grey(0.8), new.plot=TRUE, plot.dists=TRUE, same.heights=FALSE, normalise.dists=TRUE) {
+  #height <- length(set$d.min:set$d.max) * height/50
   if(length(age.lim) == 0)
     lims <- c()
   for(i in 1:length(set$calib$probs))
@@ -175,17 +175,15 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
         cal[,2] <- cal[,2]/max(cal[,2])
       if(normalise.dists)
         cal[,2] <- cal[,2]/sum(cal[,2])
-      cal <- cal[cal[,2] >= cutoff,]
       cal[,2] <- height*cal[,2]
       if(ncol(set$dets) > 4 && set$dets[i,5] == 0) # cal BP date
         cal[,2] <- calheight*cal[,2]
-      cal <- approx(cal[,1], cal[,2], seq(min(cal[,1]), max(cal[,1]), length=100)) # tmp
 
       if(mirror)
-        pol <- cbind(c(d-cal$y, d+rev(cal$y)), c(cal$x, rev(cal$x))) else
+        pol <- cbind(c(d-cal[,2], d+rev(cal[,2])), c(cal[,1], rev(cal[,1]))) else
          if(up)
-           pol <- cbind(d-c(0, cal$y, 0), c(min(cal$x), cal$x, max(cal$x))) else
-             pol <- cbind(d+c(0, cal$y, 0), c(min(cal$x), cal$x, max(cal$x)))
+           pol <- cbind(d-c(0, cal[,2], 0), c(min(cal[,1]), cal[,1], max(cal[,1]))) else
+             pol <- cbind(d+c(0, cal[,2], 0), c(min(cal[,1]), cal[,1], max(cal[,1])))
       if(rotate.axes)
         pol <- cbind(pol[,2], pol[,1])
       if(ncol(set$dets)==4 && cc > 0 || (ncol(set$dets) > 4 && set$dets[i,5] > 0)) {
@@ -205,7 +203,7 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
 
 
 # calibrate C14 dates and calculate distributions for any calendar dates
-.bacon.calib <- function(dat, set=get('info'), date.res=100, normal=set$normal, t.a=set$t.a, t.b=set$t.b, delta.R=set$delta.R, delta.STD=set$delta.STD, ccdir="") {
+.bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.05, normal=set$normal, t.a=set$t.a, t.b=set$t.b, delta.R=set$delta.R, delta.STD=set$delta.STD, ccdir="") {
   # read in the curves
   if(set$cc1=="IntCal20" || set$cc1=="\"IntCal20\"")
     cc1 <- read.table(paste0(ccdir, "3Col_intcal20.14C")) else
@@ -238,26 +236,24 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
   if(round(set$t.b-set$t.a) !=1)
     stop("t.b - t.a should always be 1, check the manual", call.=FALSE)
 
-  d.cal <- function(cc, rcmean, w2, t.a, t.b) {
+  d.cal <- function(cc, rcmean, w2, t.a, t.b) { # formula updated Oct 2020
     if(set$normal)
       cal <- cbind(cc[,1], dnorm(cc[,2], rcmean, sqrt(cc[,3]^2+w2))) else
-        cal <- cbind(cc[,1], (t.b+ ((rcmean-cc[,2])^2) / (2*(cc[,3]^2 + w2))) ^ (-1*(t.a+0.5))) # student-t
-    cal[,2] <- cal[,2]/sum(cal[,2])
-    if(length(which(cal[,2]>set$cutoff)) > 5) # ensure that also very precise dates get a range of probabilities
-      cal[which(cal[,2]>set$cutoff),] else {
-        calx <- seq(min(cal[,1]), max(cal[,1]), length=100)
-        caly <- approx(cal[,1], cal[,2], calx)$y
-        cbind(calx, caly/sum(caly), deparse.level = 0)
-      }
+        cal <- cbind(cc[,1], (t.b+ ((rcmean-cc[,2])^2) / (2*(cc[,3]^2 + w2))) ^ (-1*(t.a+0.5))) # student-t	   
+    cal[,2] <- cal[,2]/sum(cal[,2]) # normalise
+    these <- which(cal[,2] >= cutoff*max(cal[,2])) # keep those with values >% of the maximum height  
+    cal <- cal[these,]
+
+    calx <- seq(min(cal[,1]), max(cal[,1]), length=date.res)
+    caly <- approx(cal[,1], cal[,2], calx)$y
+    cbind(calx, caly/sum(caly), deparse.level = 0)
   }
 
   # now calibrate all dates
   calib <- list(d=dat[,4])
   if(ncol(dat)==4) { # only one type of dates (e.g., calBP, or all IntCal20 C14 dates)
     if(set$cc==0) {
-      x <- seq(min(dat[,2])-(5*max(dat[,3])), max(dat[,2])+(5*max(dat[,3])), by=5) # simplify, May 2019
-      if(length(x) > 100) # if too many resulting years, make 100 vals
-        x <- seq(min(dat[,2])-(5*max(dat[,3])), max(dat[,2])+(5*max(dat[,3])), length=100)
+      x <- seq(min(dat[,2])-(5*max(dat[,3])), max(dat[,2])+(5*max(dat[,3])), length=date.res)
       ccurve <- cbind(x, x, rep(0,length(x))) # dummy 1:1 curve
     } else {
         if(set$cc==1) ccurve <- cc1 else
@@ -271,14 +267,12 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
       for(i in 1:nrow(dat)) {
         dets <- c(NA, as.numeric(dat[i,-1])) # the first column is not numeric
         if(dets[5]==0) {
-          x <- seq(dets[2]-(5*dets[3]), dets[2]+(5*dets[3]), by=5) # simplify, May 2019
-          if(length(x) < 5 || length(x) > 100) # if too many resulting years, make 100 vals
-            x <- seq(dets[2]-(5*dets[3]), dets[2]+(5*dets[3]), length=100)
+          x <- seq(dets[2]-(5*dets[3]), dets[2]+(5*dets[3]), length=date.res)
           ccurve <- cbind(x, x, rep(0,length(x))) # dummy 1:1 curve
         } else {
             if(dets[5]==1) ccurve <- cc1 else if(dets[5]==2) ccurve <- cc2 else
               if(dets[5]==3) ccurve <- cc3 else ccurve <- cc4
-              }
+            }
         delta.R <- set$delta.R; delta.STD <- set$delta.STD; t.a <- set$t.a; t.b <- set$t.b
         if(length(dets) >= 7 && dets[5] > 0) { # the user provided age offsets; only for C14 dates
           delta.R <- dets[6]

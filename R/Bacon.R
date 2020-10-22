@@ -11,13 +11,15 @@
 #' @importFrom utils read.csv read.table write.table packageName txtProgressBar setTxtProgressBar
 #' @importFrom Rcpp evalCpp
 #' @importFrom coda gelman.diag mcmc.list as.mcmc
-#' @importFrom IntCal copyCalibrationCurve mix.curves pMC.age age.pMC
-#'
+#' @import IntCal
 #' @useDynLib rbacon
 #' @name rbacon
 NULL
 
-# do: adapt lowest section so that there is always a section below the lowermost dated depth, 
+# to be able to directly use copyCalibrationCurve, mix.curves, pMC.age & age.pMC
+library(IntCal)
+
+# do: investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), why doesn't a defined seed result in similar runs?
 
 # done: 
 
@@ -170,7 +172,7 @@ NULL
 #' Journal of Ecology 77: 1-23.
 #'
 #' @export
-Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=4, mem.mean=0.7, boundary=NA, hiatus.depths=NA, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", ccdir="", postbomb=0, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), BCAD=FALSE, ssize=2000, th0=c(), burnin=min(500, ssize), MinAge=c(), MaxAge=c(), MinYr=MinAge, MaxYr=MaxAge, cutoff=.001, plot.pdf=TRUE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, verbose=TRUE, ...) {
+Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=4, mem.mean=0.7, boundary=NA, hiatus.depths=NA, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", ccdir="", postbomb=0, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), BCAD=FALSE, ssize=2000, th0=c(), burnin=min(500, ssize), MinAge=c(), MaxAge=c(), MinYr=MinAge, MaxYr=MaxAge, cutoff=.1, plot.pdf=TRUE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, verbose=TRUE, ...) {
   # Check coredir and if required, copy example file in core directory
   coredir <- assign_coredir(coredir, core, ask)
   if(core == "MSB2K" || core == "RLGH3") {
@@ -250,14 +252,15 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     if(info$postbomb == 0 && ((ncol(info$dets) == 4 && min(info$dets[,2]) < 0) ||
       ncol(info$dets)>4 && max(info$dets[,5]) > 0 && min(info$dets[info$dets[,5] > 0,2]) < 0))
         stop("you have negative C14 ages so should select a postbomb curve", call.=FALSE)
-  info$calib <- .bacon.calib(dets, info, date.res, ccdir=ccdir)
+  info$calib <- .bacon.calib(dets, info, date.res, ccdir=ccdir, cutoff=cutoff)
 
   ### find some relevant values
   info$rng <- c()
   for(i in 1:length(info$calib$probs)) {
     tmp <- info$calib$probs[[i]]
-    info$rng <- range(info$rng, tmp[which(tmp[,2]>cutoff),1])
+    info$rng <- range(info$rng, tmp[,1]) # removed cutoff selection from tmp
   }
+  
   if(length(th0)==0) # provide two ball-park/initial age estimates
     info$th0 <- round(rnorm(2, max(MinAge, dets[1,2]), dets[1,3]))
   info$th0[info$th0 < info$MinAge] <- info$MinAge # otherwise twalk will not start
@@ -281,7 +284,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
 
   info$elbows <- seq(floor(info$d.min), ceiling(info$d.max), by=thick)
   if(add.bottom)  # new October 2020
-    info$elbows <- c(info$elbow, max(info$elbow)+thick) # new October 2020
+    info$elbows <- c(info$elbows, max(info$elbows)+thick) # new October 2020
   info$K <- length(info$elbows)
   info$cK <- info$d.min+(info$thick*info$K) # the maximum depth to be used by the bacon model
 

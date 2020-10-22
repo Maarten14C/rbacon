@@ -7,7 +7,7 @@
 #' @param set Detailed information of the current run, stored within this session's memory as variable info.
 #' @param its The set of MCMC iterations to be used. Defaults to the entire MCMC output, \code{its=set$output}.
 #' @param BCAD The calendar scale of graphs and age output-files is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
-#' @param remove Whether or not to remove NA values (ages within slumps)
+#' @param na.rm Whether or not to remove NA values (ages within slumps)
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return Outputs all MCMC-derived ages for a given depth.
 #' @examples
@@ -21,7 +21,7 @@
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
 #'  \url{https://projecteuclid.org/euclid.ba/1339616472}
 #' @export
-Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, remove=FALSE) {
+Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm=FALSE) {
   if(length(d) > 1)
     stop("Bacon.Age.d can handle one depth at a time only", call.=FALSE)
   if(length(its) == 0)
@@ -73,7 +73,7 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, remov
 #' @param set Detailed information of the current run, stored within this session's memory as variable info.
 #' @param its The set of MCMC iterations to be used. Defaults to the entire MCMC output, \code{its=set$output}.
 #' @param BCAD The calendar scale of graphs and age output-files is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
-#' @param remove Whether or not to remove NA values (ages within slumps)
+#' @param na.rm Whether or not to remove NA values (ages within slumps)
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return Outputs all MCMC-derived ages for a given depth.
 #' @examples

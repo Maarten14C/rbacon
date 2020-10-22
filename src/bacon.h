@@ -63,7 +63,9 @@ class BaconFix: public Bacon {
 			int H; //number of hiatuses
 			double *h; //location of the hiatuses
 			
-			int useT; //=1 to use the t model, =0 to use the noermal model
+			int useT; //=1 to use the t model, =0 to use the normal model
+			
+           //unsigned long int seed; // MB Oct 2020
 			
 			double w, w0, wp0;			
 			

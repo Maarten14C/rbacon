@@ -9,8 +9,8 @@
 * Added a new function Bacon.d.Age to provide the depths belonging to a specific modelled age (kindly contributed by Timon Netzel)
 * Depth units are now respected better by the agedepth function
 * New option accept.suggestions, which automatically accepts suggestions regarding acc.rate and thick. Use with caution (this option was kindly suggested by Quinn Asena)
+* By default, a section is now added below the bottom-most dated depth, in order to ensure that the this depth is always taken into account. Defaults to add.bottom=TRUE. 
 * STILL TO DO: check why the areas of calibrated blobs are not all the same size any more. Do we need to treat the blobs differently now with so much more detail in IntCal? 
-* STILL TO DO: add section at bottom to ensure bottommost date always taken into account (possibly add option add.bottom). This should deal with the problem of the bottommost date being neglected
 
 # rbacon 2.4.3
 * replaced 'cat' with 'message' or 'warning' where possible
