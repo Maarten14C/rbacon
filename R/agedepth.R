@@ -170,7 +170,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     message("Calculating age ranges...\n")
   modelranges <- c()
   ranges <- Bacon.rng(d, set, BCAD=BCAD, prob=prob)
-  
+
   # calculate calendar axis limits
   modelranges <- range(ranges[!is.na(ranges)])
   dates <- set$calib$probs

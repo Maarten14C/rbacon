@@ -128,13 +128,13 @@ void RandomSeed(Random *rng, unsigned long int s)
    if (rng->s2 < 8) rng->s2 += 8UL;
    rng->s3 = LCG(rng->s2);
    if (rng->s3 < 16) rng->s3 += 16UL;
-   Rprintf("Seed: %lu %lu %lu %lu\n", rng->s, rng->s1, rng->s2, rng->s3);
+   //Rprintf("Seed: %lu %lu %lu %lu\n", rng->s, rng->s1, rng->s2, rng->s3);
    /* "warm it up" */
-   Random32(rng);
-   Random32(rng);
-   Random32(rng);
-   Random32(rng);
-   Random32(rng);
+   //Random32(rng);
+   //Random32(rng);
+   //Random32(rng);
+   //Random32(rng);
+   //Random32(rng);
    Random32(rng);
    return;
 }

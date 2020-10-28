@@ -51,6 +51,7 @@ Bacon(
   dec = ".",
   runname = "",
   slump = c(),
+  remove = FALSE,
   BCAD = FALSE,
   ssize = 2000,
   th0 = c(),
@@ -190,6 +191,8 @@ try running your core again with \code{remember=FALSE}, or, start cleanly by typ
 \item{runname}{Text to add to the corename for specific runs, e.g., \code{runname="MyCore_Test1"}.}
 
 \item{slump}{Upper and lower depths of any sections of assumed abrupt accumulation, that require excising before age-modelling (and adding after age-modelling). Requires pairs of depths, e.g., \code{slump=c(10,15,60,67)} for slumps at 67-60 and 15-10 cm core depth.}
+
+\item{remove}{Whether or not to remove depths within slumps. Defaults to \code{remove=FALSE}.}
 
 \item{BCAD}{The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
 

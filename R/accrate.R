@@ -50,6 +50,7 @@ accrate.depth <- function(d, set=get('info'), cmyr=FALSE) {
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param cmyr Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm.
 #' @param BCAD The calendar scale of graphs and age output-files is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
+#' @param silent Warn when ages are outside the core's range. Default \code{silent=TRUE}.
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return all MCMC estimates of accumulation rate of the chosen age.
 #' @examples
@@ -64,15 +65,16 @@ accrate.depth <- function(d, set=get('info'), cmyr=FALSE) {
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
 #'  \url{https://projecteuclid.org/euclid.ba/1339616472}
 #' @export
-accrate.age <- function(age, set=get('info'), cmyr=FALSE, BCAD=set$BCAD) {
+accrate.age <- function(age, set=get('info'), cmyr=FALSE, BCAD=set$BCAD, silent=TRUE) {
  ages <- cbind(set$output[,1])
  for(i in 1:(set$K-1))
    ages <- cbind(ages, ages[,i] + (set$thick * (set$output[,i+1])))
  if(BCAD)
    ages <- 1950 - ages
 
- if(age < min(ages) || age > max(ages))
-   message(" Warning, age outside the core's age range!\n")
+ if(!silent)
+   if(age < min(ages) || age > max(ages))
+     message(" Warning, age outside the core's age range!\n")
  accs <- c()
  for(i in 2:ncol(ages)) {
    these <- (ages[,i-1] < age) * (ages[,i] > age)

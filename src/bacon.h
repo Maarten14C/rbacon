@@ -48,7 +48,7 @@ class Bacon: public obj_fcn {
 		virtual double GetcK() = 0;
 		virtual void ShowDescrip() = 0;
 		virtual void PrintNumWarnings() = 0;
-
+        
 };
 
 
@@ -207,8 +207,13 @@ class BaconFix: public Bacon {
 				x0[0]  = th0;
 				xp0[0] = thp0;
 				
-				Seed(seed); //Set the Seed for random number generation
-
+				Seed(seed);
+                //Seed(1234); //Set the Seed for random number generation
+                //Seed(GetSeed()); // tmp MB Oct 2020
+                //Seed(11); // tmp MB Oct 2020
+				//Rprintf("\nThe cat found two beta seeds: %f and %f \n", BetaSim(a,b), BetaSim(a,b)); // tmp MB Oct 2020	
+                //Rprintf("Now checking GetSeed: %lu\n", GetSeed());
+				
 				//and for w, from its prior
 				x0[K+1]  = BetaSim( a, b);
 				xp0[K+1] = BetaSim( a, b);
@@ -223,6 +228,11 @@ class BaconFix: public Bacon {
 				//initial values for the acc. rates
 				x0[K]  = GammaSim( alpha[H], 1.0/beta[H]);
 				xp0[K] = GammaSim( alpha[H], 1.0/beta[H]);
+				
+				//Rprintf("The cat also found two gamma seeds: %f and %f \n", GammaSim(alpha[H], 1.0/beta[H]), GammaSim(alpha[H], 1.0/beta[H])); // tmp MB Oct 2020	
+				
+				
+				
 				if (H == 0) {  //with no hiatus
 					for (int k=K-1; k>0; k--) { 
 						x0[k]  = w0*x0[k+1] + (1.0-w0)*GammaSim( alpha[0], mult/beta[0]);		

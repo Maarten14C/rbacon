@@ -29,7 +29,7 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
 
   hiatus.depths <- set$hiatus.depths
   if(length(set$slump) > 0) {
-   d <- toslump(d, set$slump, remove=remove)
+   d <- toslump(d, set$slump, remove=na.rm)
    if(!is.na(hiatus.depths[1]))
      hiatus.depths <- set$slumphiatus
   }
@@ -409,14 +409,16 @@ Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
   if(length(d) > 1)
     pb <- txtProgressBar(min=0, max=max(1, length(d)-1), style=3)
   rng <- array(NA, dim=c(length(d), 4))
+
   for(i in 1:length(d)) {
     ages <- Bacon.Age.d(d[i], set, BCAD=BCAD)
 	  if(length(!is.na(ages)) > 0) {
       rng[i,1:3] <- quantile(ages[!is.na(ages)], c(((1-prob)/2), 1-((1-prob)/2), .5))
       rng[i,4] <- mean(ages[!is.na(ages)])
     }
-    if(length(d) > 1)
-      setTxtProgressBar(pb, i)
+
+  if(length(d) > 1)
+    setTxtProgressBar(pb, i)
   }
   if(length(d) > 1)
     close(pb)
@@ -461,6 +463,7 @@ agemodel.it <- function(it, set=get('info'), BCAD=set$BCAD) {
 toslump <- function(d, slump, remove=FALSE) {
   d <- sort(d)
   slump <- matrix(sort(slump), ncol=2, byrow=TRUE)
+ # slump <<- slump
   slices <- c(0, slump[,2] - slump[,1])
   dfree <- d
   for(i in 1:nrow(slump)) {
@@ -474,7 +477,7 @@ toslump <- function(d, slump, remove=FALSE) {
 
     if(length(inside) > 0) # depths within slump
       if(min(d) < max(slump[i,]))
-	    if(remove)
+        if(remove)
           dfree[inside] <- NA else
             dfree[inside] <- slump[i,1] - sum(slices[1:i])
   }

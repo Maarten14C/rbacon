@@ -15,4 +15,4 @@ Bacon(ask=FALSE, boundary=c(25,46))
 Bacon(ask=FALSE, hiatus.depths=c(25,46))
 Bacon(ask=FALSE, boundary=c(25,46), slump=c(28,33))
 
-Bacon("RLGH3", ask=FALSE)
+Bacon("RLGH3", accept.suggestions=T)

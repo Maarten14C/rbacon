@@ -539,12 +539,11 @@ int simulation(unsigned long long Tr1, char *filename, const char *op="wt", int 
 	FILE *fptr;
     FILE *recacc = NULL; // JEV warning
 
-
+	//Seed(4321); // tmp MB&JAC Oct 2020
     long sec=time(NULL); //beginning of the twalk
     time_t temp = sec;
     if (silent == 0)
-        Rprintf("twalk: %12lu iterations to run, %s", Tr1, ctime(&temp));
-
+		Rprintf("twalk: %12lu iterations to run", Tr1, ctime(&temp));
 
     // ----- --- Initialization --- -----
 
@@ -617,6 +616,7 @@ int simulation(unsigned long long Tr1, char *filename, const char *op="wt", int 
 
 		Rprintf("BUFSIZ is %d, optimal block size changed to %ld\n", BUFSIZ, st_blksize);
 #endif
+		//Rprintf("\nThe wee seed is now %lu, %lu, %lu, \n", Seed, GetSeed(), Seed); // tmp MB Oct 2020	
 
 
 		fver_vector(fptr, x, n);
@@ -629,6 +629,7 @@ int simulation(unsigned long long Tr1, char *filename, const char *op="wt", int 
             else{
                 Rprintf("twalk: All %d iterations to be saved in file %s\n", save_every, filename);
             }
+		//Rprintf("\nOh, the seed is now %lu \n", GetSeed()); // tmp MB Oct 2020	
         }
 
 
@@ -677,7 +678,7 @@ int simulation(unsigned long long Tr1, char *filename, const char *op="wt", int 
 					if (((ax=time(NULL)) - sec2) > (1 << j)*WAIT)
 					{
 						if (silent == 0) {
-                            Rprintf("twalk: %lu iterations so far. ", it);
+                            Rprintf("twalk: %lu iterations so far\n", it);
 							Remain( Tr1, it, sec, ax);
 						}
 						sec2 = ax;
@@ -726,9 +727,14 @@ int simulation(unsigned long long Tr1, char *filename, const char *op="wt", int 
 
 		sec = time(NULL);
         temp = sec;
-		if (silent == 0)
+		if (silent == 0) {
+            //Rprintf("\nOh, la semilla esta en %lu \n", GetSeed()); // tmp MB Oct 2020	
+
             Rprintf("twalk: Finished, %4.1f%% of moved pars per iteration (ratio %f/%lu). Output in file %s,\n      %s\n",
                  100.0*(acc/(double) Tr1), acc, Tr1, filename, ctime(&temp));
+            //Rprintf("\nOh, la semilla sigue en %lu \n", GetSeed()); // tmp MB Oct 2020	
+            
+        }
 
         return (int) rint(acc);
 

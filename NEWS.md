@@ -10,7 +10,7 @@
 * Depth units are now respected better by the agedepth function
 * New option accept.suggestions, which automatically accepts suggestions regarding acc.rate and thick. Use with caution (this option was kindly suggested by Quinn Asena)
 * By default, a section is now added below the bottom-most dated depth, in order to ensure that the this depth is always taken into account. Defaults to add.bottom=TRUE. 
-* STILL TO DO: check why the areas of calibrated blobs are not all the same size any more. Do we need to treat the blobs differently now with so much more detail in IntCal? 
+* The calibrated distributions should now be of the same size, so that more precise dates peaks more than less precise ones (suggested by Tiffany Napier). 
 
 # rbacon 2.4.3
 * replaced 'cat' with 'message' or 'warning' where possible

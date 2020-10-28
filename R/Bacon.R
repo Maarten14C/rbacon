@@ -19,11 +19,11 @@ NULL
 # to be able to directly use copyCalibrationCurve, mix.curves, pMC.age & age.pMC
 library(IntCal)
 
-# do: investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), why doesn't a defined seed result in similar runs?
+# do:
 
 # done: 
 
-# for future versions: can ssize be predicted more accurately?, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, find a way to get rid of accrate.age.ghost's overly low accrates at core bottoms, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, introduce write.Bacon function to write files only once user agrees with the model, can we change from using files to using memory only?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
+# for future versions: investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), why doesn't a defined seed result in similar runs? can ssize be predicted more accurately?, accrate.age.ghost is black all through - needs to have sections with lower maximum amount of grey, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, find a way to get rid of accrate.age.ghost's overly low accrates at core bottoms, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, introduce write.Bacon function to write files only once user agrees with the model, can we change from using files to using memory only?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
 #' @name Bacon
 #' @title Main age-depth modelling function
@@ -123,6 +123,7 @@ library(IntCal)
 #' @param dec Character for decimal points. Default to \code{dec="."}.
 #' @param runname Text to add to the corename for specific runs, e.g., \code{runname="MyCore_Test1"}.
 #' @param slump Upper and lower depths of any sections of assumed abrupt accumulation, that require excising before age-modelling (and adding after age-modelling). Requires pairs of depths, e.g., \code{slump=c(10,15,60,67)} for slumps at 67-60 and 15-10 cm core depth.
+#' @param remove Whether or not to remove depths within slumps. Defaults to \code{remove=FALSE}.
 #' @param BCAD The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
 #' @param ssize The approximate amount of iterations to store at the end of the MCMC run. Default 2000; decrease for faster (but less reliable) runs or increase for cores where the MCMC mixing (panel at upper-left corner of age-model graph) appears problematic.
 #' @param th0 Starting years for the MCMC iterations.
@@ -172,7 +173,7 @@ library(IntCal)
 #' Journal of Ecology 77: 1-23.
 #'
 #' @export
-Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=4, mem.mean=0.7, boundary=NA, hiatus.depths=NA, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", ccdir="", postbomb=0, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), BCAD=FALSE, ssize=2000, th0=c(), burnin=min(500, ssize), MinAge=c(), MaxAge=c(), MinYr=MinAge, MaxYr=MaxAge, cutoff=.1, plot.pdf=TRUE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, verbose=TRUE, ...) {
+Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=4, mem.mean=0.7, boundary=NA, hiatus.depths=NA, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", ccdir="", postbomb=0, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), remove=FALSE, BCAD=FALSE, ssize=2000, th0=c(), burnin=min(500, ssize), MinAge=c(), MaxAge=c(), MinYr=MinAge, MaxYr=MaxAge, cutoff=.1, plot.pdf=TRUE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, verbose=TRUE, ...) {
   # Check coredir and if required, copy example file in core directory
   coredir <- assign_coredir(coredir, core, ask)
   if(core == "MSB2K" || core == "RLGH3") {
@@ -325,8 +326,9 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
       thick <- sugg
       info$thick = thick #CHANGED: if the answer is "yes", the global thick value is not updated
       info$elbows <- seq(floor(info$d.min), ceiling(info$d.max), by=thick)
+
       if(length(info$slump) > 0) # why here, and not a few lines later?
-        info$elbows <- seq(floor(info$d.min), toslump(ceiling(info$d.max), info$slump), by=thick)
+        info$elbows <- seq(floor(info$d.min), toslump(ceiling(info$d.max), info$slump, remove=remove), by=thick)
       info$K <- length(info$elbows)
       info$cK <- info$d.min+(info$thick*info$K) # the maximum depth to be used by the bacon model
     }
@@ -338,19 +340,19 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     slump <- matrix(sort(slump), ncol=2, byrow=TRUE)
     info$slump <- slump
 
-    slumpdmax <- toslump(ceiling(info$d.max), slump)
+    slumpdmax <- toslump(ceiling(info$d.max), slump, remove=remove)
 	info$elbows <- seq(floor(info$d.min), slumpdmax, by=thick)
     info$K <- length(info$elbows)
     info$cK <- info$d.min+(info$thick*info$K) # the maximum depth to be used by the bacon model
 
-	info$slumpfree <- toslump(depths, slump)
-    info$slumphiatus <- toslump(info$hiatus.depths, slump) # check
+	info$slumpfree <- toslump(depths, slump, remove=remove)
+    info$slumphiatus <- toslump(info$hiatus.depths, slump, remove=remove) # check
 	if(!is.na(info$boundary[1])) {
-      info$slumpboundary <- toslump(info$boundary, slump) # check
+      info$slumpboundary <- toslump(info$boundary, slump, remove=remove) # check
       info$slumphiatus <- info$slumpboundary
     }
     slumpdets <- info$dets
-    slumpdets[,4] <- toslump(slumpdets[,4], slump, remove=FALSE) # dates within slumps are not removed
+    slumpdets[,4] <- toslump(slumpdets[,4], slump, remove=remove) # by default, dates within slumps are not removed
     info$slumpdets <- slumpdets[!is.na(slumpdets[,4]),]
   }
 
