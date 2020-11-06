@@ -19,7 +19,65 @@ NULL
 # to be able to directly use copyCalibrationCurve, mix.curves, pMC.age & age.pMC
 library(IntCal)
 
-# do:
+# see if/where R subsamples .out, as the .out file is identical if seed is set!!! Something is happening there. 
+
+set.seed(99) # tmp!
+# do: add.date() how indicate postbomb curve to use?
+
+# rplum integration of the c++ code:
+# no differences between the files for ranfun.h, Matrix.h, Matrix.cpp or events.cpp
+# vector.cpp:  added lines 30 and 32 from rplum's. Bacon still compiles and runs as expected.
+# twalk.h: files are the same except for code to check and report seeds in rbacon's. Bacon still compiles and runs as expected.
+# ranfun.cpp: no differences except for lines commented in order to debug the seed problem
+
+# input.h: added line 50 int plum; from rplum, added lines 97, 99, 101 from rplum
+
+# input.cpp: 
+# line 8, BUFFZ 1024 in rbacon, but 50000 in rplum. Which one is best?
+# added lines 61-2, plum = 0; int more_pars = 0; from rplum
+# added lines 152-62 for the Plum 'calibration curve'. 
+# line 220, numofpars == 12 in rplum, 11 in rbacon. Seed. Check if this should be 12 for seed to work.
+# lines 233, 240, added more_pars from rplum
+# added lines 260-368, which define a new function OutputFiles
+
+# cal.h: added class Plum (lines 1066-1174), added lines 1192-3 is_210Pb, rho, delta, added lines 1263-6 Is210Pb(), added lines 1327-30
+
+# bacon.h: 
+# line 36 LA_CONST added, line 77 added MaxYrTheta0Plum
+# line 73, added *x, changed x to X
+# line 90-112, added priorPhiU, priorPSU
+# lines 133 and onward, x replaced by X, added lines 
+# lines 223-8, copied from rplum.h
+# lines 269-71: x0 becomes X0
+# lines 181-5: added lines from rplum.h
+# added lines 185-188
+# lines 293-4: x became X
+# lines 301, 303, changed lines
+# line 312, x became X
+# changed line 318
+# added lines 342-400 for Plum
+# added lines 437-451 from Plum
+# commented lines 453-464 on hiatus... can we?
+# added lines 408-427 for Plum
+# commented lines 489-90 on int rt - SetThetas(x);
+# added delete x in line 422
+# changed x to X in lines 423, 424, 446, 447
+# what does prime do in function starting line 448?
+# added explanation lines from rplum in lines 449-450
+# replaced lines 459-476 with updated lines 479-517
+# changed last lines, 518 & 520 to return U
+
+# according to Marco, the 'fat' age-model bug was in bacon.h, for (int j=0; j<(m-1); j++) has to go until m, not m-1
+
+# bacon.cpp: 
+# added line 127 All.outputFiles(outputFile1)
+# note that lines 61-6 still uncommented, but are active in rplum
+
+#### since so many changes in bacon.h, simply copied rplum's bacon.h into rbacon
+
+# check with Andres:
+# input.cpp, line 8: BUFFZ 1024 in rbacon, but 50000 in rplum. Which one is best?
+# kernel.cpp, lines 151-9: added if(vector_cmp(x,xp,n) != 1) { ... else return -1.0; from rplum and commented it.
 
 # done: 
 
@@ -237,6 +295,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   info$coredir <- coredir
   if(is.na(seed))
     seed <-sample(1:1e6, 1) # sample an integer
+  set.seed(seed) # Nov 2020
   info$seed <- seed
   info$isplum <- FALSE
 

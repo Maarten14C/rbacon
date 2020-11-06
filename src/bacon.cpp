@@ -38,7 +38,8 @@ the files:
 #define MAXNUMOFDETS  1000
 
 #define BUFFSIZE 4000
-
+#define BUFSIZE 4000
+// line 41 tmp MB Nov 2020; twalk.h calls it BUFSIZE
 
 //the "every" thinning subsampling parameter is EVERY_MULT*All.Dim()
 #define EVERY_MULT 5
@@ -51,7 +52,7 @@ the files:
 
 
 // [[Rcpp::export]]
-int bacon( std::string inputfile1, std::string outputfile1 , int ssize, std::string dircc) {// Command line: bacon inputfile outputfile
+int bacon( std::string inputfile1, std::string outputfile1, int ssize, std::string dircc) {// Command line: bacon inputfile outputfile
 //
 
   char *inputfile = new char[inputfile1.length() + 1];
