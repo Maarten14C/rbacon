@@ -42,7 +42,6 @@ int Input::GetPars() {
 
 Input::Input(char *datafile, int emaxnumofcurves, int maxm, std::string ccdir) {
 
-
 	//Open the array to hold all c. curves
 	maxnumofcurves = emaxnumofcurves;
 	curves = new Cal * [maxnumofcurves];
@@ -67,7 +66,6 @@ Input::Input(char *datafile, int emaxnumofcurves, int maxm, std::string ccdir) {
 	for (int i=0; i<5; i++)
 		hiatus_pars[i] = new double[MAXNUMOFHIATUS]; //open each row
 	H = 0; //set to zero hiatuses at the beginning
-
 
 	FILE *F;
 
@@ -173,12 +171,10 @@ Input::Input(char *datafile, int emaxnumofcurves, int maxm, std::string ccdir) {
     //		exit(0);
 		}
 
-		//Rprintf("Leyendo Dets....\n");
 
 		if (strcmp( key, "Det") == 0){
 			sscanf( pars[0], " %s", line);
 					   //Det(char *enm, double ey, double estd, double x, double edeltaR, double edeltaSTD, double ea, double eb, Cal *ecc)
-
 			tmpdet = new Det(  line   ,  rpars[1],    rpars[2], rpars[3],       rpars[4],         rpars[5],  rpars[6],  rpars[7], curves[(int) rpars[8]]);
 
 			dets->AddDet(tmpdet);
@@ -256,8 +252,10 @@ Input::Input(char *datafile, int emaxnumofcurves, int maxm, std::string ccdir) {
 }
 
 void Input::outputFiles(std::string outputfile1){
-	if(! isPlum() ) return; //the output file is correct
-
+	if(! isPlum() ) {
+        // Rprintf("Not using Plum, this is Bacon, just Bacon, moving on...\n"); // tmp MB Nov 2020
+        return; //the output file is correct
+    }
 	//printf("Plum is needed\n");
 	FILE *F, *F1, *F2/*, *F3*/;
 	char line[BUFFSZ];
@@ -285,20 +283,20 @@ void Input::outputFiles(std::string outputfile1){
 
 
 	if ((F1 = fopen( outputFilePlum1.c_str(), "w" )) == NULL){
-		Rprintf("Could not open %s for writting\n", outputFilePlum1.c_str());
-		Rcpp::stop("Could not open %s for writting\n", outputFilePlum1.c_str());
+		Rprintf("Could not open %s for writing\n", outputFilePlum1.c_str());
+		Rcpp::stop("Could not open %s for writing\n", outputFilePlum1.c_str());
 		//exit(-1);
 	}
 
 	if ((F2 = fopen( outputFilePlum2.c_str(), "w" )) == NULL){
-		Rprintf("Could not open %s for writting\n", outputFilePlum2.c_str());
-		Rcpp::stop("Could not open %s for writting\n", outputFilePlum2.c_str());
+		Rprintf("Could not open %s for writing\n", outputFilePlum2.c_str());
+		Rcpp::stop("Could not open %s for writing\n", outputFilePlum2.c_str());
 		//exit(-1);
 	}
 
 	/*if ((F3 = fopen( outputFilePlum3.c_str(), "w" )) == NULL){
-		Rprintf("Could not open %s for writting\n", outputFilePlum3.c_str());
-		Rcpp::stop("Could not open %s for writting\n", outputFilePlum3.c_str());
+		Rprintf("Could not open %s for writing\n", outputFilePlum3.c_str());
+		Rcpp::stop("Could not open %s for writing\n", outputFilePlum3.c_str());
 		//exit(-1);
 	}*/
 

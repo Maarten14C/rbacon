@@ -29,7 +29,7 @@ void fver_vector(FILE *fptr, double *u, int m) {
         fprintf(fptr, "\n");
         for(int i=0; i<(m); i++) // rplum says m-1!
             fprintf(fptr, "\t%13.6g", u[i]);
-  //      fprintf(fptr, "%13.6g", u[m-1]); // this from rplum. Not sure if it makes any difference
+		//      fprintf(fptr, "%13.6g", u[m-1]); // this from rplum. Not sure if it makes any difference
 }
 
 /*Returns 1 if v = u, component to component*/

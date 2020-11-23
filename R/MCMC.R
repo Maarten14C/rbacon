@@ -27,7 +27,6 @@
 #'   agedepth()
 #' }
 #'
-#' @seealso \url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
@@ -76,7 +75,6 @@ scissors <- function(burnin, set=get('info')) {
 #'   agedepth()
 #' }
 #'
-#' @seealso \url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
@@ -118,7 +116,6 @@ thinner <- function(proportion=0.1, set=get('info')) {
 #'   \donttest{
 #'     Baconvergence(runs=2, ssize=100, coredir=tempfile()) # a quick-and-dirty toy example
 #'   }
-#' @seealso \url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.

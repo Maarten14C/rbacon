@@ -144,7 +144,6 @@ void Seed(unsigned long int s) {
 }
 
 unsigned long int GetSeed() {
-//    Rprintf("La semilla es %lu %lu %lu %lu \n", RNG.s, RNG.s1, RNG.s2, RNG.s3);
 	return RNG.s;
 }
 	

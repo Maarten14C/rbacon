@@ -89,7 +89,6 @@ public:
 	//Print number of warnings
 	void PrintNumWarnings() { return bacon->PrintNumWarnings(); }
 	
-	
 	double Getc0() { return bacon->Getc0(); }
 	double GetcK() { return bacon->GetcK(); }
 	int GetK() { return K; }

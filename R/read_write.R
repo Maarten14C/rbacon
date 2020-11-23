@@ -20,7 +20,6 @@
 #' @param bacondir The directory where the Bacon runs reside. Defaults to \code{coredir="Bacon_runs"}.
 #' @param sep The separator for the .csv files. Defaults to \code{sep=","}.
 #' @param cc Calibration curve for C-14 dates: \code{cc=1} for IntCal20 (northern hemisphere terrestrial), \code{cc=2} for Marine20 (marine),
-#' @seealso \url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
 #' @export
 clam2bacon <- function(core, clamdir="clam_runs", bacondir="Bacon_runs", sep=",", cc=1) {
   clamfl <- read.csv(paste0(clamdir, "/", core, "/", core, ".csv"), sep=sep)
@@ -65,7 +64,6 @@ clam2bacon <- function(core, clamdir="clam_runs", bacondir="Bacon_runs", sep=","
 #'   bacon2clam("MSB2K", bacondir=tmpfl, clamdir=tmpfl)
 #'  }
 #' }
-#' @seealso \url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
 #' @export
 bacon2clam <- function(core, bacondir="Bacon_runs", clamdir="clam_runs", sep=",") {
   baconfl <- read.csv(paste0(bacondir, "/", core, "/", core, ".csv"), sep=sep)
@@ -112,7 +110,6 @@ bacon2clam <- function(core, bacondir="Bacon_runs", clamdir="clam_runs", sep=","
 #' @examples
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   Bacon.cleanup()
-#' @seealso \url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
 #' @export
 Bacon.cleanup <- function(set=get('info')) {
   files <- c(paste0(set$prefix, ".bacon"), paste0(set$prefix, ".out"),

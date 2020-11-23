@@ -1,7 +1,7 @@
 /*
 *********
 
-Andres christen, May 2009.
+Andres Christen, May 2009.
 
 Bacon
 
@@ -11,7 +11,7 @@ Bacon
  NEW VERSION OF BACON: With Plum and USING THE ALPHA'S AS PARAMETERS
  instead of the x's ... that is: x_j = w x_{j+1} + (1-w) alpha_j
 
- Use the alpha_j's as parameter and then transform to x_j ... this is the way Nico and Marco does it.
+ Use the alpha_j's as parameter and then transform to x_j ... this is the way Nico and Marco do it.
 
  The array X is is now used to communicate with the twalk.  This is then translated to x (and thetas) in
  the SetThetas function, which now uses the object's variable x.  Everything remains the same afterwards.
@@ -36,12 +36,9 @@ Bacon
 #include "Matrix.h"
 #include "twalk.h"              // twalk simulator class
 
-
-
 #define CHARBUFFER 8000
 
 #define LA_CONST 0.03114
-
 
 class Bacon: public obj_fcn {
 
@@ -155,8 +152,7 @@ class BaconFix: public Bacon {
 				theta[0] = x[0]; // new Nov 2020
 
 				x[K]  = X[K]; //= alpha[K]
-				if (H == 0) {  //with no hiatus
-				//if( true ){
+				if (H == 0) {  // no hiatus
 					for (int k=K-1; k>0; k--) { // goes backwards
 						x[k]  = w*x[k+1] + (1.0-w)*X[k]; //Create the x's
 					}
@@ -181,14 +177,14 @@ class BaconFix: public Bacon {
 					WarnBeyondLimits++;
 
 					//beyond established limits
-					rt = 0; // que hace rt?
+					rt = 0;
 				}
 				for (int k=1; k<K; k++) { // this is the same as the old rbacon again
 					S += x[k]*(c(k)-c(k-1)); //For fixed c's, Dc = c(k)-c(k-1)
 					theta[k] = S;
 				}
 				//Last theta
-				theta[K] = theta[K-1] + x[K]*(c(K)-c(K-1)); // OK? 
+				theta[K] = theta[K-1] + x[K]*(c(K)-c(K-1)); // x, not X?
 				if (fcmp( theta[K], MaxYr) == 1)
 					WarnBeyondLimits++;
 					//beyond established limits
@@ -287,10 +283,7 @@ class BaconFix: public Bacon {
 				x[0] = X0[0]; // newly defined Nov 2020
 				Xp0[0] = thp0; // was xp0[0]
 
-				//Rprintf("Plum: Seed %d\n", seed);
-
 				Seed(seed); //Set the Seed for random number generation
-                Seed(88);
 				//and for w, from its prior
 				X0[K+1]  = BetaSim( a, b); // was x, Nov 2020
 				x[K+1] = X0[K+1];
@@ -463,10 +456,7 @@ class BaconFix: public Bacon {
 
 
 
-
-
 				//x has been created from X, all the rest is the same
-
 				if (H > 0) {
 				//if( false ){
 					//Additional checks if there are hiatuses
@@ -519,29 +509,24 @@ class BaconFix: public Bacon {
 
 			//we assume the correct thetas are in theta
 			//G is only called right after insupport
-			 virtual double G( const double d, const double *x) {
-
+			 virtual double G(const double d, const double *x) {
 				int i = (int) floor((d-c0)/Dc);
 				return theta[i] + x[i+1]*(d-c(i));
-
 			 }
 
 			//This is a polymorphic version of the above age-depth model
 			//where only the theta at the nearest node is returned.
 			//we assume the correct thetas are in theta!!!!
 			virtual double G(const double d) {
-
 				int i = (int) floor((d-c0)/Dc);
 				return theta[i] + (d-c(i))*(theta[i+1]-theta[i])/Dc;
 
 			}
 
 			virtual double G_Plum( const double d, const double *x, const double delta, const double AS, const double phi) {
-
 	 			double th1 = G( d-delta, x)-theta[0], th = G( d, x)-theta[0];
 	 			//AS = rho_i * PSi
 	 			return AS + (phi/LA_CONST)*(exp(-LA_CONST*th1) - exp(-LA_CONST*th));
-
 	 		}
 
 
@@ -560,7 +545,7 @@ class BaconFix: public Bacon {
 
 			virtual void ShowDescrip() {
                 Rprintf("BaconFixed: Bacon jumps model with fixed c's.\n");
-                Rprintf("            K= %d, H= %d, dim= %d, Seed= %ld, Dc=%f, c(0)= %f, c(K)= %f\n",
+                Rprintf("            K=%d, H=%d, dim=%d, Seed=%ld, Dc=%f, c(0)=%f, c(K)=%f\n",
 					K, H, get_dim(), GetSeed(), Dc, c(0), c(K));
 			}
 
@@ -574,11 +559,11 @@ class BaconFix: public Bacon {
 			 double *Getx0() { return X0; }
 			 double *Getxp0() { return Xp0; }
 
-			virtual double eval(double *X, int prime) {
+			virtual double eval(double *X, int prime) { // X, not x
 				//x has been created from X in insupport function with the SetThetas function
 				//The rest is the same!! X is ignored here.
 
-        prime=0; //avoid warning JEV
+                prime=0; //avoid warning JEV
 
 				Uprior = 0.0;
 				Uli = 0.0;
@@ -587,22 +572,20 @@ class BaconFix: public Bacon {
 
 				//assuming insupport is called right before eval
 
-
+                // read in the dets
 				if (useT) { //uses t model
-
-					for (int j=0; j<(m); j++) { // m could also be m-1. Setting to m does not solve fat-bacon problem.
+                    // Rprintf("m:%d ", m); // tmp MB Nov 2020
+					for (int j=0; j<(m); j++) { // v2.5.0 goes to m-1!
 
 						if (dets->Is210Pb(j) == 1)
 							Uli += dets->Ut( j, G_Plum( dets->d(j), x, dets->Delta210Pb(j), dets->Rho210Pb(j)*GetPS(j, x), phi));
 						else
 							Uli += dets->Ut( j, G( dets->d(j), x)); //likelihood
-
 					//printf("%d  %f  %f  %f\n", j, dets->d(j), G( dets->d(j), x), Uli);
 					}
 					//Uli += dets->Ut( m-1, G( dets->d(m-1), x));
 				} else { //uses standard normal model
-
-					for (int j=0; j<(m); j++) { // m could also be m-1
+					for (int j=0; j<(m); j++) { // v2.5.0 goes to m-1!
 
 						if (dets->Is210Pb(j) == 1)
 							Uli += dets->U( j, G_Plum( dets->d(j), x, dets->Delta210Pb(j), dets->Rho210Pb(j)*GetPS(j, x), phi));
@@ -615,7 +598,7 @@ class BaconFix: public Bacon {
 				}
 
 
-				if ( plumUsed == 1) {
+				if (plumUsed == 1) {
 					//Uli += additional term in likelihood involving PS, eq (6)
 					for (int j=0; j < plumobj->NS(); j++) {
 						Uli += sqr(plumobj->yS(j) - GetPS(j, x))/(2*plumobj->s2(j));
@@ -627,11 +610,6 @@ class BaconFix: public Bacon {
 					Uprior += priorPSU(x);
 
 				}
-
-
-
-
-
 
 
 

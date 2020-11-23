@@ -22,7 +22,6 @@
 #'   hist(d20)
 #'   d20 <- accrate.depth(20, cmyr=TRUE) # to calculate accumulation rates in cm/yr
 #'   mean(d20)
-#' @seealso \url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
@@ -59,7 +58,6 @@ accrate.depth <- function(d, set=get('info'), cmyr=FALSE) {
 #'   accrate.a5000 = accrate.age(5000)
 #'   plot(accrate.a5000, pch='.')
 #'   hist(accrate.a5000)
-#' @seealso \url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
@@ -121,7 +119,6 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, BCAD=set$BCAD, silent=
 #'   agedepth(yr.res=50, d.res=50, d.by=10)
 #'   layout(1)
 #'   accrate.depth.ghost()
-#' @seealso \url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
@@ -240,7 +237,6 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #'   agedepth(yr.res=50, d.res=50, d.by=10)
 #'   layout(1)
 #'   accrate.age.ghost()
-#' @seealso \url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
@@ -390,7 +386,6 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), yr.lim=age.lim, age.
 #'   agedepth(yr.res=50)
 #'   flux.age.ghost(1)
 #' }
-#' @seealso \url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.

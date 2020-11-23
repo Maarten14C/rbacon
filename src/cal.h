@@ -40,11 +40,8 @@
 #define SHCal20ROWS 9501
 #define SHCal20COLS 3
 
-
-
 #define GENCCMAXLINLEN 255
 #define GENCCCOLS 3
-
 
 #define POSTBOMBFNAMS	"None", \
                         "postbomb_NH1.14C", \
@@ -241,7 +238,6 @@ public:
 	double MinCal() { return mincal; }
 	double MaxCal() { return maxcal; }
 };
-
 
 
 /* draft curve for IntCal20 */
@@ -655,7 +651,7 @@ public:
 
 
 
-/* draft curve for IntCal13 */
+/* IntCal13 */
 class IntCal13 : public Cal {
 
 protected:
@@ -1188,7 +1184,7 @@ protected:
 	double deltaR;	// delta-R (reservoir correction)
 	double deltaSTD;	// delta-R std dev. (reservoir correction)
 
-  int is_210Pb; //flag to verify if this is a 210Pb datum is_201Pb=1 if it is a 210Pb datum
+    int is_210Pb; //flag to verify if this is a 210Pb datum is_201Pb=1 if it is a 210Pb datum
 	double rho, delta; //rho (density) for 210Pb, delta (thickness)
 
 	double a, b; //prior parameters for the t distribution
@@ -1255,7 +1251,7 @@ public:
 	double res_std() { return deltaSTD; }
 	double d() { return x; }
 
-  int Is210Pb() { return is_210Pb; }
+    int Is210Pb() { return is_210Pb; }
 	double Delta210Pb() { return delta; }
 	double Rho210Pb() { return rho; }
 	const Cal *GetCC() { return cc; }

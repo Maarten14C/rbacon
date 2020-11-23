@@ -45,9 +45,6 @@ Brooks, SP. and Gelman, A. (1998) General methods for monitoring
 convergence of iterative simulations.
 _Journal of Computational and Graphical Statistics, *7*, 434-455.
 }
-\seealso{
-\url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
-}
 \author{
 Maarten Blaauw, J. Andres Christen
 }

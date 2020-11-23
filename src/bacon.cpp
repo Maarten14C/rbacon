@@ -37,9 +37,10 @@ the files:
 #define MAXNUMOFCURVES 100
 #define MAXNUMOFDETS  1000
 
+/* commented by MB Nov 2020
 #define BUFFSIZE 4000
 #define BUFSIZE 4000
-// line 41 tmp MB Nov 2020; twalk.h calls it BUFSIZE
+*/ 
 
 //the "every" thinning subsampling parameter is EVERY_MULT*All.Dim()
 #define EVERY_MULT 5
@@ -59,11 +60,11 @@ int bacon( std::string inputfile1, std::string outputfile1, int ssize, std::stri
 //  printf("%s\n", inputfile1.c_str());
   strcpy(inputfile, inputfile1.c_str());
   //JEV avoid warning int i=0; i<inputfile1.length() ; i++
-  //for (unsigned int i=0; i<inputfile1.length() ; i++){   // MB commented this Oct 2020 as it just repeats printing the name/location of the bacon file
+//  for (unsigned int i=0; i<inputfile1.length() ; i++){   // MB remove this Oct 2020 as it just repeats printing the name/location of the bacon file?
 
 //     printf("'%c' ", inputfile1.c_str()[i]);
-     // Rprintf("'%c' ", inputfile1.c_str()[i]);
- //     Rprintf("%c", inputfile1.c_str()[i]);
+ //     Rprintf("'%c' ", inputfile1.c_str()[i]);
+//    Rprintf("%c", inputfile1.c_str()[i]);
 //  }
 
   char *outputfile = new char[outputfile1.length() + 1];

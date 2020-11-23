@@ -285,9 +285,6 @@ Jones, V.J., Stevenson, A.C., Battarbee, R.W., 1989. Acidification of lakes in G
 - a diatom and pollen study of the post-glacial history of the Round Loch of Glenhead.
 Journal of Ecology 77: 1-23.
 }
-\seealso{
-\url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
-}
 \author{
 Maarten Blaauw, J. Andres Christen
 }

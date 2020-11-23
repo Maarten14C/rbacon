@@ -19,15 +19,14 @@ NULL
 # to be able to directly use copyCalibrationCurve, mix.curves, pMC.age & age.pMC
 library(IntCal)
 
-# see if/where R subsamples .out, as the .out file is identical if seed is set!!! Something is happening there. 
+# see if/where R subsamples .out, as the .out file is identical if seed is set!
 
-set.seed(99) # tmp!
 # do: add.date() how indicate postbomb curve to use?
 
 # rplum integration of the c++ code:
 # no differences between the files for ranfun.h, Matrix.h, Matrix.cpp or events.cpp
-# vector.cpp:  added lines 30 and 32 from rplum's. Bacon still compiles and runs as expected.
-# twalk.h: files are the same except for code to check and report seeds in rbacon's. Bacon still compiles and runs as expected.
+# vector.cpp:  added lines 30 and 32 from rplum's
+# twalk.h: files are the same except for code to check and report seeds in rbacon's
 # ranfun.cpp: no differences except for lines commented in order to debug the seed problem
 
 # input.h: added line 50 int plum; from rplum, added lines 97, 99, 101 from rplum
@@ -67,7 +66,7 @@ set.seed(99) # tmp!
 # replaced lines 459-476 with updated lines 479-517
 # changed last lines, 518 & 520 to return U
 
-# according to Marco, the 'fat' age-model bug was in bacon.h, for (int j=0; j<(m-1); j++) has to go until m, not m-1
+# according to Marco, the 'fat' age-model bug was in bacon.h; for (int j=0; j<(m-1); j++) has to go until m, not m-1
 
 # bacon.cpp: 
 # added line 127 All.outputFiles(outputFile1)
@@ -79,9 +78,9 @@ set.seed(99) # tmp!
 # input.cpp, line 8: BUFFZ 1024 in rbacon, but 50000 in rplum. Which one is best?
 # kernel.cpp, lines 151-9: added if(vector_cmp(x,xp,n) != 1) { ... else return -1.0; from rplum and commented it.
 
-# done: 
+# done: seed is working again
 
-# for future versions: investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), why doesn't a defined seed result in similar runs? can ssize be predicted more accurately?, accrate.age.ghost is black all through - needs to have sections with lower maximum amount of grey, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, find a way to get rid of accrate.age.ghost's overly low accrates at core bottoms, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, introduce write.Bacon function to write files only once user agrees with the model, can we change from using files to using memory only?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
+# for future versions: investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, accrate.age.ghost is black all through - needs to have sections with lower maximum amount of grey, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, find a way to get rid of accrate.age.ghost's overly low accrates at core bottoms, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, introduce write.Bacon function to write files only once user agrees with the model, can we change from using files to using memory only?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
 #' @name Bacon
 #' @title Main age-depth modelling function
@@ -210,7 +209,6 @@ set.seed(99) # tmp!
 #'   Bacon(ask=FALSE, coredir=tempfile())
 #'   Bacon(cc=2, delta.R=80, delta.STD=40, coredir=tempfile())
 #' }
-#' @seealso \url{http://www.qub.ac.uk/chrono/blaauw/manualBacon_2.3.pdf}
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
 #' \url{https://projecteuclid.org/euclid.ba/1339616472}
