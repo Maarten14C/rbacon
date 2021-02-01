@@ -122,8 +122,8 @@ class BaconFix: public Bacon {
 			double rsc, logrsc, logw;
 			// ds=1.0, rsc=ds/Dc and logrsc=log(ds/Dc) set in the creator, lines 177 and 178 after reading Dc
 			double priorwU(const double w) {
-				logw=log(w);
-			  return rsc*(1.0-a)*logw + (1.0-b)*log(1.0-exp(rsc*logw)) + (1.0-rsc)*logw - logrsc;
+				logw=log(w); 
+			  return rsc*(1.0-a)*logw + (1.0-b)*log(1.0-exp(rsc*logw) + .0001) + (1.0-rsc)*logw - logrsc; // +.0001 Marco y Maarten Dec 2020, to avoid memory bouncing to infinity
 
 				//rsc = ds/Dc = 1/[(cm-c0)/K]
 				//( ((1./by)-1.)*log(w)- log(by)+  ((1./by)*(shape1_m-1.))*log(w) +

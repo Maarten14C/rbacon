@@ -182,7 +182,7 @@ assign_coredir <- function(coredir, core, ask=TRUE) {
         file.rename(paste0(csv.file, ".txt"), csv.file)
         message("Removing .txt extension from .csv file")
       } else {
-        message("No .csv file found, reading", dat.file, "and converting it to .csv")
+        message("No .csv file found, reading", dat.file, " and converting it to .csv")
         dets <- read.table(dat.file, header=TRUE)
         changed <- 1
         }

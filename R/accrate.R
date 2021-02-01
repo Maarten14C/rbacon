@@ -142,6 +142,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 
   for(i in 1:length(d)) {
     acc[[i]]$y <- acc[[i]]$y/max.dens
+    cat(max(acc[[i]]$y), " ") # tmp Jan 2021
     acc[[i]]$y[acc[[i]]$y > dark] <- dark
   }
 

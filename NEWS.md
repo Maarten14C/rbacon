@@ -1,3 +1,9 @@
+# rbacon 2.5.1
+* pMC.age and other IntCal functions should now load as expected
+* Adapted the default prior for memory to 0.5 (mean) and 10 (strength), to repair a bug with the original bacon c++ code. This default should work with most cores and give similar results to the previous settings for the memory prior.
+* Updated c/c++ code (as used in version 2.4.1 with some minor additional updates) 
+
+
 # rbacon 2.5.0
 * updated src/kernel.cpp and src/twalk.h, to repair a bug in one of the moves ('hop'). This means we can now add the updated MCMC code of version 2.4.0 again and accommodate code to run 210Pb-dated cores (via the package rplum) 
 * Radiocarbon calibration curves are now loaded from the imported IntCal R package, and have been removed from the rbacon package to save space and remove duplication

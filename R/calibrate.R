@@ -129,7 +129,7 @@ add.dates <- function(mn, sdev, depth, cc=1, above=1e-6, ex=10, normal=TRUE, nor
 #' \url{https://projecteuclid.org/euclid.ba/1339616472}
 #' @export
 ### produce plots of the calibrated distributions
-calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, rev.yr=rev.age, age.lim=c(), yr.lim=age.lim, date.res=100, d.lab=c(), age.lab=c(), yr.lab=age.lab, height=30, calheight=1, mirror=TRUE, up=TRUE, cutoff=.1, C14.col=rgb(0,0,1,.5), C14.border=rgb(0,0,1,.75), cal.col=rgb(0,.5,.5,.5), cal.border=rgb(0,.5,.5,.75), dates.col=c(), slump.col=grey(0.8), new.plot=TRUE, plot.dists=TRUE, same.heights=FALSE, normalise.dists=TRUE) {
+calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, rev.yr=rev.age, age.lim=c(), yr.lim=age.lim, date.res=100, d.lab=c(), age.lab=c(), yr.lab=age.lab, height=1, calheight=1, mirror=TRUE, up=TRUE, cutoff=.1, C14.col=rgb(0,0,1,.5), C14.border=rgb(0,0,1,.75), cal.col=rgb(0,.5,.5,.5), cal.border=rgb(0,.5,.5,.75), dates.col=c(), slump.col=grey(0.8), new.plot=TRUE, plot.dists=TRUE, same.heights=FALSE, normalise.dists=TRUE) {
   #height <- length(set$d.min:set$d.max) * height/50
   if(length(age.lim) == 0)
     lims <- c()
@@ -161,6 +161,15 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
       abline(h=set$slump, lty=2, col=slump.col) else
         abline(v=set$slump, lty=2, col=slump.col)
 
+  maxhght <- 0; yrsteps <- c()
+  if(plot.dists) 
+    for(i in 1:length(set$calib$probs)) {
+      maxhght <- max(maxhght, set$calib$probs[[i]][,2])
+      yrsteps <- min(yrsteps, diff(set$calib$probs[[1]][,1]))
+      }
+
+yrsteps <<- yrsteps      
+      
   if(plot.dists)
     for(i in 1:length(set$calib$probs)) {
       cal <- cbind(set$calib$probs[[i]])
@@ -169,14 +178,22 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
         cal[,1] <- 1950-cal[,1]
       o <- order(cal[,1])
       cal <- cbind(cal[o,1], cal[o,2])
+      cal <- approx(cal[,1], cal[,2], seq(min(cal[,1]), max(cal[,1]), by=yrsteps)) # all dists should have the same binsize
+      cal <- cbind(cal$x, cal$y)
       if(same.heights)
-        cal[,2] <- cal[,2]/max(cal[,2])
+        cal[,2] <- cal[,2]/max(cal[,2]) else
+          cal[,2] <- cal[,2]/maxhght
       if(normalise.dists)
         cal[,2] <- cal[,2]/sum(cal[,2])
-      cal[,2] <- height*cal[,2]
+      #cal[,2] <- height*cal[,2] # new definition below, 31 Jan 2021
+	  cal[,2] <- cal[,2]*height*(max(dlim) - min(dlim))/(5*maxhght) # the value 5 should result in visible blobs in most cases. Otherwise adapt with the option height
       if(ncol(set$dets) > 4 && set$dets[i,5] == 0) # cal BP date
         cal[,2] <- calheight*cal[,2]
-
+ 
+ 
+ 
+ # cal BP dates need same amount of total area as C14 dates... How?
+  
       if(mirror)
         pol <- cbind(c(d-cal[,2], d+rev(cal[,2])), c(cal[,1], rev(cal[,1]))) else
          if(up)
@@ -201,7 +218,7 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
 
 
 # calibrate C14 dates and calculate distributions for any calendar dates
-.bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.05, normal=set$normal, t.a=set$t.a, t.b=set$t.b, delta.R=set$delta.R, delta.STD=set$delta.STD, ccdir="") {
+.bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.005, normal=set$normal, t.a=set$t.a, t.b=set$t.b, delta.R=set$delta.R, delta.STD=set$delta.STD, ccdir="") {
   # read in the curves
   if(set$cc1=="IntCal20" || set$cc1=="\"IntCal20\"")
     cc1 <- read.table(paste0(ccdir, "3Col_intcal20.14C")) else
@@ -237,10 +254,11 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
   d.cal <- function(cc, rcmean, w2, t.a, t.b) { # formula updated Oct 2020
     if(set$normal)
       cal <- cbind(cc[,1], dnorm(cc[,2], rcmean, sqrt(cc[,3]^2+w2))) else
-        cal <- cbind(cc[,1], (t.b+ ((rcmean-cc[,2])^2) / (2*(cc[,3]^2 + w2))) ^ (-1*(t.a+0.5))) # student-t	   
-    cal[,2] <- cal[,2]/sum(cal[,2]) # normalise
-    these <- which(cal[,2] >= cutoff*max(cal[,2])) # keep those with values >% of the maximum height  
+        cal <- cbind(cc[,1], (t.b+ ((rcmean-cc[,2])^2) / (2*(cc[,3]^2 + w2))) ^ (-1*(t.a+0.5))) # student-t
+    cal[,2] <- cal[,2]/max(cal[,2]) # all peaks at 1
+    these <- which(cal[,2] >= cutoff) # keep values >% of the maximum height  
     cal <- cal[these,]
+    #cal[,2] <- cal[,2]/sum(cal[,2]) # now normalise	
 
     calx <- seq(min(cal[,1]), max(cal[,1]), length=date.res)
     caly <- approx(cal[,1], cal[,2], calx)$y
