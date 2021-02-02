@@ -37,7 +37,7 @@ agedepth(
   rev.yr = rev.age,
   rev.d = FALSE,
   maxcalc = 500,
-  height = 30,
+  height = 1,
   calheight = 1,
   mirror = TRUE,
   up = TRUE,

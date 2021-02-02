@@ -18,7 +18,7 @@ calib.plot(
   d.lab = c(),
   age.lab = c(),
   yr.lab = age.lab,
-  height = 30,
+  height = 1,
   calheight = 1,
   mirror = TRUE,
   up = TRUE,

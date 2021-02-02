@@ -267,7 +267,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
       ncol(info$dets)>4 && max(info$dets[,5]) > 0 && min(info$dets[info$dets[,5] > 0,2]) < 0))
         stop("you have negative C14 ages so should select a postbomb curve", call.=FALSE)
   info$calib <- .bacon.calib(dets, info, date.res, ccdir=ccdir, cutoff=cutoff)
-
+  
   ### find some relevant values
   info$rng <- c()
   for(i in 1:length(info$calib$probs)) {

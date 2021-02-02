@@ -60,7 +60,7 @@ Bacon(
   MaxAge = c(),
   MinYr = MinAge,
   MaxYr = MaxAge,
-  cutoff = 0.1,
+  cutoff = 0.01,
   plot.pdf = TRUE,
   dark = 1,
   date.res = 100,
@@ -256,7 +256,7 @@ postbomb curve you need. If Bacon finds postbomb dates (negative 14C ages) and y
 you will be prompted. Provide postbomb curves as, e.g., \code{postbomb=1} for the NH1 postbomb curve (2 for NH2, 3 for NH3, 4 for SH1-2, 5 for SH3).
 For calendar dates, i.e. dates that are already on the calendar scale and thus should not be calibrated, set\code{cc=0}.
 
-From version 2.5.1 on, the default memory prior has changed to \code{mem.mean=0.5} and \code{mem.strength=10}. Previously used Bacon c++ code contained a bug which caused the prior information for the memory not to be taken into account correctly. Now that this bug has been repaired, the default memory prior has been updated such that it should work for most types of cores, and should result in similar output to previous versions of Bacon.
+From version 2.5.1 on (i.e., since February 2021), the default memory prior has changed to \code{mem.mean=0.5} and \code{mem.strength=10}. Previously used c++ code contained a bug which caused the prior information for the memory not to be taken into account correctly. Now that this bug has been repaired, the default memory prior has been updated such that it should work for most types of cores, and should result in similar output to previous versions of Bacon. There is no need to re-do previous runs. However, it is considered good practice to test the impact of different settings on a site's age-depth model (e.g., thick, acc.mean, acc.shape, mem.mean, acc.strength).
 }
 \examples{
 \dontshow{
