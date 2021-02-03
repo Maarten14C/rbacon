@@ -21,17 +21,21 @@ library(IntCal)
 
 #if(!exists("info"))  info <- c() # a user reported that rbacon was looking for info but not finding it. Not sure if this is a good idea, so, commenting it
 
-# check if greyscale is still done OK, with only 1 region the darkest instead of all depths having the same darkest grey. Also see if cal blobs might need to be plotted wider as currently poorly visible. Some reports that greyscale looks bad when exporting from Rstudio.
+# check if greyscale in accrate.age.ghost is still done OK, with only 1 region the darkest instead of all depths having the same darkest grey. 
+
+# Some reports that agedepth() greyscale looks bad when exporting from Rstudio.
 
 # do: add.date() how indicate postbomb curve to use? 
 
-# add explanation new mem prior 
+# check how/why accrates change rapidly close to boundaries - DeepChalla
 
-# check if par(op) can be done better, as axis settings are off after agedepth()
+# check if par(op) can be done better, as axis settings are off after agedepth() (e.g., y axis gone if doing plot(1) after agedepth())
 
-# done: seed is working again. But, see if/where R subsamples .out, as the .out file is identical if seed is set!
+# seed is working again. But, see if/where R subsamples .out, as the .out file is identical if seed is set!
 
-# for future versions: investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, accrate.age.ghost is black all through - needs to have sections with lower maximum amount of grey, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, find a way to get rid of accrate.age.ghost's overly low accrates at core bottoms, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, introduce write.Bacon function to write files only once user agrees with the model, can we change from using files to using memory only?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
+# done: repaired wrongly sized calibrated blobs. added explanation new mem prior. pMC.age etc. can now be called without having to type IntCal::pMC.age  
+
+# for future versions: investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, accrate.age.ghost is black all through - needs to have sections with lower maximum amount of grey, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, find a way to get rid of accrate.age.ghost's overly low accrates at core bottoms, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
 #' @name Bacon
 #' @title Main age-depth modelling function
