@@ -19,21 +19,13 @@ NULL
 # to be able to directly use copyCalibrationCurve, mix.curves, pMC.age & age.pMC (without having to type IntCal:: first)
 library(IntCal)
 
-#if(!exists("info"))  info <- c() # a user reported that rbacon was looking for info but not finding it. Not sure if this is a good idea, so, commenting it
+#if(!exists("info"))  info <- c() # a user reported that rbacon was looking for the variable info but not finding it. Not sure if the solution here is a good idea, so, commenting it
 
-# check if greyscale in accrate.age.ghost is still done OK, with only 1 region the darkest instead of all depths having the same darkest grey. 
-
-# Some reports that agedepth() greyscale looks bad when exporting from Rstudio.
-
-# do: add.date() how indicate postbomb curve to use? 
-
-# check how/why accrates change rapidly close to boundaries - DeepChalla
-
-# check if par(op) can be done better, as axis settings are off after agedepth() (e.g., y axis gone if doing plot(1) after agedepth())
+# check how/why accrates fluctuate rapidly close to boundaries - DeepChalla
 
 # seed is working again. But, see if/where R subsamples .out, as the .out file is identical if seed is set!
 
-# done: repaired wrongly sized calibrated blobs. added explanation new mem prior. pMC.age etc. can now be called without having to type IntCal::pMC.age  
+# done: repaired heights of calibrated blobs. added explanation new mem prior. pMC.age etc. can now be called without having to type IntCal::pMC.age. The add.dates function now handles postbomb dates. The greyscale age-depth graph is now more easily exported because white pixels are removed. Added options to make the top panel pars more flexible. 
 
 # for future versions: investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, accrate.age.ghost is black all through - needs to have sections with lower maximum amount of grey, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, find a way to get rid of accrate.age.ghost's overly low accrates at core bottoms, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
@@ -105,7 +97,7 @@ library(IntCal)
 #' @param cc2 For marine 14C dates (Marine20).
 #' @param cc3 For southern hemisphere 14C dates (SHCal20).
 #' @param cc4 Use an alternative curve (3 columns: cal BP, 14C age, error, separated by white spaces and saved as a plain-text file). See \code{ccdir}.
-#' @param ccdir Directory where the calibration curves for C14 dates \code{cc} are located. By default \code{ccdir=""} since they are loaded into R's memory.
+#' @param ccdir Directory where the calibration curves for C14 dates \code{cc} are located. By default \code{ccdir=""}.
 #' For example, use \code{ccdir="."} to choose current working directory, or \code{ccdir="Curves/"} to choose sub-folder \code{Curves/}. Note that all calibration curves should reside in the same directory. If you want to add a custom-built curve, put it in the directory where the default calibration curves are (probably \code{list.files(paste0(.libPaths(), "/IntCal/extdata"))}).
 #' Alternatively produce a new folder, and add your curve as well as the default calibration curves there (cc1, cc2 and cc3; e.g., \code{write.table(copyCalibrationCurve(1), "./3Col_intcal20.14C", sep="\t")}.)
 #' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages. \code{0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}
@@ -193,7 +185,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     fileCopy <- system.file(paste0("extdata/Cores/", core), package="rbacon") # change to package rbacon
     file.copy(fileCopy, coredir, recursive = TRUE, overwrite=FALSE)
   }
-
+  
   # set the calibration curve
   if(ccdir == "")
     ccdir <- system.file("extdata", package="IntCal")
@@ -202,7 +194,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   # default_settings.txt is located within system.file
   defaults <- system.file("extdata", defaults, package=packageName())
   # read in the data, adapt settings from defaults if needed
-  dets <- .read.dets(core, coredir, sep=sep, dec=dec, cc=cc)
+  dets <- read.dets(core, coredir, sep=sep, dec=dec, cc=cc)
   # give feedback about calibration curves used
   if(ncol(dets) > 4 && length(cc) > 0) {
     cc.csv <- unique(dets[,5])
@@ -249,7 +241,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   }
 
   info <- .Bacon.settings(core=core, coredir=coredir, dets=dets, thick=thick, remember=remember, d.min=d.min, d.max=d.max, d.by=d.by, depths.file=depths.file, slump=slump, acc.mean=acc.mean, acc.shape=acc.shape, mem.mean=mem.mean, mem.strength=mem.strength, boundary=boundary, hiatus.depths=hiatus.depths, hiatus.max=hiatus.max, BCAD=BCAD, cc=cc, postbomb=postbomb, cc1=cc1, cc2=cc2, cc3=cc3, cc4=cc4, depth.unit=depth.unit, normal=normal, t.a=t.a, t.b=t.b, delta.R=delta.R, delta.STD=delta.STD, prob=prob, defaults=defaults, runname=runname, ssize=ssize, dark=dark, MinAge=MinAge, MaxAge=MaxAge, cutoff=cutoff, age.res=age.res, after=after, age.unit=age.unit)
-  .assign_to_global("info", info)
+  assign_to_global("info", info)
   info$coredir <- coredir
   if(is.na(seed))
     seed <-sample(1:1e6, 1) # sample an integer
@@ -395,7 +387,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
       add <- info$acc.mean # then add a short (max)hiatus, large enough not to crash Bacon but not affect the chronology much. Needs more work
     info$hiatus.max <- add
   }
-  .assign_to_global("info", info)
+  assign_to_global("info", info)
 
   prepare <- function() {
     ### plot initial data and priors
@@ -406,11 +398,11 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     layout(matrix(pn, nrow=2, byrow=TRUE), heights=c(.3,.7))
     oldpar <- par(mar=c(3,3,1,1), mgp=c(1.5,.7,.0), bty="l")
 	on.exit(par(oldpar))         	
-    .PlotAccPrior(info$acc.shape, info$acc.mean, depth.unit=depth.unit, age.unit=age.unit)
-    .PlotMemPrior(info$mem.strength, info$mem.mean, thick)
+    PlotAccPrior(info$acc.shape, info$acc.mean, depth.unit=depth.unit, age.unit=age.unit)
+    PlotMemPrior(info$mem.strength, info$mem.mean, thick)
     if(!is.na(info$hiatus.depths)[1])
       if(is.na(info$boundary)[1])
-        .PlotHiatusPrior(info$hiatus.max, info$hiatus.depths)
+        PlotHiatusPrior(info$hiatus.max, info$hiatus.depths)
     calib.plot(info, BCAD=BCAD)
     legend("topleft", core, bty="n", cex=1.5)
   }
@@ -431,7 +423,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   }
 
 ### run bacon if initial graphs seem OK; run automatically, not at all, or only plot the age-depth model
-  .write.Bacon.file(info)
+  write.Bacon.file(info)
   if(!run)
     prepare() else
       if(!ask)
@@ -447,4 +439,5 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
         }
   if(close.connections)
     closeAllConnections()
+    
 }

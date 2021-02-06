@@ -130,7 +130,6 @@ Bacon.d.Age <- function(age, set=get("info"), BCAD=set$BCAD, its=set$output, na.
     # summary of the depths corresponding to the chosen age
     depths <- rep(NA,nrow(its))
     for ( i in 2:ncol(elbow.ages) ){
-    
         # consideration of hiatuses
         if ( hiatus.check[i] == 1 ){ 
             for ( j in 1:length(hiatus.depths) ) {
@@ -160,7 +159,7 @@ Bacon.d.Age <- function(age, set=get("info"), BCAD=set$BCAD, its=set$output, na.
                     depths[which(these.below==1)] <- hiatus.depths[j] + accs.below * age.diff.below
                 }
             }
-        } else{
+        } else {
             # consideration of the cases without hiatuses
             
             # find the correct intersections
@@ -334,8 +333,8 @@ hiatus.slopes <- function(set=get('info'), hiatus.option=1) {
 Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c(), hist.lab="Frequency", calc.range=TRUE, hist.lim=c(), draw=TRUE, prob=set$prob, hist.col=grey(0.5), hist.border=grey(.2), range.col="blue", med.col="green", mean.col="red", verbose=TRUE) {
   outfile <- paste(set$prefix, ".out", sep="")
   if(length(set$output) == 0 || length(set$Tr) == 0) {
-    set <- .Bacon.AnaOut(outfile, set)
-    .assign_to_global("set", set)
+    set <- Bacon.AnaOut(outfile, set)
+    assign_to_global("set", set)
   }
   hist3 <- function(d, BCAD) {
     hsts <- list(); maxhist <- 0; minhist <- 1
@@ -359,7 +358,7 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
     return(hsts)
   }
   hists <- hist3(d, BCAD)
-  .assign_to_global("hists", hists)
+  assign_to_global("hists", hists)
 
   # rng <- c()
   rng <- array(NA, dim=c(length(d), 4)) # to deal with new R which does not like to fill c() using loops
@@ -399,8 +398,8 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
 Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
   outfile <- paste(set$prefix, ".out", sep="")
   if(length(set$output) == 0 || length(set$Tr) == 0) {
-    set <- .Bacon.AnaOut(outfile, set)
-    .assign_to_global("set", set)
+    set <- Bacon.AnaOut(outfile, set)
+    assign_to_global("set", set)
   }
 
   if(length(d) > 1)
@@ -442,8 +441,8 @@ Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
 agemodel.it <- function(it, set=get('info'), BCAD=set$BCAD) {
   outfile <- paste(set$prefix, ".out", sep="")
   if(length(set$output) == 0 || length(set$Tr) == 0) {
-    set <- .Bacon.AnaOut(outfile, set)
-    .assign_to_global("set", set)
+    set <- Bacon.AnaOut(outfile, set)
+    assign_to_global("set", set)
   }
   # does this function work in cores with slumps?
   if(length(set$hiatus.depths) > 0)

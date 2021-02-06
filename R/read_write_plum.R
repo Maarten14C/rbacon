@@ -518,7 +518,7 @@
       set$hiatus.max <- rep(set$hiatus.max, length(hiatus.depths))
 #      if(length(set$hiatus.shape)==1)
 #        set$hiatus.shape <- rep(set$hiatus.shape, length(set$hiatus.depths))
-    .assign_to_global("info", set)
+    assign_to_global("info", set)
     cat("\n\n### Depths and priors for fixed hiatuses, in descending order",
       "\n##### cm  alpha beta      ha     hb", file=fl)
     for(i in length(hiatus.depths):1)

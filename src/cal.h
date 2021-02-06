@@ -1231,7 +1231,7 @@ public:
 	}
 
 	void ShortOut() {
-        Rprintf("%s: %6.1f+-%-6.1f  d=%-g  ResCorr= %6.1f+-%-6.1f  a=%-g b=%-g   cc=%s\n",
+        Rprintf("%s: %6.1f+-%-6.1f d=%-g ResCorr=%6.1f+-%-6.1f a=%-g b=%-g cc=%s\n",
 				nm, y, std, x, deltaR, deltaSTD, a, b, cc->Name());
 	}
 

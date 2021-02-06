@@ -158,7 +158,7 @@ assign_coredir <- function(coredir, core, ask=TRUE) {
 
 
 # read the dets file, converting old formats to new ones if so required
-.read.dets <- function(core, coredir, set=get('info'), sep=",", dec=".", cc=1) {
+read.dets <- function(core, coredir, set=get('info'), sep=",", dec=".", cc=1) {
   # if a .csv file exists, read it (checking that it is more recent than any .dat file in the folder). Otherwise, read the .dat file, check the columns, report back if >4 (>5?) columns, and convert to .csv (report this also)
   csv.file <- paste(coredir,  core, "/", core, ".csv", sep="")
   dat.file <- paste(coredir,  core, "/", core, ".dat", sep="")
@@ -373,7 +373,7 @@ assign_coredir <- function(coredir, core, ask=TRUE) {
 
 
 # write files to be read by the main Bacon age-depth modelling function
-.write.Bacon.file <- function(set=get('info')) {
+write.Bacon.file <- function(set=get('info')) {
   if(length(set$slump) > 0) {
     dets <- set$slumpdets
     hiatus.depths <- set$slumphiatus
@@ -458,7 +458,7 @@ assign_coredir <- function(coredir, core, ask=TRUE) {
       set$hiatus.max <- rep(set$hiatus.max, length(hiatus.depths))
 #      if(length(set$hiatus.shape)==1)
 #        set$hiatus.shape <- rep(set$hiatus.shape, length(set$hiatus.depths))
-    .assign_to_global ("info", set)
+    assign_to_global ("info", set)
 
     cat("\n\n### Depths and priors for fixed hiatuses, in descending order",
       "\n##### cm  alpha beta      ha     hb", file=fl)
@@ -493,7 +493,7 @@ assign_coredir <- function(coredir, core, ask=TRUE) {
 
 
 # function to read output files into memory
-.Bacon.AnaOut <- function(fnam, set=get('info')) {
+Bacon.AnaOut <- function(fnam, set=get('info')) {
   out <- read.table(fnam)
   n <- ncol(out)-1
   set$n <- n
@@ -507,6 +507,6 @@ assign_coredir <- function(coredir, core, ask=TRUE) {
 
 # function to load results in global environment
 # parameter position defaults to 1, which equals an assignment to the global environment
-.assign_to_global <- function(key, val, pos=1) {
+assign_to_global <- function(key, val, pos=1) {
   assign(key, val, envir=as.environment(pos) )
 }

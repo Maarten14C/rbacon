@@ -50,7 +50,7 @@ scissors <- function(burnin, set=get('info')) {
 
   info <- get('info')
   info$output <- output
-  .assign_to_global ("info", info)
+  assign_to_global ("info", info)
 }
 
 
@@ -90,7 +90,7 @@ thinner <- function(proportion=0.1, set=get('info')) {
 
   info <- get('info')
   info$output <- output
-  .assign_to_global ("info", info)
+  assign_to_global ("info", info)
 }
 
 

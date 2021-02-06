@@ -108,12 +108,6 @@ It can be used to produce custom-built graphs.
 \examples{
   Bacon(run=FALSE, coredir=tempfile())
   calib.plot()
-
-}
-\references{
-Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
-gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-\url{https://projecteuclid.org/euclid.ba/1339616472}
 }
 \author{
 Maarten Blaauw, J. Andres Christen
