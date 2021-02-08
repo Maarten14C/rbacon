@@ -161,12 +161,9 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
   maxhght <- 0; agesteps <- c()
   if(plot.dists) 
     for(i in 1:length(set$calib$probs)) {
-      maxhght <- max(maxhght, set$calib$probs[[i]][,2])
+      maxhght[i] <- max(set$calib$probs[[i]][,2] / sum(set$calib$probs[[i]][,2]))
       agesteps <- min(agesteps, diff(set$calib$probs[[1]][,1]))
     }
-
-  #set$yrsteps <- agesteps
-  #.assign_to_global("info", set) # this correct? Doesn't seem to work
 
   if(plot.dists)
     for(i in 1:length(set$calib$probs)) {
@@ -177,8 +174,8 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
       cal <- approx(cal[,1], cal[,2], seq(min(cal[,1]), max(cal[,1]), by=agesteps)) # all dists should have the same binsize
       cal <- cbind(cal$x, cal$y/sum(cal$y))
       if(same.heights)
-        cal[,2] <- cal[,2]/max(cal[,2])/3 # /3 because next line we do *3
-      cal[,2] <- 3 * height * cal[,2] * (max(dlim) - min(dlim)) # scale the height of the blobs with the core length
+        cal[,2] <- cal[,2]/max(cal[,2])
+      cal[,2] <- ((height * cal[,2])/median(maxhght))/25 * (max(dlim) - min(dlim)) # scale the height of the blobs with the core length
       if(ncol(set$dets) > 4 && set$dets[i,5] == 0) # cal BP dates could have different relative height:
         cal[,2] <- calheight * cal[,2]
 

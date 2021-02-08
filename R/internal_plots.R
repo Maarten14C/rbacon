@@ -47,7 +47,7 @@ agedepth.ghost <- function(set=get('info'), d.min=set$d.min, d.max=set$d.max, BC
 # Time series of the log of the posterior
 PlotLogPost <- function(set, from=0, to=set$Tr, xaxs="i", yaxs="i", panel.size=toppanel.fontsize)
   plot(from:(to-1), -set$Us[(from+1):to], type="l",
-    ylab="Log of Objective", xlab="Iteration", main="", xaxs=xaxs, yaxs=yaxs, col=grey(0.4), cex=panel.size)
+    ylab="Log of Objective", xlab="Iteration", main="", xaxs=xaxs, yaxs=yaxs, col=grey(0.4), cex.axis=panel.size)
 
 
 

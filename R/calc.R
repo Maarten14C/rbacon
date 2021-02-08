@@ -35,7 +35,7 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
 
   ages <- numeric(nrow(its)) # to sort R-base problem with c() and loops
   if(!is.na(d))
-    if(d >= set$d.min) { # we cannot calculate ages of depths above the top depth
+    if(d >= min(set$elbows)) { # we cannot calculate ages of depths above the top depth; was > d.min before Feb 2021
       topages <- as.vector(its[,1]) # ages for the core top
       maxd <- max(which(set$elbows <= d)) # find the relevant sections
       accs <- as.matrix(its[,1+(1:maxd)]) # the accumulation rates xi for each relevant section
@@ -54,10 +54,12 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
                 ages <- set$elbow.above[,i] + (set$slope.above[,i] * (d - set$elbows[above]))
             }
         }
-    }
-  if(BCAD)
-    ages <- 1950 - ages
-  return(c(ages))
+    } else
+         ages <- NA # Feb 2021
+
+    if(BCAD)
+      ages <- 1950 - ages
+    return(c(ages))
 }
 
 
@@ -444,7 +446,7 @@ agemodel.it <- function(it, set=get('info'), BCAD=set$BCAD) {
     set <- Bacon.AnaOut(outfile, set)
     assign_to_global("set", set)
   }
-  # does this function work in cores with slumps?
+  # does this function work in cores with slumps? also doesn't take into account hiatuses.
   if(length(set$hiatus.depths) > 0)
     age <- sort(c(set$d, set$hiatus.depths+.001, set$hiatus.depths))
   age <- c()

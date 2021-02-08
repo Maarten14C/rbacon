@@ -5,8 +5,10 @@
 * the heights of the calibrated distributions should now scale better according to how precise they are
 * the add.dates function now handles postbomb dates. It can also store the calibrated information using, e.g., tmp <- add.dates(2450,30,20); tmp
 * The greyscale age-depth graph is now more easily exported to external graphics editors, because areas with very low probabilities are now left empty (instead of plotted as white).
+* corrected a bug where ages above d.min received incorrect ages
 * Added an option prior.ticks to show tickmarks and values on the vertical axes of the panels that show the prior distributions. These are not drawn by default, as they don't provide much information and clutter the graphs. 
 * Added new options title.size and prior.fontsize for the size of the fonts of the core's title and the red information on settings in the top panels, respectively. 
+* Repaired the functions accrate.depth(), accrate.age(), accrate.depth.ghost() and accrate.age.ghost()
 
 # rbacon 2.5.0
 * updated src/kernel.cpp and src/twalk.h, to repair a bug in one of the moves ('hop'). This means we can now add the updated MCMC code of version 2.4.0 again and accommodate code to run 210Pb-dated cores (via the package rplum) 

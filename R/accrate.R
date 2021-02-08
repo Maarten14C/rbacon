@@ -28,8 +28,10 @@
 #' \url{https://projecteuclid.org/euclid.ba/1339616472}
 #' @export
 accrate.depth <- function(d, set=get('info'), cmyr=FALSE) {
+  accs.elbows <- set$output[,2:(set$K+1)]
   if(min(set$elbows) <= d && max(set$elbows) >= d)
-    accs <- set$output[,1+max(which(set$elbows <= d))] else
+    accs <- unlist(accs.elbows[max(which(set$elbows <= d))]) else
+  #  accs <- set$output[,1+min(which(set$elbows >= d))] else # was 1 + max(which(set$elbows < d))...
       accs <- NA
   if(cmyr) 1/accs else accs
 }
@@ -64,21 +66,21 @@ accrate.depth <- function(d, set=get('info'), cmyr=FALSE) {
 #'  \url{https://projecteuclid.org/euclid.ba/1339616472}
 #' @export
 accrate.age <- function(age, set=get('info'), cmyr=FALSE, BCAD=set$BCAD, silent=TRUE) {
- ages <- cbind(set$output[,1])
- for(i in 1:(set$K-1))
-   ages <- cbind(ages, ages[,i] + (set$thick * (set$output[,i+1])))
- if(BCAD)
-   ages <- 1950 - ages
+   ages <- array(0, dim=c(nrow(set$output), length(set$elbows)))
+   for(i in 1:ncol(ages))
+     ages[,i] <- Bacon.Age.d(set$elbows[i])
 
- if(!silent)
-   if(age < min(ages) || age > max(ages))
-     message(" Warning, age outside the core's age range!\n")
- accs <- c()
- for(i in 2:ncol(ages)) {
-   these <- (ages[,i-1] < age) * (ages[,i] > age)
-   if(sum(these) > 0) # age lies within these age-model iterations
-     accs <- c(accs, set$output[which(these>0),i+1])
+  if(!silent)
+    if(age < min(ages) || age > max(ages))
+     stop(" Warning, age outside the core's age range!\n")
+
+  accs <- c()
+  for(i in 2:ncol(ages)) {
+    these <- (ages[,i-1] < age) * (ages[,i] > age)
+    if(sum(these) > 0) # age lies within these age-model iterations
+      accs <- c(accs, set$output[which(these>0),i]) # was i+1
   }
+
   if(cmyr)
     accs <- 1/accs
   return(accs)
@@ -142,7 +144,6 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 
   for(i in 1:length(d)) {
     acc[[i]]$y <- acc[[i]]$y/max.dens
-    cat(max(acc[[i]]$y), " ") # tmp Jan 2021
     acc[[i]]$y[acc[[i]]$y > dark] <- dark
   }
 
@@ -165,27 +166,27 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
   if(rotate.axes) {
     plot(0, type="n", xlab=acc.lab, ylab=d.lab, ylim=d.lim, xlim=acc.lim)
     for(i in 2:length(d)) {
-      col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0, 1-max(acc[[i]]$y), length=rgb.res))
-      image(acc[[i]]$x, d[c(i-1, i)], t(1-t(acc[[i]]$y)), add=TRUE, col=col)
+      col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0, 1-max(acc[[i-1]]$y), length=rgb.res)) # was acc[[i]]
+      image(acc[[i-1]]$x, d[c(i-1, i)], t(1-t(acc[[i-1]]$y)), add=TRUE, col=col) # was acc[[i]]
     }
     if(plot.range) {
-      lines(min.rng, d-(set$thick/2), col=range.col, lty=range.lty)
-      lines(max.rng, d-(set$thick/2), col=range.col, lty=range.lty)
+      lines(min.rng, d+(set$thick/2), col=range.col, lty=range.lty)
+      lines(max.rng, d+(set$thick/2), col=range.col, lty=range.lty)
     }
     if(plot.mean)
-      lines(mn.rng, d-(set$thick/2), col=mean.col, lty=mean.lty)
+      lines(mn.rng, d+(set$thick/2), col=mean.col, lty=mean.lty)
   } else {
       plot(0, type="n", xlab=d.lab, ylab=acc.lab, xlim=d.lim, ylim=acc.lim)
       for(i in 2:length(d)) {
-        col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(acc[[i]]$y), 0, length=rgb.res))
-        image(d[c(i-1, i)], acc[[i]]$x, 1-t(acc[[i]]$y), add=TRUE, col=col) 
+        col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(acc[[i-1]]$y), 0, length=rgb.res)) # was acc[[i]]
+        image(d[c(i-1, i)], acc[[i-1]]$x, 1-t(acc[[i-1]]$y), add=TRUE, col=col) # was acc[[i]]
         }
       if(plot.range) {
-        lines(d-(set$thick/2), min.rng, col=range.col, lty=range.lty)
-        lines(d-(set$thick/2), max.rng, col=range.col, lty=range.lty)
+        lines(d+(set$thick/2), min.rng, col=range.col, lty=range.lty)
+        lines(d+(set$thick/2), max.rng, col=range.col, lty=range.lty)
         }
     if(plot.mean)
-      lines(d-(set$thick/2), mn.rng, col=mean.col, lty=mean.lty)
+      lines(d+(set$thick/2), mn.rng, col=mean.col, lty=mean.lty)
     }
 }
 

@@ -23,6 +23,8 @@ library(IntCal)
 
 # check how/why accrates fluctuate rapidly close to boundaries - DeepChalla
 
+# agemodel.it (in calc.R) doesn't work correctly above boundaries.
+
 # seed is working again. But, see if/where R subsamples .out, as the .out file is identical if seed is set!
 
 # done: repaired heights of calibrated blobs. added explanation new mem prior. pMC.age etc. can now be called without having to type IntCal::pMC.age. The add.dates function now handles postbomb dates. The greyscale age-depth graph is now more easily exported because white pixels are removed. Added options to make the top panel pars more flexible. 
