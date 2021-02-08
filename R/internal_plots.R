@@ -45,7 +45,7 @@ agedepth.ghost <- function(set=get('info'), d.min=set$d.min, d.max=set$d.max, BC
 
 
 # Time series of the log of the posterior
-PlotLogPost <- function(set, from=0, to=set$Tr, xaxs="i", yaxs="i", panel.size=toppanel.fontsize)
+PlotLogPost <- function(set, from=0, to=set$Tr, xaxs="i", yaxs="i", panel.size=.9)
   plot(from:(to-1), -set$Us[(from+1):to], type="l",
     ylab="Log of Objective", xlab="Iteration", main="", xaxs=xaxs, yaxs=yaxs, col=grey(0.4), cex.axis=panel.size)
 
@@ -150,7 +150,7 @@ PlotPhiPrior <- function(s, mn, set=get('info'), depth.unit=depth.unit, age.unit
 
 
 # plot the posterior (and prior) of the accumulation rate
-PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main="", depth.unit=set$depth.unit, age.unit=set$age.unit, ylab="Frequency", xaxs="i", yaxs="i", yaxt="n", prior.size=prior.fontsize, panel.size=toppanel.fontsize) {
+PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main="", depth.unit=set$depth.unit, age.unit=set$age.unit, ylab="Frequency", xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9) {
   hi <- 2:(set$K-1)
   if(!is.na(set$hiatus.depths)[1])
     for(i in set$hiatus.depths)
@@ -174,7 +174,7 @@ PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main=
 
 
 # plot the posterior (and prior) of the memory
-PlotMemPost <- function(set=get('info'), corenam, K, main="", s=set$mem.strength, mn=set$mem.mean, xlab=paste("Memory"), ylab="Density", ds=1, thick, xaxs="i", yaxs="i", yaxt="n", prior.size=prior.fontsize, panel.size=toppanel.fontsize) {
+PlotMemPost <- function(set=get('info'), corenam, K, main="", s=set$mem.strength, mn=set$mem.mean, xlab=paste("Memory"), ylab="Density", ds=1, thick, xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9) {
   post <- density(set$output[,set$n]^(1/set$thick), from=0, to=1)
   post <- cbind(c(min(post$x), post$x, max(post$x)), c(0, post$y, 0))
   maxprior <- max(dbeta((0:100)/100, s*mn, s*(1-mn)))
@@ -188,7 +188,7 @@ PlotMemPost <- function(set=get('info'), corenam, K, main="", s=set$mem.strength
 
 
 # plot the posterior (and prior) of the hiatus
-PlotHiatusPost <- function(set=get('info'), mx=set$hiatus.max, main="", xlim=c(), xlab=paste0("Hiatus size (", set$age.unit, ")"), ylab="Frequency", after=set$after, xaxs="i", yaxs="i", yaxt="n", prior.size=prior.fontsize, panel.size=toppanel.fontsize) {
+PlotHiatusPost <- function(set=get('info'), mx=set$hiatus.max, main="", xlim=c(), xlab=paste0("Hiatus size (", set$age.unit, ")"), ylab="Frequency", after=set$after, xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9) {
   gaps <- c()
   for(i in set$hiatus.depths) {
     below <- Bacon.Age.d(i+after, set)
@@ -212,7 +212,7 @@ PlotHiatusPost <- function(set=get('info'), mx=set$hiatus.max, main="", xlim=c()
 
 
 # plot the Supported data (for plum)
-PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, cex=.9, yaxt="n", prior.size=prior.fontsize, panel.size=toppanel.fontsize) {
+PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, cex=.9, yaxt="n", prior.size=.9, panel.size=.9) {
   lab <- ifelse(set$Bqkg, "Bq/kg", "dpm/g")
 
   if(set$nPs > 1) {
@@ -247,7 +247,7 @@ PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, cex=.
 
 
 # plot the Supply data (for plum)
-PlotPhiPost <- function(set=get('info'), xlab=paste0("Bq/",expression(m^2)," yr"), ylab="", xaxs="i", yaxs="i", legend=TRUE, cex=.9, yaxt="n", csize=.8, prior.size=prior.fontsize, panel.size=toppanel.fontsize) {
+PlotPhiPost <- function(set=get('info'), xlab=paste0("Bq/",expression(m^2)," yr"), ylab="", xaxs="i", yaxs="i", legend=TRUE, cex=.9, yaxt="n", csize=.8, prior.size=.9, panel.size=.9) {
   post <- density(set$phi)
   plot(post, type="n", xlab=xlab, ylab=ylab, main="", yaxt=yaxt, cex.axis=panel.size)
   polygon(post, col=grey(.8), border=grey(.4))

@@ -7,7 +7,7 @@
 #' @author Maarten Blaauw <maarten.blaauw@qub.ac.uk> J. Andres Christen <jac@cimat.mx> 
 #' @importFrom grDevices dev.cur dev.off pdf dev.copy2pdf grey rgb dev.list extendrange
 #' @importFrom graphics abline box curve hist image layout legend lines par plot points polygon segments rect axis mtext plot
-#' @importFrom stats approx dbeta density dgamma dnorm dunif lm quantile rnorm weighted.mean coef
+#' @importFrom stats approx dbeta density dgamma dnorm dunif lm quantile rnorm weighted.mean coef median
 #' @importFrom utils read.csv read.table write.table packageName txtProgressBar setTxtProgressBar
 #' @importFrom Rcpp evalCpp
 #' @importFrom coda gelman.diag mcmc.list as.mcmc
@@ -21,13 +21,7 @@ library(IntCal)
 
 #if(!exists("info"))  info <- c() # a user reported that rbacon was looking for the variable info but not finding it. Not sure if the solution here is a good idea, so, commenting it
 
-# check how/why accrates fluctuate rapidly close to boundaries - DeepChalla
-
-# agemodel.it (in calc.R) doesn't work correctly above boundaries.
-
-# seed is working again. But, see if/where R subsamples .out, as the .out file is identical if seed is set!
-
-# done: repaired heights of calibrated blobs. added explanation new mem prior. pMC.age etc. can now be called without having to type IntCal::pMC.age. The add.dates function now handles postbomb dates. The greyscale age-depth graph is now more easily exported because white pixels are removed. Added options to make the top panel pars more flexible. 
+# done: 
 
 # for future versions: investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, accrate.age.ghost is black all through - needs to have sections with lower maximum amount of grey, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, find a way to get rid of accrate.age.ghost's overly low accrates at core bottoms, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
@@ -67,7 +61,7 @@ library(IntCal)
 #' @param d.max Maximum depth of age-depth model (use this to extrapolate to depths below the bottom dated depth).
 #' @param add.bottom Add a model section at the bottom of the core, in order to ensure the bottommost date is taken into account. Default \code{add.bottom=TRUE}. This is a new option and can cause age-models to differ from previous version. Please re-run the model if in doubt.
 #' @param d.by Depth intervals at which ages are calculated. Defaults to \code{d.by=1}.
-#' @param seed Seed used for C++ executions. If it is not assigned (\code{seed=NA}) then the seed is set by system.
+#' @param seed Seed used for C++ executions. If it is not assigned (\code{seed=NA}; default) then the seed is set by system.
 #' @param depth.unit Units of the depths. Defaults to \code{depth.unit="cm"}.
 #' @param age.unit Units of the ages. Defaults to \code{age.unit="yr"}.
 #' @param unit Deprecated and replaced by \code{depth.unit}.

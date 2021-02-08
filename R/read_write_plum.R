@@ -508,8 +508,8 @@
 
   if(!is.na(hiatus.depths[1])) {
     if(is.null(boundary[1]))
-      message("\n  Hiatus set at depth(s) ", hiatus.depths) else
-        message("  Boundary set at depth(s) ", boundary)
+      message("\n  Hiatus set at depth(s) ", paste("", hiatus.depths)) else
+        message("  Boundary set at depth(s) ", paste("", boundary))
     if(length(set$acc.shape)==1)
       set$acc.shape <- rep(set$acc.shape, length(hiatus.depths)+1)
     if(length(set$acc.mean)==1)

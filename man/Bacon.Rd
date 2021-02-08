@@ -91,7 +91,7 @@ Thinner (and thus more) sections will result in smoother age-models, but too man
 
 \item{d.by}{Depth intervals at which ages are calculated. Defaults to \code{d.by=1}.}
 
-\item{seed}{Seed used for C++ executions. If it is not assigned (\code{seed=NA}) then the seed is set by system.}
+\item{seed}{Seed used for C++ executions. If it is not assigned (\code{seed=NA}; default) then the seed is set by system.}
 
 \item{depths.file}{By default, Bacon will calculate the ages for the depths \code{d.min} to \code{d.max} in steps of \code{d.by}.
 If \code{depths.file=TRUE}, Bacon will read a file containing the depths for which you require ages.
