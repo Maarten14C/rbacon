@@ -25,7 +25,7 @@
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#' \url{https://projecteuclid.org/euclid.ba/1339616472}
+#' \doi{10.1214/11-BA618}
 #' @export
 accrate.depth <- function(d, set=get('info'), cmyr=FALSE) {
   accs.elbows <- set$output[,2:(set$K+1)]
@@ -63,7 +63,7 @@ accrate.depth <- function(d, set=get('info'), cmyr=FALSE) {
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#'  \url{https://projecteuclid.org/euclid.ba/1339616472}
+#' \doi{10.1214/11-BA618}
 #' @export
 accrate.age <- function(age, set=get('info'), cmyr=FALSE, BCAD=set$BCAD, silent=TRUE) {
    ages <- array(0, dim=c(nrow(set$output), length(set$elbows)))
@@ -124,7 +124,7 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, BCAD=set$BCAD, silent=
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#' \url{https://projecteuclid.org/euclid.ba/1339616472}
+#' \doi{10.1214/11-BA618}
 #' @export
 accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE) {
   max.acc <- 0; max.dens <- 0
@@ -238,7 +238,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#' \url{https://projecteuclid.org/euclid.ba/1339616472}
+#' \doi{10.1214/11-BA618}
 #' @export
 accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res=400, acc.res=200, cutoff=.001, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, xaxs="i", yaxs="i", bty="l") {
 
@@ -363,7 +363,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#' \url{https://projecteuclid.org/euclid.ba/1339616472}
+#' \doi{10.1214/11-BA618}
 #' @export
 flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr.res=age.res, set=get('info'), flux=c(), plot.range=TRUE, prob=.8, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, flux.lim=c(), flux.lab="flux", upper=.95, rgb.scale=c(0,0,0), rgb.res=100, dark=set$dark, BCAD=set$BCAD, age.lab=c(), yr.lab=age.lab, rotate.axes=FALSE, rev.flux=FALSE, rev.age=FALSE, rev.yr=rev.age) {
   if(length(flux) == 0) { # then read a .csv file, expecting data in columns with headers

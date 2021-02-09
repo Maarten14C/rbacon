@@ -40,7 +40,7 @@ indicate poor MCMC mixing. Robust MCMC mixing is indicated by a Gelman and Rubin
 \references{
 Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-\url{https://projecteuclid.org/euclid.ba/1339616472}
+\doi{10.1214/11-BA618}
 Brooks, SP. and Gelman, A. (1998) General methods for monitoring
 convergence of iterative simulations.
 _Journal of Computational and Graphical Statistics, *7*, 434-455.

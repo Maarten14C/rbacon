@@ -18,7 +18,7 @@
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#'  \url{https://projecteuclid.org/euclid.ba/1339616472}
+#' \doi{10.1214/11-BA618}
 #' @export
 Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm=FALSE) {
   if(length(d) > 1)
@@ -85,7 +85,7 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#'  \url{https://projecteuclid.org/euclid.ba/1339616472}
+#' \doi{10.1214/11-BA618}
 #' @export
 Bacon.d.Age <- function(age, set=get("info"), BCAD=set$BCAD, its=set$output, na.rm=FALSE ){
 
@@ -330,7 +330,7 @@ hiatus.slopes <- function(set=get('info'), hiatus.option=1) {
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#' \url{https://projecteuclid.org/euclid.ba/1339616472}
+#' \doi{10.1214/11-BA618}
 #' @export
 Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c(), hist.lab="Frequency", calc.range=TRUE, hist.lim=c(), draw=TRUE, prob=set$prob, hist.col=grey(0.5), hist.border=grey(.2), range.col="blue", med.col="green", mean.col="red", verbose=TRUE) {
   outfile <- paste(set$prefix, ".out", sep="")
@@ -438,7 +438,7 @@ Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#' \url{https://projecteuclid.org/euclid.ba/1339616472}
+#' \doi{10.1214/11-BA618}
 #' @export
 agemodel.it <- function(it, set=get('info'), BCAD=set$BCAD) {
   outfile <- paste(set$prefix, ".out", sep="")
