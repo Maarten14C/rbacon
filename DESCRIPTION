@@ -6,7 +6,7 @@ Date: 2021-02-09
 Authors@R: c(
     person("Maarten", "Blaauw", email = "maarten.blaauw@qub.ac.uk", role = c("aut", "cre")),
     person("J. Andres", "Christen", email = "jac@cimat.mx", role = c("aut", "ctb", "cph")),
-    person("Marco A.", "Aquino L.", email = "Marco.AquinoLopez@mu.ie", role="aut"),
+    person("Marco A.", "Aquino Lopez", email = "aquino@cimat.mx", role="aut"),
 	person("Judith", "Esquivel Vazquez", email = "", role = "ctb"),
   person("Oscar M.", "Gonzalez V.", email = "", role = "ctb"),
 	person("Ted", "Belding", role = "cph"),
