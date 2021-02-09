@@ -85,11 +85,6 @@ if calculated in cm/yr; therefore you might want to manually adapt the axis limi
   layout(1)
   accrate.depth.ghost()
 }
-\references{
-Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
-gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-\doi{10.1214/11-BA618}
-}
 \author{
 Maarten Blaauw, J. Andres Christen
 }

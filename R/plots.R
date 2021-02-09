@@ -42,10 +42,6 @@
 #'   layout(1)
 #'   proxy.ghost()
 #' }
-#' @references
-#' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
-#' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#' \doi{10.1214/11-BA618}
 #' @export
 proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.res=age.res, rgb.scale=c(0,0,0), rgb.res=100, set=get('info'), dark=1, darkest=1, rotate.axes=FALSE, proxy.rev=FALSE, age.rev=FALSE, yr.rev=age.rev, plot.mean=FALSE, mean.col="red", age.lim=NULL, yr.lim=age.lim, proxy.lim=NULL, sep=",", xaxs="i", yaxs="i", xaxt="s", yaxt="s", bty="l", BCAD=set$BCAD, age.lab=ifelse(BCAD, "BC/AD", "cal yr BP"), yr.lab=age.lab, verbose=TRUE, add=FALSE) {
   if(length(set$Tr)==0)

@@ -43,11 +43,6 @@ by the MCMC iterations for any age of a core. Deals with only 1 age at a time. S
   plot(accrate.a5000, pch='.')
   hist(accrate.a5000)
 }
-\references{
-Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
-gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-\doi{10.1214/11-BA618}
-}
 \author{
 Maarten Blaauw, J. Andres Christen
 }

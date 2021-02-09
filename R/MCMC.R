@@ -27,10 +27,6 @@
 #'   agedepth()
 #' }
 #'
-#' @references
-#' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
-#' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#' \doi{10.1214/11-BA618}
 #' @export
 scissors <- function(burnin, set=get('info')) {
   output <- read.table(paste(set$prefix, ".out", sep=""))
@@ -75,10 +71,6 @@ scissors <- function(burnin, set=get('info')) {
 #'   agedepth()
 #' }
 #'
-#' @references
-#' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
-#' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#' \doi{10.1214/11-BA618}
 #' @export
 thinner <- function(proportion=0.1, set=get('info')) {
   output <- read.table(paste(set$prefix, ".out", sep=""))
@@ -117,9 +109,6 @@ thinner <- function(proportion=0.1, set=get('info')) {
 #'     Baconvergence(runs=2, ssize=100, coredir=tempfile()) # a quick-and-dirty toy example
 #'   }
 #' @references
-#' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
-#' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#' \doi{10.1214/11-BA618}
 #' Brooks, SP. and Gelman, A. (1998) General methods for monitoring
 #' convergence of iterative simulations.
 #' _Journal of Computational and Graphical Statistics, *7*, 434-455.

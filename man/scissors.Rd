@@ -38,11 +38,6 @@ To remove, e.g., the first 300 iterations, type \code{scissors(300)}. To remove 
 }
 
 }
-\references{
-Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
-gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-\doi{10.1214/11-BA618}
-}
 \author{
 Maarten Blaauw, J. Andres Christen
 }

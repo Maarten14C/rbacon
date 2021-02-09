@@ -115,11 +115,6 @@ The file name should start with the core's name and end with "_proxies.csv". For
   proxy.ghost()
 }
 }
-\references{
-Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive
-gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-\doi{10.1214/11-BA618}
-}
 \author{
 Maarten Blaauw, J. Andres Christen
 }

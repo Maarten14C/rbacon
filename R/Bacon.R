@@ -155,7 +155,6 @@ library(IntCal)
 #' }
 #' @references
 #' Blaauw, M. and Christen, J.A., Flexible paleoclimate age-depth models using an autoregressive gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
-#' \doi{10.1214/11-BA618}
 #'
 #' Christen, J.A., Perez E., S., 2010. A new robust statistical model for radiocarbon data. Radiocarbon 51, 1047-1059. 
 #'
