@@ -205,11 +205,10 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' Currently does not deal well with hiatuses, so do not interpret accumulation rates close to depths with inferred hiatuses.
 #' @param set Detailed information of the current run, stored within this session's memory as variable info.
 #' @param age.lim Minimum and maximum calendar age ranges, calculated automatically by default (\code{age.lim=c()}).
-#' @param yr.lim Deprecated - use age.lim instead
 #' @param age.lab The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}).
-#' @param yr.lab Deprecated - use age.lab instead
-#' @param age.res Resolution or amount of greyscale pixels to cover the age scale of the age-model plot. Default \code{age.res=200}.
-#' @param yr.res Deprecated - use age.res instead
+#' @param age.res Resolution or amount of greyscale pixels to cover the age scale of the plot. Default \code{age.res=400}.
+#' @param acc.res Resolution or amount of greyscale pixels to cover the accumulation rate scale plot. Default \code{age.res=400}.
+#' @param cutoff Point below which colours will no longer be printed. Default \code{cutoff=0.001}.
 #' @param rgb.scale The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}). 
 #' @param rgb.res Resolution of the colour spectrum depicting the age-depth model. Default \code{rgb.res=100}.
 #' @param prob Probability ranges. Defaults to \code{prob=0.95}.
@@ -221,13 +220,10 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' @param mean.lty Type of the mean lines.
 #' @param acc.lim Axis limits for the accumulation rates.
 #' @param acc.lab Axis label for the accumulation rate.
-#' @param upper Maximum accumulation rates to plot. Defaults to the upper 99\%; \code{upper=0.99}.
-#' @param dark The darkest grey value is dark=1 by default; lower values will result in lighter grey but values >1 are not advised.
 #' @param BCAD The calendar scale of graphs and age output-files is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
 #' @param cmyr Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm. Axis limits are difficult to calculate when \code{cmyr=TRUE}, so a manual adaptation of \code{acc.lim} might be a good idea.
 #' @param rotate.axes The default is to plot the calendar age horizontally and accumulation rates vertically. Change to \code{rotate.axes=TRUE} value to rotate axes.
 #' @param rev.age The direction of the age axis, which can be reversed using \code{rev.age=TRUE}.
-#' @param rev.yr Deprecated - use rev.age instead
 #' @param rev.acc The direction of the accumulation rate axis, which can be reversed (\code{rev.acc=TRUE}.
 #' @param xaxs Extension of the x-axis. White space can be added to the vertical axis using \code{xaxs="r"}.
 #' @param yaxs Extension of the y-axis. White space can be added to the vertical axis using \code{yaxs="r"}.
@@ -244,47 +240,38 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' gamma process. Bayesian Anal. 6 (2011), no. 3, 457--474.
 #' \url{https://projecteuclid.org/euclid.ba/1339616472}
 #' @export
-accrate.age.ghost <- function(set=get('info'), age.lim=c(), yr.lim=age.lim, age.lab=c(), yr.lab=age.lab, age.res=200, yr.res=age.res, rgb.scale=c(0,0,0), rgb.res=50, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, acc.lim=c(), acc.lab=c(), upper=0.99, dark=50, BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.acc=FALSE, xaxs="i", yaxs="i", bty="l") {
-  if(length(yr.lim) == 0) {
-    min.age <- min(set$ranges[,2])
-    max.age <- max(set$ranges[,3])
-  } else {
-      min.age <- min(age.lim)
-      max.age <- max(age.lim)
-    }
+accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res=400, acc.res=200, cutoff=.001, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, xaxs="i", yaxs="i", bty="l") {
 
-  age.seq <- seq(min.age, max.age, length=age.res)
+  if(length(age.lim) == 0) 
+     age.lim <- extendrange(set$ranges[,5]) # just the mean ages, not the extremes
+  if(BCAD)
+    age.lim <- 1950 - age.lim
+  age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
+    
+  if(length(acc.lim) == 0)
+    acc.lim <-  c(0, 1.05*max(set$output[,2:(1+set$K)])) # maximum accrate in the output
+  if(cmyr)
+    acc.lim <- 1/acc.lim
+  acc.seq <- seq(min(acc.lim), max(acc.lim), length=acc.res)
+  breaks <- c(acc.seq, acc.seq[acc.res]+diff(acc.seq[1:2])) # bins of the histogram
+    
+  z <- array(0, dim=c(age.res, acc.res))
+  acc.rng <- array(0, dim=c(age.res, 2))
+  acc.mn <- 0
+  
   pb <- txtProgressBar(min=0, max=max(1,length(age.seq)-1), style = 3)
-  max.y <- 0; all.x <- NULL
-  fill.length <- numeric(length(age.seq))
-  hist.list <- list(x=NULL, y=NULL, min.rng= fill.length, max.rng= fill.length, mn.rng= fill.length)
-  for(i in 1:length(age.seq)) {
+  for(i in 1:age.res) {
     setTxtProgressBar(pb, i)
-    acc <- accrate.age(age.seq[i], set, cmyr=cmyr)
-    if(cmyr) acc <- rev(acc)
-      accs <- acc
-    if(length(acc) > 2)
-    if(length(acc.lim) == 0)
-      acc <- density(acc, from=0) else
-        acc <- density(acc, from=0, to=max(acc.lim))
-    hist.list$yr[[i]] <- age.seq[i]
-    hist.list$x[[i]] <- acc$x
-    hist.list$y[[i]] <- acc$y/sum(acc$y)
-    rng <- quantile(accs, c((1-prob)/2, 1-((1-prob)/2)))
-    hist.list$mn.rng[i] <- mean(accs) # was [[i]]
-    hist.list$min.rng[i] <- rng[1] # was [[i]]
-    hist.list$max.rng[i] <- rng[2] # was [[i]]
-    max.y <- max(max.y, hist.list$y[[i]])
-    all.x <- c(all.x, acc$x)
+    acc <- accrate.age(age.seq[i], cmyr=cmyr, BCAD=BCAD, silent=TRUE)
+    z[i,] <- hist(acc, breaks=breaks, plot=FALSE)$counts
+    acc.rng[i,] <- quantile(acc, c((1-prob)/2, 1-((1-prob)/2)))
+    acc.mn[i] <- mean(acc)
   }
   message("\n")
-
-  if(BCAD)
-    age.seq <- 1950 - age.seq
-  if(length(age.lim) == 0)
-    age.lim <- range(age.seq)
-  if(length(acc.lim) == 0)
-    acc.lim <- c(0, 1.1*quantile(all.x, upper))
+  
+  z <- z/max(z) # normalise
+  z[z<cutoff] <- NA # do not plot very small values
+  
   if(BCAD)
     age.lim <- rev(age.lim)
   if(rev.age)
@@ -299,47 +286,32 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), yr.lim=age.lim, age.
     if(cmyr)
       acc.lab <- paste0("accumulation rate (", set$depth.unit, "/", set$age.unit, ")") else
         acc.lab <- paste0("accumulation rate (", set$age.unit, "/", set$depth.unit, ")")
-  peak <- 0
-  for(i in 1:length(age.seq))
-    peak <- max(peak, unlist(hist.list$y[[i]])) # doesn't work well owing to the very dark tail at the bottom
+
+  cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0, 1, length=rgb.res))
+
   if(rotate.axes) {
-    plot(0, type="n", xlim=acc.lim, xlab=acc.lab, ylim=age.lim, ylab=age.lab, xaxs=xaxs, yaxs=yaxs)
-    for(i in 2:length(age.seq)) {
-      x <- unlist(hist.list$x[[i]])
-      y <- unlist(hist.list$y[[i]])
-      col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0, 1, length=rgb.res))
-      if(BCAD)
-        image(x, 1950-unlist(hist.list$yr[c(i,i-1)]), t(t(matrix(y))), col=col, add=TRUE) else
-          image(x, unlist(hist.list$yr[c(i-1,i)]), t(t(matrix(y))), col=col, add=TRUE)
-    }
-  } else {
-        plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=acc.lim, ylab=acc.lab, xaxs=xaxs, yaxs=yaxs)
-        for(i in 2:length(age.seq)) {
-          x <- unlist(hist.list$x[[i]])
-          y <- unlist(hist.list$y[[i]])
-          col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0, 1, length=rgb.res))
-          if(BCAD)
-            image(1950-sort(unlist(hist.list$yr[c(i,i-1)])), x, t(matrix(y)), col=col, add=TRUE) else
-              image(sort(unlist(hist.list$yr[c(i-1,i)])), x, t(matrix(y)), col=col, add=TRUE)
-        }
+    plot(0, type="n", ylim=age.lim, ylab=age.lab, xlim=acc.lim, xlab=acc.lab, yaxs=xaxs, xaxs=yaxs)
+    image(acc.seq, age.seq, t(z), col=cols, add=TRUE)
+      if(plot.range) {
+        lines(acc.rng[,1], age.seq, pch=".", col=range.col, lty=range.lty)
+        lines(acc.rng[,2], age.seq, pch=".", col=range.col, lty=range.lty)
       }
-   if(plot.range)
-     if(rotate.axes) {
-       lines(hist.list$min.rng, age.seq, pch=".", col=range.col, lty=range.lty)
-       lines(hist.list$max.rng, age.seq, pch=".", col=range.col, lty=range.lty)
-     } else {
-       lines(age.seq, hist.list$min.rng, pch=".", col=range.col, lty=range.lty)
-       lines(age.seq, hist.list$max.rng, pch=".", col=range.col, lty=range.lty)
-       }
-     if(plot.mean)
-       if(rotate.axes)
-         lines(hist.list$mn.rng, age.seq, pch=".", col=mean.col, lty=mean.lty) else
-           lines(age.seq, hist.list$mn.rng, pch=".", col=mean.col, lty=mean.lty)
+    if(plot.mean) 
+      lines(acc.mn, age.seq, col=mean.col, lty=mean.lty)
+  } else {
+       plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=acc.lim, ylab=acc.lab, xaxs=xaxs, yaxs=yaxs)
+       image(age.seq, acc.seq, t(t(z)), col=cols, add=TRUE)
+       if(plot.range) {
+          lines(age.seq, acc.rng[,1], pch=".", col=range.col, lty=range.lty)
+          lines(age.seq, acc.rng[,2], pch=".", col=range.col, lty=range.lty)
+        }
+      if(plot.mean) 
+        lines(age.seq, acc.mn, col=mean.col, lty=mean.lty)
+    }
 
   if(length(bty) > 0)
     box(bty=bty)
 }
-
 
 
 #' @name flux.age.ghost
