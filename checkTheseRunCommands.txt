@@ -9,8 +9,6 @@ accrate.depth.ghost()
 Bacon(ask=FALSE, slump=c(25,27))
 Bacon(ask=FALSE, slump=c(25,27, 68,73))
 
-Bacon(ask=FALSE, boundary=25)
-Bacon(ask=FALSE, hiatus.depths=25)
 Bacon(ask=FALSE, boundary=c(25,46))
 Bacon(ask=FALSE, hiatus.depths=c(25,46))
 Bacon(ask=FALSE, boundary=c(25,46), slump=c(28,33))

@@ -11,7 +11,6 @@
 * Repaired the functions accrate.depth(), accrate.age(), accrate.depth.ghost() and accrate.age.ghost()
 * agemodel.it now treats the upper depth of a core as expected
 
-
 # rbacon 2.5.0
 * updated src/kernel.cpp and src/twalk.h, to repair a bug in one of the moves ('hop'). This means we can now add the updated MCMC code of version 2.4.0 again and accommodate code to run 210Pb-dated cores (via the package rplum) 
 * Radiocarbon calibration curves are now loaded from the imported IntCal R package, and have been removed from the rbacon package to save space and remove duplication

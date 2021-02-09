@@ -21,6 +21,10 @@ library(IntCal)
 
 #if(!exists("info"))  info <- c() # a user reported that rbacon was looking for the variable info but not finding it. Not sure if the solution here is a good idea, so, commenting it
 
+# accrate.age.ghost() isn't working: Error in image.default(sort(unlist(hist.list$yr[c(i - 1, i)])), x, t(matrix(y)),  : 
+#  dimensions of z are not length(x)(-1) times length(y)(-1)
+# In addition: There were 50 or more warnings (use warnings() to see the first 50) = In mean.default(accs) : argument is not numeric or logical: returning NA
+
 # done: 
 
 # for future versions: investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, accrate.age.ghost is black all through - needs to have sections with lower maximum amount of grey, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, find a way to get rid of accrate.age.ghost's overly low accrates at core bottoms, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
