@@ -46,6 +46,7 @@ accrate.depth <- function(d, set=get('info'), cmyr=FALSE) {
 #' @param age The age for which the accumulation rates need to be returned.
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param cmyr Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm.
+#' @param ages The ages of the age-depth model. Not provided by default, but can be provided to speed things up if the function is called repeatedly
 #' @param BCAD The calendar scale of graphs and age output-files is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
 #' @param silent Warn when ages are outside the core's range. Default \code{silent=TRUE}.
 #' @author Maarten Blaauw, J. Andres Christen
@@ -57,15 +58,18 @@ accrate.depth <- function(d, set=get('info'), cmyr=FALSE) {
 #'   plot(accrate.a5000, pch='.')
 #'   hist(accrate.a5000)
 #' @export
-accrate.age <- function(age, set=get('info'), cmyr=FALSE, BCAD=set$BCAD, silent=TRUE) {
-   ages <- array(0, dim=c(nrow(set$output), length(set$elbows)))
-   for(i in 1:ncol(ages))
-     ages[,i] <- Bacon.Age.d(set$elbows[i])
+accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCAD, silent=TRUE) {
+  if(length(ages) == 0) {
+    ages <- array(0, dim=c(nrow(set$output), length(set$elbows)))
+    for(i in 1:ncol(ages))
+      ages[,i] <- Bacon.Age.d(set$elbows[i])
+  }
 
   if(!silent)
     if(age < min(ages) || age > max(ages))
      stop(" Warning, age outside the core's age range!\n")
 
+  # can this be made faster, i.e. without the loop?
   accs <- c()
   for(i in 2:ncol(ages)) {
     these <- (ages[,i-1] < age) * (ages[,i] > age)
@@ -220,9 +224,9 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' @return A greyscale plot of accumulation rate against calendar age.
 #' @examples
 #'   Bacon(run=FALSE, coredir=tempfile())
-#'   agedepth(yr.res=50, d.res=50, d.by=10)
+#'   agedepth(age.res=20, d.res=20, d.by=10)
 #'   layout(1)
-#'   accrate.age.ghost()
+#'   accrate.age.ghost(age.res=200, acc.res=100)
 #' @export
 accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res=400, acc.res=200, cutoff=.001, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, xaxs="i", yaxs="i", bty="l") {
 
@@ -243,10 +247,15 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
   acc.rng <- array(0, dim=c(age.res, 2))
   acc.mn <- 0
   
+  # trying to speed things up by not repeatedly calculating ages in accrate.age
+  ages <- array(0, dim=c(nrow(set$output), length(set$elbows)))
+  for(i in 1:ncol(ages))
+    ages[,i] <- Bacon.Age.d(set$elbows[i])
+  
   pb <- txtProgressBar(min=0, max=max(1,length(age.seq)-1), style = 3)
   for(i in 1:age.res) {
     setTxtProgressBar(pb, i)
-    acc <- accrate.age(age.seq[i], cmyr=cmyr, BCAD=BCAD, silent=TRUE)
+    acc <- accrate.age(age.seq[i], cmyr=cmyr, ages=ages, BCAD=BCAD, silent=TRUE)
     z[i,] <- hist(acc, breaks=breaks, plot=FALSE)$counts
     acc.rng[i,] <- quantile(acc, c((1-prob)/2, 1-((1-prob)/2)))
     acc.mn[i] <- mean(acc)

@@ -21,6 +21,8 @@ library(IntCal)
 
 #if(!exists("info"))  info <- c() # a user reported that rbacon was looking for the variable info but not finding it. Not sure if the solution here is a good idea, so, commenting it
 
+# do: optimise accrate.age(), perhaps by not calculating ages each time but putting them in the accrate.age.ghost() function. Also avoid second loop?
+
 # done: 
 
 # for future versions: investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)

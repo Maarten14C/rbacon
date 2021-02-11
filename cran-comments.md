@@ -5,14 +5,9 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | 2 notes
+0 errors | 0 warnings | 0 notes
 
-The notes relate to the long time it takes to produce some labour-intensive plots, which by necessity are based on looping through thousands of iterations. I have not been able to further optimise its speed. 
+The slow example for the accrate.age.ghost() functio is now listed as donttest, thus making compilation and testing faster.
 
 * This is a new release.
 
-
-
- 
- 
- 
