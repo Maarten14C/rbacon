@@ -116,7 +116,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     set <- hiatus.slopes(set, hiatus.option)
   assign_to_global("info", set)
 
-  oldpar <- par(mar=c(3, 3, 1, 0), bty=bty, mar=mar, mgp=mgp, xaxs=xaxs, yaxs=yaxs)
+  oldpar <- par(mar=mar, bty=bty, mar=mar, mgp=mgp, xaxs=xaxs, yaxs=yaxs)
   on.exit(par(oldpar))
   if(model.only)
     panels else { # layout(1) can mess things up if plotting within an existing panel

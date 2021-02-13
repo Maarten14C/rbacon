@@ -2,7 +2,7 @@
 #' @title Output all ages for a single depth.
 #' @description Output all MCMC-derived age estimates for a given depth.
 #' @details Obtaining an age-depth model is often only a step towards a goal, e.g., plotting a core's
-#' fossil series ('proxies') against calendar time. Bacon.Age.d can be used to list all MCMC-derived age estimates for a given (single) depth, for example to calculate mean ages for a depth.
+#' fossil series ('proxies') against calendar time. Bacon.Age.d can be used to list all MCMC-derived age estimates for a given (single) depth, for example to calculate mean ages for a depth. See also Bacon.d.Age which calculates the depths of a single age estimate.
 #' @param d The depth of which Bacon age estimates are to be returned. Has to be a single depth.
 #' @param set Detailed information of the current run, stored within this session's memory as variable info.
 #' @param its The set of MCMC iterations to be used. Defaults to the entire MCMC output, \code{its=set$output}.
@@ -61,11 +61,11 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
 
 
 #' @name Bacon.d.Age
-#' @title Output all ages for a single depth.
-#' @description Output all MCMC-derived age estimates for a given depth.
+#' @title Output all depths for a single age.
+#' @description Output all depths of a single given MCMC-derived age estimate.
 #' @details Obtaining an age-depth model is often only a step towards a goal, e.g., plotting a core's
 #' fossil series ('proxies') against calendar time. Bacon.d.Age can be used to list all MCMC-derived depths belonging to a given (single) age, for example to calculate mean depths belonging to a modelled depth. 
-#' This function was kindly written and provided by Timon Netzel (Bonn University).
+#' This function was kindly written and provided by Timon Netzel (Bonn University). See also Bacon.Age.d, which calculates the ages for a single depth.
 #' @param age The age estimate for which depths are to be returned. Has to be a single age.
 #' @param set Detailed information of the current run, stored within this session's memory as variable info.
 #' @param its The set of MCMC iterations to be used. Defaults to the entire MCMC output, \code{its=set$output}.
