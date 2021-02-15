@@ -394,7 +394,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
         pn <- c(1,2,3,4,4,4)
     layout(matrix(pn, nrow=2, byrow=TRUE), heights=c(.3,.7))
     oldpar <- par(mar=c(3,3,1,1), mgp=c(1.5,.7,.0), bty="l")
-	on.exit(par(oldpar))         	
+    on.exit(par(oldpar))	
     PlotAccPrior(info$acc.shape, info$acc.mean, depth.unit=depth.unit, age.unit=age.unit)
     PlotMemPrior(info$mem.strength, info$mem.mean, thick)
     if(!is.na(info$hiatus.depths)[1])
