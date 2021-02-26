@@ -8,6 +8,7 @@ accrate.age(
   age,
   set = get("info"),
   cmyr = FALSE,
+  ages = c(),
   BCAD = set$BCAD,
   silent = TRUE
 )
@@ -18,6 +19,8 @@ accrate.age(
 \item{set}{Detailed information of the current run, stored within this session's memory as variable \code{info}.}
 
 \item{cmyr}{Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm.}
+
+\item{ages}{The ages of the age-depth model. Not provided by default, but can be provided to speed things up if the function is called repeatedly}
 
 \item{BCAD}{The calendar scale of graphs and age output-files is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
 

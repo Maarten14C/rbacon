@@ -72,10 +72,10 @@
 #' @param title.size Size of the title font. Defaults to \code{title.size=1.5}.
 #' @param after Sets a short section above and below hiatus.depths within which to calculate ages. For internal calculations - do not change.
 #' @param bty Type of box to be drawn around plots (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).
-#' @param mar.left Plot margins for the topleft panel (amount of white space along edges of axes 1-4). Default \code{mar=c(3,3,1,1)}.
-#' @param mar.middle Plot margins for the middle panel(s) at the top (amount of white space along edges of axes 1-4). Default \code{mar=c(3,3,1,1)}.
-#' @param mar.right Plot margins for the topright panel (amount of white space along edges of axes 1-4). Default \code{mar=c(3,3,1,1)}.
-#' @param mar.main Plot margins for the main panel (amount of white space along edges of axes 1-4). Default \code{mar=c(3,3,1,1)}.
+#' @param mar.left Plot margins for the topleft panel (amount of white space along edges of axes 1-4). Default \code{mar.left=c(3,3,1,1)}.
+#' @param mar.middle Plot margins for the middle panel(s) at the top (amount of white space along edges of axes 1-4). Default \code{mar.middle=c(3,3,1,1)}.
+#' @param mar.right Plot margins for the topright panel (amount of white space along edges of axes 1-4). Default \code{mar.right=c(3,3,1,1)}.
+#' @param mar.main Plot margins for the main panel (amount of white space along edges of axes 1-4). Default \code{mar.main=c(3,3,1,1)}.
 #' @param mgp Axis text margins (where should titles, labels and tick marks be plotted). Defaults to \code{mgp=c(1.5, .7, .0)}.
 #' @param xaxs Extension of x-axis. By default, add some extra white-space at both extremes (\code{xaxs="r"}). See ?par for other options.
 #' @param yaxs Extension of y-axis. By default, add no extra white-space at both extremes (\code{yaxs="i"}). See ?par for other options.
@@ -101,7 +101,7 @@
 #'   agedepth()
 #' }
 #' @export
-agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=c(), prob=set$prob, rounded=0, d.res=400, age.res=400, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, maxcalc=500, height=1, calheight=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, panels=layout(1), range.col=grey(.5), range.lty="12", mn.col="red", mn.lty="12", med.col=NA, med.lty="12", C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), hiatus.col=grey(0.5), hiatus.lty="12", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, after=set$after, bty="l", mar.left=c(3,3,1,1), mar.middle=c(3,3,1,1), mar.right=c(3,3,1,1), mar.main=c(3,3,1,1),   mgp=c(1.5,.7,.0), xaxs="r", yaxs="i", prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, xaxt="s", yaxt="s", plot.pb=TRUE, plot.pdf=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE) {
+agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=c(), prob=set$prob, rounded=0, d.res=400, age.res=400, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, maxcalc=500, height=1, calheight=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, panels=layout(1), range.col=grey(.5), range.lty="12", mn.col="red", mn.lty="12", med.col=NA, med.lty="12", C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), hiatus.col=grey(0.5), hiatus.lty="12", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, after=set$after, bty="l", mar.left=c(3,3,1,1), mar.middle=c(3,0,1,.5), mar.right=c(3,3,1,1), mar.main=c(3,3,1,1), mgp=c(1.5,.7,.0), xaxs="r", yaxs="i", prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, xaxt="s", yaxt="s", plot.pb=TRUE, plot.pdf=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE) {
 # Load the output, if it exists
   outp <- paste0(set$prefix, ".out")
   if(file.exists(outp))
@@ -119,7 +119,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     set <- hiatus.slopes(set, hiatus.option)
   assign_to_global("info", set)
 
-  oldpar <- par(mar=mar, bty=bty, mar=mar, mgp=mgp, xaxs=xaxs, yaxs=yaxs)
+  oldpar <- par(mar=mar.left, bty=bty, mgp=mgp, xaxs=xaxs, yaxs=yaxs)
   on.exit(par(oldpar))
   if(model.only)
     panels else { # layout(1) can mess things up if plotting within an existing panel
@@ -129,7 +129,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
           pn <- c(1:4, rep(5,4))
       layout(matrix(pn, nrow=2, byrow=TRUE), heights=c(.3,.7))
       PlotLogPost(set, 0, set$Tr, xaxs=xaxs, yaxs=yaxs, panel.size=toppanel.fontsize) # convergence information
-      oldpar <- par(mar=c(3,0,1,.5)) # reduce white space
+      oldpar <- par(mar=mar.middle) # reduce white space
       on.exit(par(oldpar))
       PlotAccPost(set, depth.unit=depth.unit, age.unit=age.unit, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize)
       PlotMemPost(set, set$core, set$K, "", set$mem.strength, set$mem.mean, ds=1, thick=set$thick, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize)
@@ -207,11 +207,13 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(kcal)
     ifelse(rotate.axes, xaxt <- "n", yaxt <- "n")
   if(set$isplum) {
-     oldpar <- par(mar=c(3,3,1,3)) # to make space for righthand Pb axis
+     #oldpar <- par(mar=c(3,3,1,3)) # to make space for righthand Pb axis; should be mar.middle?
+	 oldpar <- par(mar=mar.middle)
       on.exit(par(oldpar))         	
   } else {
-      oldpar <- par(mar=c(3,3,1,1)) # no need for righthand axis
-      on.exit(par(oldpar))         	
+      #oldpar <- par(mar=c(3,3,1,1)) # no need for righthand axis; should be mar.right?
+      oldpar <- par(mar=mar.right)
+	  on.exit(par(oldpar))         	
   }
 
   if(rotate.axes)

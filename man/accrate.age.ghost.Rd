@@ -100,12 +100,10 @@ This is due to only some MCMC iterations reaching those old ages, and these iter
 Currently does not deal well with hiatuses, so do not interpret accumulation rates close to depths with inferred hiatuses.
 }
 \examples{
-\donttest{
   Bacon(run=FALSE, coredir=tempfile())
   agedepth(age.res=20, d.res=20, d.by=10)
   layout(1)
-  accrate.age.ghost(age.res=20, acc.res=10)
-}
+  accrate.age.ghost(age.res=200, acc.res=100)
 }
 \author{
 Maarten Blaauw, J. Andres Christen

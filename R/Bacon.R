@@ -21,11 +21,13 @@ library(IntCal)
 
 #if(!exists("info"))  info <- c() # a user reported that rbacon was looking for the variable info but not finding it. Not sure if the solution here is a good idea, so, commenting it
 
-# do: check all greyscale functions, set mar for each panel in agedepth, e.g., mar.mcmc=..., mar.acc=..., 
+# do: check correct settings of mar for each panel in agedepth 
+
+# read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum
 
 # done: optimised accrate.age.ghost(). 
 
-# for future versions: investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
+# for future versions: check all greyscale functions, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
 #' @name Bacon
 #' @title Main age-depth modelling function
@@ -79,7 +81,7 @@ library(IntCal)
 #' which can be changed to, e.g., 5, 10 or 50 for different kinds of deposits). Multiple values can be given in case of hiatuses or boundaries, e.g., Bacon(hiatus.depths=23, acc.mean=c(5,20))
 #' @param mem.strength The prior for the memory (dependence of accumulation rate between neighbouring depths) is a beta distribution, which looks much like the gamma distribution.
 #'  but its values are always between 0 (no assumed memory) and 1 (100\% memory). Its default settings of \code{mem.strength=10}
-#'  (higher values result in more peaked shapes) allow for a large range of posterior memory values. Please note that the default memory prior has been updated from rbacon version 2.5.1. on, to repair a bug. 
+#'  (higher values result in more peaked shapes) allow for a large range of posterior memory values. Please note that the default memory prior has been updated from rbacon version 2.5.1 on, to repair a bug. 
 #' @param mem.mean The prior for the memory is a beta distribution, which looks much like the gamma distribution but
 #' its values are always between 0 (no assumed memory) and 1 (100\% memory). Its default settings of \code{mem.mean=0.5}
 #' allow for a large range of posterior memory values. Please note that the default memory prior has been updated from rbacon version 2.5.1. on, to repair a bug. 
@@ -198,7 +200,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
 	if(verbose) {
       if(length(cc.csv) == 1) {
         if(cc.csv != cc)
-          message(" Using calibration curve specified within the .csv file,", cc[cc.csv], "\n")
+          message(" Using calibration curve specified within the .csv file,", cc.csv, "\n")
       } else
         if(min(cc.csv) == 0)
           message(" Using a mix of cal BP and calibrated C-14 dates\n")
