@@ -43,7 +43,6 @@ agedepth(
   up = TRUE,
   cutoff = 0.1,
   plot.range = TRUE,
-  panels = layout(1),
   range.col = grey(0.5),
   range.lty = "12",
   mn.col = "red",
@@ -169,8 +168,6 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 \item{cutoff}{Avoid plotting very low probabilities of date distributions (default \code{cutoff=0.1}).}
 
 \item{plot.range}{Whether or not to plot the curves showing the confidence ranges of the age-model. Defaults to (\code{plot.range=TRUE}).}
-
-\item{panels}{Divide the graph panel. Defaults to 1 graph per panel, \code{panels=layout(1)}. To avoid dividing into panels, use \code{panels=c()}.}
 
 \item{range.col}{The colour of the curves showing the confidence ranges of the age-model. Defaults to medium grey (\code{range.col=grey(0.5)}).}
 

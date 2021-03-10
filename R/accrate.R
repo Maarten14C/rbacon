@@ -247,7 +247,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
   acc.rng <- array(0, dim=c(age.res, 2))
   acc.mn <- 0
   
-  # trying to speed things up by not repeatedly calculating ages in accrate.age
+  # speed things up by not repeatedly calculating ages in accrate.age
   ages <- array(0, dim=c(nrow(set$output), length(set$elbows)))
   for(i in 1:ncol(ages))
     ages[,i] <- Bacon.Age.d(set$elbows[i])

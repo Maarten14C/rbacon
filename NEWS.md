@@ -1,7 +1,7 @@
 # rbacon 2.5.2
 * optimised accrate.age.ghost()
-* the internal functions bacon and events are now exported, for use by the rplum package
 * added options to modify the margins of the individual panels in the agedepth plot: mar.left, mar.middle, mar.right, mar.main
+* removed the panels option in agedepth() as it didn't work as expected and is better done outside rbacon functions
 
 # rbacon 2.5.1
 * Adapted the default prior for memory to 0.5 (mean) and 10 (strength), to repair a bug with the original bacon c++ code. This default should work with most cores and give similar results to the previous settings for the memory prior
