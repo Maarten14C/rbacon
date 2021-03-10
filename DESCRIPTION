@@ -13,7 +13,7 @@ Authors@R: c(
 	person("James", "Theiler", role = "cph"),
 	person("Brian", "Gough", role = "cph"),
 	person("Charles", "Karney", role = "cph"))
-Description: An approach to age-depth modelling that uses Bayesian statistics to reconstruct accumulation histories for deposits, through combining radiocarbon and other dates with prior information. See Blaauw & Christen (2011) <doi:10.1214/11-BA618>.
+Description: An approach to age-depth modelling that uses Bayesian statistics to reconostruct accumulation histories for deposits, through combining radiocarbon and other dates with prior information. See Blaauw & Christen (2011) <doi:10.1214/11-BA618>.
 Encoding: UTF-8
 Repository: CRAN
 License: GPL (>= 2)
