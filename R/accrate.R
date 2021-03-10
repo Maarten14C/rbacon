@@ -242,7 +242,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
     acc.lim[is.infinite(acc.lim)] <- 0  
   }  
   acc.seq <- seq(min(acc.lim), max(acc.lim), length=acc.res)
-  breaks <- c(acc.seq, acc.seq[acc.res]+diff(acc.seq[1:2])) # bins of the histogram
+  # breaks <- c(acc.seq, acc.seq[acc.res]+diff(acc.seq[1:2])) # bins of the histogram
   
   z <- array(NA, dim=c(age.res, acc.res))
   acc.rng <- array(NA, dim=c(age.res, 2))
@@ -256,7 +256,6 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
   pb <- txtProgressBar(min=0, max=max(1,length(age.seq)-1), style = 3)
   for(i in 1:age.res) {
     setTxtProgressBar(pb, i)
-    tmp <<- age.seq[i]
     acc <- accrate.age(age.seq[i], cmyr=cmyr, ages=ages, silent=TRUE, BCAD=FALSE)
     if(length(acc) > 0) {
       #z[i,] <- hist(acc, breaks=breaks, plot=FALSE)$counts
@@ -268,7 +267,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
   message("\n")
 
   z <- z/max(z) # normalise
-  z[z<cutoff] <- NA # do not plot very small values
+  z[z<cutoff] <- NA # do not plot very small/light greyscale values
   
   if(rev.age)
     age.lim <- rev(age.lim)
