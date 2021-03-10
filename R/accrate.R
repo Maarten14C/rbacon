@@ -62,7 +62,7 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
   if(length(ages) == 0) {
     ages <- array(0, dim=c(nrow(set$output), length(set$elbows)))
     for(i in 1:ncol(ages))
-      ages[,i] <- Bacon.Age.d(set$elbows[i])
+      ages[,i] <- Bacon.Age.d(set$elbows[i], BCAD=BCAD)
   }
 
   if(!silent)
@@ -229,11 +229,10 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #'   accrate.age.ghost(age.res=200, acc.res=100)
 #' @export
 accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res=400, acc.res=200, cutoff=.001, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, xaxs="i", yaxs="i", bty="l") {
-
   if(length(age.lim) == 0) 
      age.lim <- extendrange(set$ranges[,5]) # just the mean ages, not the extremes
   if(BCAD)
-    age.lim <- 1950 - age.lim
+    age.lim <- 1950 - age.lim  # internally, work on the cal BP scale
   age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
     
   if(length(acc.lim) == 0)
@@ -242,31 +241,31 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
     acc.lim <- 1/acc.lim
   acc.seq <- seq(min(acc.lim), max(acc.lim), length=acc.res)
   breaks <- c(acc.seq, acc.seq[acc.res]+diff(acc.seq[1:2])) # bins of the histogram
-    
-  z <- array(0, dim=c(age.res, acc.res))
-  acc.rng <- array(0, dim=c(age.res, 2))
-  acc.mn <- 0
   
+  z <- array(NA, dim=c(age.res, acc.res))
+  acc.rng <- array(NA, dim=c(age.res, 2))
+  acc.mn <- NA
+
   # speed things up by not repeatedly calculating ages in accrate.age
   ages <- array(0, dim=c(nrow(set$output), length(set$elbows)))
   for(i in 1:ncol(ages))
-    ages[,i] <- Bacon.Age.d(set$elbows[i])
-  
+    ages[,i] <- Bacon.Age.d(set$elbows[i], BCAD=FALSE)
+ 
   pb <- txtProgressBar(min=0, max=max(1,length(age.seq)-1), style = 3)
   for(i in 1:age.res) {
     setTxtProgressBar(pb, i)
-    acc <- accrate.age(age.seq[i], cmyr=cmyr, ages=ages, BCAD=BCAD, silent=TRUE)
-    z[i,] <- hist(acc, breaks=breaks, plot=FALSE)$counts
-    acc.rng[i,] <- quantile(acc, c((1-prob)/2, 1-((1-prob)/2)))
-    acc.mn[i] <- mean(acc)
+    acc <- accrate.age(age.seq[i], cmyr=cmyr, ages=ages, silent=TRUE, BCAD=FALSE)
+    if(length(acc) > 0) {
+      z[i,] <- hist(acc, breaks=breaks, plot=FALSE)$counts
+      acc.rng[i,] <- quantile(acc, c((1-prob)/2, 1-((1-prob)/2)))
+      acc.mn[i] <- mean(acc)
+    }
   }
   message("\n")
-  
+
   z <- z/max(z) # normalise
   z[z<cutoff] <- NA # do not plot very small values
   
-  if(BCAD)
-    age.lim <- rev(age.lim)
   if(rev.age)
     age.lim <- rev(age.lim)
   if(rev.acc)
@@ -281,19 +280,29 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
         acc.lab <- paste0("accumulation rate (", set$age.unit, "/", set$depth.unit, ")")
 
   cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0, 1, length=rgb.res))
-
+  
   if(rotate.axes) {
-    plot(0, type="n", ylim=age.lim, ylab=age.lab, xlim=acc.lim, xlab=acc.lab, yaxs=xaxs, xaxs=yaxs)
+    yaxt <- ifelse(BCAD, "n", "s")
+    plot(0, type="n", ylim=age.lim, ylab=age.lab, xlim=acc.lim, xlab=acc.lab, yaxs=xaxs, xaxs=yaxs, yaxt=yaxt, bty="n")
+    if(BCAD) {
+      ticks <- pretty(age.lim)
+      axis(2, ticks, labels=1950-ticks) 
+    }
     image(acc.seq, age.seq, t(z), col=cols, add=TRUE)
-      if(plot.range) {
-        lines(acc.rng[,1], age.seq, pch=".", col=range.col, lty=range.lty)
-        lines(acc.rng[,2], age.seq, pch=".", col=range.col, lty=range.lty)
-      }
+    if(plot.range) {
+      lines(acc.rng[,1], age.seq, pch=".", col=range.col, lty=range.lty)
+      lines(acc.rng[,2], age.seq, pch=".", col=range.col, lty=range.lty)
+    }
     if(plot.mean) 
       lines(acc.mn, age.seq, col=mean.col, lty=mean.lty)
   } else {
-       plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=acc.lim, ylab=acc.lab, xaxs=xaxs, yaxs=yaxs)
-       image(age.seq, acc.seq, t(t(z)), col=cols, add=TRUE)
+    xaxt <- ifelse(BCAD, "n", "s")
+    plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=acc.lim, xaxt=xaxt, ylab=acc.lab, xaxs=xaxs, yaxs=yaxs, bty="n")
+    if(BCAD) {
+      ticks <- pretty(age.lim)
+      axis(1, ticks, labels=1950-ticks) 
+    }
+    image(age.seq, acc.seq, t(t(z)), col=cols, add=TRUE)
        if(plot.range) {
           lines(age.seq, acc.rng[,1], pch=".", col=range.col, lty=range.lty)
           lines(age.seq, acc.rng[,2], pch=".", col=range.col, lty=range.lty)

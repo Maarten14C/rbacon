@@ -19,13 +19,11 @@ NULL
 # to be able to directly use copyCalibrationCurve, mix.curves, pMC.age & age.pMC (without having to type IntCal:: first)
 library(IntCal)
 
-#if(!exists("info"))  info <- c() # a user reported that rbacon was looking for the variable info but not finding it. Not sure if the solution here is a good idea, so, commenting it
+#if(!exists("info"))  info <- c() # a user reported that rbacon was looking for the variable info but not finding it. Not sure if the solution here is a good idea, so, deactivating this
 
-# do: check correct settings of mar for each panel in agedepth 
+# read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum. I tried the recommendation to avoid the use of ::: and instead exporting the bacon and events functions within the .cpp code, but this threw errors.
 
-# read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum
-
-# done: sped up accrate.age.ghost(). removed the panels option as it didn't work as expected and is better done outside rbacon functions, added options mar.left, mar.middle, mar.right and mar.main for the margins of the different panels in the agedepth plot. 
+# done:
 
 # for future versions: check all greyscale functions, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
@@ -219,7 +217,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
       if(accept.suggestions) { # new Oct '20
         acc.mean <- sugg
         message("Adapting acc.mean to ", sugg, " ", age.unit, "/", depth.unit)
-	  } else {
+    } else {
         ans <- readline(message(" Ballpark estimates suggest changing the prior for acc.mean to ", sugg, " ", age.unit, "/", depth.unit, ". OK? (y/N) "))
         if(tolower(substr(ans,1,1)) == "y")
           acc.mean <- sugg else
