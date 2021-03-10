@@ -231,14 +231,16 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res=400, acc.res=200, cutoff=.001, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, xaxs="i", yaxs="i", bty="l") {
   if(length(age.lim) == 0) 
      age.lim <- extendrange(set$ranges[,5]) # just the mean ages, not the extremes
-  if(BCAD)
+  if(set$BCAD)
     age.lim <- 1950 - age.lim  # internally, work on the cal BP scale
   age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
     
-  if(length(acc.lim) == 0)
+  if(length(acc.lim) == 0) {
     acc.lim <-  c(0, 1.05*max(set$output[,2:(1+set$K)])) # maximum accrate in the output
-  if(cmyr)
-    acc.lim <- 1/acc.lim
+    if(cmyr)
+      acc.lim <- 1/acc.lim
+    acc.lim[is.infinite(acc.lim)] <- 0  
+  }  
   acc.seq <- seq(min(acc.lim), max(acc.lim), length=acc.res)
   breaks <- c(acc.seq, acc.seq[acc.res]+diff(acc.seq[1:2])) # bins of the histogram
   
@@ -254,9 +256,11 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
   pb <- txtProgressBar(min=0, max=max(1,length(age.seq)-1), style = 3)
   for(i in 1:age.res) {
     setTxtProgressBar(pb, i)
+    tmp <<- age.seq[i]
     acc <- accrate.age(age.seq[i], cmyr=cmyr, ages=ages, silent=TRUE, BCAD=FALSE)
     if(length(acc) > 0) {
-      z[i,] <- hist(acc, breaks=breaks, plot=FALSE)$counts
+      #z[i,] <- hist(acc, breaks=breaks, plot=FALSE)$counts
+      z[i,] <- density(acc, from=min(acc.lim), to=max(acc.lim), n=acc.res)$y
       acc.rng[i,] <- quantile(acc, c((1-prob)/2, 1-((1-prob)/2)))
       acc.mn[i] <- mean(acc)
     }
