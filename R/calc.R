@@ -461,7 +461,7 @@ toslump <- function(d, slump, remove=FALSE) {
     inside <- which(d[inside] >= slump[i,1]) # step 2
     below <- which(d >= slump[i,2]) # adapt depths below slumps
 
-	if(length(below) > 0) # depths below slump
+    if(length(below) > 0) # depths below slump
       dfree[below] <- dfree[below] - slices[i+1]
 
     if(length(inside) > 0) # depths within slump

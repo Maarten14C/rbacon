@@ -111,6 +111,9 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
 #' @param plot.mean If \code{plot.mean=TRUE}, the means are plotted.
 #' @param mean.col Colour of the mean accumulation rates.
 #' @param mean.lty Type of the mean lines.
+#' @param plot.median If \code{plot.mean=TRUE}, the medians are plotted.
+#' @param median.col Colour of the median accumulation rates.
+#' @param median.lty Type of the median lines.
 #' @param rotate.axes The default is to plot the accumulation rates horizontally and the depth vertically (\code{rotate.axes=FALSE}). Change rotate.axes value to rotate axes.
 #' @param rev.d The direction of the depth axis can be reversed from the default (\code{rev.d=TRUE}.
 #' @param rev.acc The direction of the accumulation rate axis can be reversed from the default (\code{rev.acc=TRUE}).
@@ -124,9 +127,9 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
 #'   accrate.depth.ghost()
 #' }
 #' @export
-accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE) {
+accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2,  rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE) {
   max.acc <- 0; max.dens <- 0
-  acc <- list(); min.rng <- numeric(length(d)); max.rng <- numeric(length(d)); mn.rng <- numeric(length(d))
+  acc <- list(); min.rng <- numeric(length(d)); max.rng <- numeric(length(d)); mean.rng <- numeric(length(d)); median.rng <- numeric(length(d))
   for(i in 1:length(d))
     if(length(acc.lim) == 0)
       acc[[i]] <- density(accrate.depth(d[i], set, cmyr=cmyr), from=0) else
@@ -134,10 +137,12 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
   for(i in 1:length(d)) {
     max.acc <- max(max.acc, acc[[i]]$x)
     max.dens <- max(max.dens, acc[[i]]$y)
-    quants <- quantile(accrate.depth(d[i], set, cmyr=cmyr), c((1-prob)/2, 1-((1-prob)/2)))
+    accs <- accrate.depth(d[i], set, cmyr=cmyr)
+    quants <- quantile(accs, c((1-prob)/2, 1-((1-prob)/2)))
     min.rng[i] <- quants[1]
     max.rng[i] <- quants[2]
-    mn.rng[i] <- mean(accrate.depth(d[i], set, cmyr=cmyr))
+    mean.rng[i] <- mean(accs)
+    median.rng[i] <- median(accs)
    }
 
   for(i in 1:length(d)) {
@@ -172,7 +177,9 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
       lines(max.rng, d+(set$thick/2), col=range.col, lty=range.lty)
     }
     if(plot.mean)
-      lines(mn.rng, d+(set$thick/2), col=mean.col, lty=mean.lty)
+      lines(mean.rng, d+(set$thick/2), col=mean.col, lty=mean.lty)
+    if(plot.median)
+      lines(median.rng, d+(set$thick/2), col=median.col, lty=median.lty)
   } else {
       plot(0, type="n", xlab=d.lab, ylab=acc.lab, xlim=d.lim, ylim=acc.lim)
       for(i in 2:length(d)) {
@@ -184,7 +191,9 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
         lines(d+(set$thick/2), max.rng, col=range.col, lty=range.lty)
         }
     if(plot.mean)
-      lines(d+(set$thick/2), mn.rng, col=mean.col, lty=mean.lty)
+      lines(d+(set$thick/2), mean.rng, col=mean.col, lty=mean.lty)
+    if(plot.median)
+      lines(d+(set$thick/2), median.rng, col=median.col, lty=median.lty)
     }
 }
 
@@ -216,6 +225,9 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' @param plot.mean If \code{plot.mean=TRUE}, the means are plotted.
 #' @param mean.col Colour of the mean accumulation rates.
 #' @param mean.lty Type of the mean lines.
+#' @param plot.median If \code{plot.mean=TRUE}, the medians are plotted.
+#' @param median.col Colour of the median accumulation rates.
+#' @param median.lty Type of the median lines.
 #' @param acc.lim Axis limits for the accumulation rates.
 #' @param acc.lab Axis label for the accumulation rate.
 #' @param BCAD The calendar scale of graphs and age output-files is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
@@ -236,7 +248,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #'   accrate.age.ghost(age.res=200, acc.res=100)
 #' }
 #' @export
-accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res=400, acc.res=200, cutoff=.001, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, xaxs="i", yaxs="i", bty="l") {
+accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res=400, acc.res=200, cutoff=.001, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, xaxs="i", yaxs="i", bty="l") {
   if(length(age.lim) == 0) 
      age.lim <- extendrange(set$ranges[,5]) # just the mean ages, not the extremes
   if(set$BCAD)
@@ -252,9 +264,9 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
   acc.seq <- seq(min(acc.lim), max(acc.lim), length=acc.res)
   # breaks <- c(acc.seq, acc.seq[acc.res]+diff(acc.seq[1:2])) # bins of the histogram
   
-  z <- array(NA, dim=c(age.res, acc.res))
+  z <- array(0, dim=c(age.res, acc.res))
   acc.rng <- array(NA, dim=c(age.res, 2))
-  acc.mn <- NA
+  acc.mean <- NA; acc.median <- NA
 
   # speed things up by not repeatedly calculating ages in accrate.age
   ages <- array(0, dim=c(nrow(set$output), length(set$elbows)))
@@ -269,7 +281,8 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
       #z[i,] <- hist(acc, breaks=breaks, plot=FALSE)$counts
       z[i,] <- density(acc, from=min(acc.lim), to=max(acc.lim), n=acc.res)$y
       acc.rng[i,] <- quantile(acc, c((1-prob)/2, 1-((1-prob)/2)))
-      acc.mn[i] <- mean(acc)
+      acc.mean[i] <- mean(acc)
+      acc.median[i] <- median(acc)
     }
   }
   message("\n")
@@ -305,7 +318,9 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
       lines(acc.rng[,2], age.seq, pch=".", col=range.col, lty=range.lty)
     }
     if(plot.mean) 
-      lines(acc.mn, age.seq, col=mean.col, lty=mean.lty)
+      lines(acc.mean, age.seq, col=mean.col, lty=mean.lty)
+    if(plot.median) 
+      lines(acc.median, age.seq, col=median.col, lty=median.lty)
   } else {
     xaxt <- ifelse(BCAD, "n", "s")
     plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=acc.lim, xaxt=xaxt, ylab=acc.lab, xaxs=xaxs, yaxs=yaxs, bty="n")
@@ -319,11 +334,12 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
           lines(age.seq, acc.rng[,2], pch=".", col=range.col, lty=range.lty)
         }
       if(plot.mean) 
-        lines(age.seq, acc.mn, col=mean.col, lty=mean.lty)
+        lines(age.seq, acc.mean, col=mean.col, lty=mean.lty)
+      if(plot.median) 
+        lines(age.seq, acc.median, col=median.col, lty=median.lty)
     }
 
-  if(length(bty) > 0)
-    box(bty=bty)
+  box(bty=bty)
 }
 
 
