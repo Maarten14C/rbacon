@@ -11,10 +11,12 @@
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return Outputs all MCMC-derived ages for a given depth.
 #' @examples
+# '\dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(age.res=50, d.res=50, d.by=10)
 #'   ages.d20 = Bacon.Age.d(20)
 #'   mean(ages.d20)
+#' }
 #' @export
 Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm=FALSE) {
   if(length(d) > 1)
@@ -74,10 +76,12 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return Outputs all MCMC-derived ages for a given depth.
 #' @examples
+# '\dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(age.res=50, d.res=50, d.by=10)
 #'   ages.d20 = Bacon.Age.d(20)
 #'   mean(ages.d20)
+#' }
 #' @export
 Bacon.d.Age <- function(age, set=get("info"), BCAD=set$BCAD, its=set$output, na.rm=FALSE ){
 
@@ -315,10 +319,12 @@ hiatus.slopes <- function(set=get('info'), hiatus.option=1) {
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A plot with the histogram and the age ranges, median and mean, or just the age ranges, medians and means if more than one depth \code{d} is given.
 #' @examples
+# '\dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(age.res=50, d.res=50, d.by=10)
 #'   Bacon.hist(20)
 #'   Bacon.hist(20:30)
+#' }
 #' @export
 Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c(), hist.lab="Frequency", calc.range=TRUE, hist.lim=c(), draw=TRUE, prob=set$prob, hist.col=grey(0.5), hist.border=grey(.2), range.col="blue", med.col="green", mean.col="red", verbose=TRUE) {
   outfile <- paste(set$prefix, ".out", sep="")
@@ -420,9 +426,11 @@ Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A variable with two columns - depth and the age-depth model of a single iteration.
 #' @examples
+# '\dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(age.res=50, d.res=50, d.by=10)
 #'   lines(agemodel.it(5), col="red")
+#' }
 #' @export
 agemodel.it <- function(it, set=get('info'), BCAD=set$BCAD) {
   outfile <- paste(set$prefix, ".out", sep="")

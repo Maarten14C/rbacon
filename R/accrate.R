@@ -16,12 +16,14 @@
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return all MCMC estimates of accumulation rate of the chosen depth.
 #' @examples
+# '\dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(yr.res=50, d.res=50, d.by=10)
 #'   d20 <- accrate.depth(20)
 #'   hist(d20)
 #'   d20 <- accrate.depth(20, cmyr=TRUE) # to calculate accumulation rates in cm/yr
 #'   mean(d20)
+#' }
 #' @export
 accrate.depth <- function(d, set=get('info'), cmyr=FALSE) {
   accs.elbows <- set$output[,2:(set$K+1)]
@@ -52,11 +54,13 @@ accrate.depth <- function(d, set=get('info'), cmyr=FALSE) {
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return all MCMC estimates of accumulation rate of the chosen age.
 #' @examples
+#  '\dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(yr.res=50, d.res=50, d.by=10)
 #'   accrate.a5000 = accrate.age(5000)
 #'   plot(accrate.a5000, pch='.')
 #'   hist(accrate.a5000)
+#' }
 #' @export
 accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCAD, silent=TRUE) {
   if(length(ages) == 0) {
@@ -113,10 +117,12 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A grey-scale plot of accumulation rate against core depth.
 #' @examples
+# '\dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(yr.res=50, d.res=50, d.by=10)
 #'   layout(1)
 #'   accrate.depth.ghost()
+#' }
 #' @export
 accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE) {
   max.acc <- 0; max.dens <- 0
@@ -223,10 +229,12 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A greyscale plot of accumulation rate against calendar age.
 #' @examples
+#' \dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(age.res=20, d.res=20, d.by=10)
 #'   layout(1)
 #'   accrate.age.ghost(age.res=200, acc.res=100)
+#' }
 #' @export
 accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res=400, acc.res=200, cutoff=.001, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, xaxs="i", yaxs="i", bty="l") {
   if(length(age.lim) == 0) 
