@@ -80,10 +80,12 @@ Axis limits for accumulation rates are estimated automatically, however upper li
 if calculated in cm/yr; therefore you might want to manually adapt the axis limits after plotting with default settings (e.g., \code{acc.lim=c(0,1)}). See also \code{accrate.age.ghost}, \code{accrate.depth} and \code{accrate.age}.
 }
 \examples{
+\dontrun{
   Bacon(run=FALSE, coredir=tempfile())
   agedepth(yr.res=50, d.res=50, d.by=10)
   layout(1)
   accrate.depth.ghost()
+}
 }
 \author{
 Maarten Blaauw, J. Andres Christen

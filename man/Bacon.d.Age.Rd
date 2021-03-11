@@ -35,10 +35,12 @@ fossil series ('proxies') against calendar time. Bacon.d.Age can be used to list
 This function was kindly written and provided by Timon Netzel (Bonn University). See also Bacon.Age.d, which calculates the ages for a single depth.
 }
 \examples{
+\dontrun{
   Bacon(run=FALSE, coredir=tempfile())
   agedepth(age.res=50, d.res=50, d.by=10)
   ages.d20 = Bacon.Age.d(20)
   mean(ages.d20)
+}
 }
 \author{
 Maarten Blaauw, J. Andres Christen

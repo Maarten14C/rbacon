@@ -11,7 +11,7 @@
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return Outputs all MCMC-derived ages for a given depth.
 #' @examples
-# '\dontrun{
+#' \dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(age.res=50, d.res=50, d.by=10)
 #'   ages.d20 = Bacon.Age.d(20)
@@ -76,7 +76,7 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return Outputs all MCMC-derived ages for a given depth.
 #' @examples
-# '\dontrun{
+#' \dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(age.res=50, d.res=50, d.by=10)
 #'   ages.d20 = Bacon.Age.d(20)
@@ -319,7 +319,7 @@ hiatus.slopes <- function(set=get('info'), hiatus.option=1) {
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A plot with the histogram and the age ranges, median and mean, or just the age ranges, medians and means if more than one depth \code{d} is given.
 #' @examples
-# '\dontrun{
+#' \dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(age.res=50, d.res=50, d.by=10)
 #'   Bacon.hist(20)
@@ -426,7 +426,7 @@ Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A variable with two columns - depth and the age-depth model of a single iteration.
 #' @examples
-# '\dontrun{
+#' \dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(age.res=50, d.res=50, d.by=10)
 #'   lines(agemodel.it(5), col="red")

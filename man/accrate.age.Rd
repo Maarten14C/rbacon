@@ -40,11 +40,13 @@ This function obtains accumulation rates (in years per cm, so actually sedimenta
 by the MCMC iterations for any age of a core. Deals with only 1 age at a time. See also \code{accrate.depth}.
 }
 \examples{
+\dontrun{
   Bacon(run=FALSE, coredir=tempfile())
   agedepth(yr.res=50, d.res=50, d.by=10)
   accrate.a5000 = accrate.age(5000)
   plot(accrate.a5000, pch='.')
   hist(accrate.a5000)
+}
 }
 \author{
 Maarten Blaauw, J. Andres Christen
