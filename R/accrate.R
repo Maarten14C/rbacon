@@ -117,6 +117,7 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
 #' @param rotate.axes The default is to plot the accumulation rates horizontally and the depth vertically (\code{rotate.axes=FALSE}). Change rotate.axes value to rotate axes.
 #' @param rev.d The direction of the depth axis can be reversed from the default (\code{rev.d=TRUE}.
 #' @param rev.acc The direction of the accumulation rate axis can be reversed from the default (\code{rev.acc=TRUE}).
+#' @param bty Type of box to be drawn around the plot (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A grey-scale plot of accumulation rate against core depth.
 #' @examples
@@ -127,7 +128,7 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
 #'   accrate.depth.ghost()
 #' }
 #' @export
-accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2,  rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE) {
+accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2,  rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE, bty="l") {
   max.acc <- 0; max.dens <- 0
   acc <- list(); min.rng <- numeric(length(d)); max.rng <- numeric(length(d)); mean.rng <- numeric(length(d)); median.rng <- numeric(length(d))
   for(i in 1:length(d))
@@ -167,7 +168,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
     acc.lim <- rev(acc.lim)
 
   if(rotate.axes) {
-    plot(0, type="n", xlab=acc.lab, ylab=d.lab, ylim=d.lim, xlim=acc.lim)
+    plot(0, type="n", xlab=acc.lab, ylab=d.lab, ylim=d.lim, xlim=acc.lim, bty="n")
     for(i in 2:length(d)) {
       col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0, 1-max(acc[[i-1]]$y), length=rgb.res)) # was acc[[i]]
       image(acc[[i-1]]$x, d[c(i-1, i)], t(1-t(acc[[i-1]]$y)), add=TRUE, col=col) # was acc[[i]]
@@ -181,7 +182,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
     if(plot.median)
       lines(median.rng, d+(set$thick/2), col=median.col, lty=median.lty)
   } else {
-      plot(0, type="n", xlab=d.lab, ylab=acc.lab, xlim=d.lim, ylim=acc.lim)
+      plot(0, type="n", xlab=d.lab, ylab=acc.lab, xlim=d.lim, ylim=acc.lim, bty="n")
       for(i in 2:length(d)) {
         col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(acc[[i-1]]$y), 0, length=rgb.res)) # was acc[[i]]
         image(d[c(i-1, i)], acc[[i-1]]$x, 1-t(acc[[i-1]]$y), add=TRUE, col=col) # was acc[[i]]
@@ -195,6 +196,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
     if(plot.median)
       lines(d+(set$thick/2), median.rng, col=median.col, lty=median.lty)
     }
+  box(bty=bty)  
 }
 
 

@@ -20,6 +20,9 @@ accrate.age.ghost(
   plot.mean = TRUE,
   mean.col = "red",
   mean.lty = 2,
+  plot.median = TRUE,
+  median.col = "blue",
+  median.lty = 2,
   acc.lim = c(),
   acc.lab = c(),
   BCAD = set$BCAD,
@@ -62,6 +65,12 @@ accrate.age.ghost(
 \item{mean.col}{Colour of the mean accumulation rates.}
 
 \item{mean.lty}{Type of the mean lines.}
+
+\item{plot.median}{If \code{plot.mean=TRUE}, the medians are plotted.}
+
+\item{median.col}{Colour of the median accumulation rates.}
+
+\item{median.lty}{Type of the median lines.}
 
 \item{acc.lim}{Axis limits for the accumulation rates.}
 
