@@ -74,7 +74,7 @@ agedepth(
   mar.middle = c(3, 0, 1, 0.5),
   mar.right = c(3, 3, 1, 1),
   mar.main = c(3, 3, 1, 1),
-  mgp = c(1.5, 0.7, 0),
+  mgp = c(1.7, 0.7, 0),
   xaxs = "r",
   yaxs = "i",
   prior.ticks = "n",
@@ -231,7 +231,7 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{mar.main}{Plot margins for the main panel (amount of white space along edges of axes 1-4). Default \code{mar.main=c(3,3,1,1)}.}
 
-\item{mgp}{Axis text margins (where should titles, labels and tick marks be plotted). Defaults to \code{mgp=c(1.5, .7, .0)}.}
+\item{mgp}{Axis text margins (where should titles, labels and tick marks be plotted). Defaults to \code{mgp=c(1.7, .7, .0)}.}
 
 \item{xaxs}{Extension of x-axis. By default, add some extra white-space at both extremes (\code{xaxs="r"}). See ?par for other options.}
 
