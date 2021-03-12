@@ -162,7 +162,7 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
   if(plot.dists) 
     for(i in 1:length(set$calib$probs)) {
       maxhght[i] <- max(set$calib$probs[[i]][,2] / sum(set$calib$probs[[i]][,2]))
-      agesteps <- min(agesteps, diff(set$calib$probs[[1]][,1]))
+      agesteps <- min(agesteps, abs(diff(set$calib$probs[[1]][,1])))
     }
 
   if(plot.dists)
