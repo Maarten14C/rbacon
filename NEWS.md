@@ -1,5 +1,6 @@
 # rbacon 2.5.3
 * corrected a bug where postbomb dates had the wrong by sign
+* some further improvements to how agedepth deals with plot margins
 
 # rbacon 2.5.2
 * optimised accrate.age.ghost()
