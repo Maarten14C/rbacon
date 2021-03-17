@@ -536,7 +536,7 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
 
 
 
-### for running Plum, but is looked for by generic agedepth() function, so is included in the rbacon code
+### for running Plum, but is looked for by generic agedepth() function (through draw.pbmodelled()), so is included in the rbacon code
 #' @name A.modelled
 #' @title Calculate modelled 210Pb
 #' @description Calculate modelled 210Pb values of a sample slice, based on the parameters of the age-model (i.e., time passed since deposition of the bottom and top of the slice), supported and influx
@@ -551,10 +551,10 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
 #' @export
 A.modelled <- function(d.top, d.bottom, dens, set=get('info'), phi=set$phi, sup=set$ps) {
   if(d.top >= d.bottom)
-    stop("\n d.top should be higher than d.bottom", call.=FALSE)
+    stop("\n d.top should be above d.bottom", call.=FALSE)
   t.top <- Bacon.Age.d(d.top, BCAD=F) - set$theta0
   t.bottom <- Bacon.Age.d(d.bottom, BCAD=F) - set$theta0
-  cat("\nhuh?", length(t.top), length(t.bottom), "\n") 
+  # cat("\nhuh?", length(t.top), length(t.bottom), "\n") 
   multiply <-  ifelse(set$Bqkg, 10, 500)
   return(sup + ((phi / (.03114*multiply*dens) ) * (exp( -.03114*t.top) - exp(-.03114*t.bottom)) ) )
 } 
