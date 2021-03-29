@@ -501,7 +501,7 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
       } else {
          pretty.pb <- pretty(c(pbmin, pbmax))
          onbp <- pb2bp(pretty.pb)
-         axis(4, onbp, pretty.pb, col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col, line=2)
+         axis(4, onbp, pretty.pb, col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col, line=-2)
          pb.lab <- ifelse(set$Bq, "Bq/kg", "dpm/g")
          mtext(pb.lab, 4, 1.4, col=pbmeasured.col, cex=.8)
        }

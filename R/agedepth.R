@@ -75,6 +75,7 @@
 #' @param mar.middle Plot margins for the middle panel(s) at the top (amount of white space along edges of axes 1-4). Default \code{mar.middle=c(3,3,1,1)}.
 #' @param mar.right Plot margins for the topright panel (amount of white space along edges of axes 1-4). Default \code{mar.right=c(3,3,1,1)}.
 #' @param mar.main Plot margins for the main panel (amount of white space along edges of axes 1-4). Default \code{mar.main=c(3,3,1,1)}.
+#' @param righthand Adapt the righthand margins by a certain amount (default 2) to allow a righthand axis to be plotted (for plum)
 #' @param mgp Axis text margins (where should titles, labels and tick marks be plotted). Defaults to \code{mgp=c(1.7, .7, .0)}.
 #' @param xaxs Extension of x-axis. By default, add some extra white-space at both extremes (\code{xaxs="r"}). See ?par for other options.
 #' @param yaxs Extension of y-axis. By default, add no extra white-space at both extremes (\code{yaxs="i"}). See ?par for other options.
@@ -100,7 +101,7 @@
 #'   agedepth()
 #' }
 #' @export
-agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=c(), prob=set$prob, rounded=0, d.res=400, age.res=400, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, maxcalc=500, height=1, calheight=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE,  range.col=grey(.5), range.lty="12", mn.col="red", mn.lty="12", med.col=NA, med.lty="12", C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), hiatus.col=grey(0.5), hiatus.lty="12", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, after=set$after, bty="l", mar.left=c(3,3,1,1), mar.middle=c(3,0,1,.5), mar.right=c(3,3,1,1), mar.main=c(3,3,1,1), mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, xaxt="s", yaxt="s", plot.pb=TRUE, plot.pdf=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE) {
+agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=c(), prob=set$prob, rounded=0, d.res=400, age.res=400, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, maxcalc=500, height=1, calheight=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE,  range.col=grey(.5), range.lty="12", mn.col="red", mn.lty="12", med.col=NA, med.lty="12", C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), hiatus.col=grey(0.5), hiatus.lty="12", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, after=set$after, bty="l", mar.left=c(3,3,1,1), mar.middle=c(3,0,1,.5), mar.right=c(3,3,1,1), mar.main=c(3,3,1,1), righthand=3, mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, xaxt="s", yaxt="s", plot.pb=TRUE, plot.pdf=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE) {
 # Load the output, if it exists
   outp <- paste0(set$prefix, ".out")
   if(file.exists(outp))
@@ -212,18 +213,16 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(length(age.lab) == 0)
     age.lab <- ifelse(BCAD, "BC/AD", ifelse(kcal, "kcal BP", paste("cal", age.unit, "BP")))
 
-  newpar <- par(mar=mar.main) # was mar.middle. If this works, then no need to check for isplum
+  if(set$isplum)
+    mar.main[4] <- mar.main[4] + righthand # to enable space for righthand axis
+  par(mar=mar.main)
   on.exit(par(oldpar))
     
   if(kcal)
     ifelse(rotate.axes, xaxt <- "n", yaxt <- "n")
-#  if(set$isplum) {
-     #oldpar <- par(mar=c(3,3,1,3)) # to make space for righthand Pb axis; should be mar.middle?
-#  } else {
-      #oldpar <- par(mar=c(3,3,1,1)) # no need for righthand axis; should be mar.right?
- #     newpar <- par(mar=mar.main) # was mar.right
- #     on.exit(par(oldpar))         	
- # }
+#  if(set$isplum)
+#     oldpar <- par(mar=c(3,3,1,3)) else {
+#      oldpar <- par(mar=c(3,3,1,1)) # no need for righthand axis; should be mar.right?
 
   if(rotate.axes)
     plot(0, type="n", ylim=d.lim, xlim=age.lim, ylab=d.lab, xlab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt, mar=mar.main) else
