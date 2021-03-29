@@ -27,7 +27,7 @@ agedepth(
   hiatus.option = 1,
   dark = c(),
   prob = set$prob,
-  rounded = 0,
+  rounded = c(),
   d.res = 400,
   age.res = 400,
   yr.res = age.res,
@@ -138,7 +138,7 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{prob}{Confidence interval to report (between 0 and 1, default 0.95 or 95\%).}
 
-\item{rounded}{Rounding of years. Default is to round to single years.}
+\item{rounded}{Rounding of years. Default is to round to single years (1 digit for plum models).}
 
 \item{d.res}{Resolution or amount of greyscale pixels to cover the depth scale of the age-model plot. Default \code{d.res=200}.}
 
