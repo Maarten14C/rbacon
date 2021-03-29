@@ -112,6 +112,11 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     if(file.exists(outPlum))
       set <- Plum.AnaOut(outPlum, set)
   }
+  
+  # sometimes runs don't go well, with the age-model totally lost. This is indicated by a very peaked posterior for memory, very close to 1
+  if(set$isplum)
+    if(min(set$output[,ncol(set$output)]) > 0.99) # probably has to be [,k+2]
+      message("\nWarning, this run has a very high posterior memory and probably didn't go very well. Please run again\n")  
 
   # Adapt ages of sections which contain hiatuses
   if(!is.na(set$hiatus.depths[1]))
@@ -174,20 +179,22 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     message("Calculating age ranges...\n")
   modelranges <- c()
   ranges <-  Bacon.rng(d, set, BCAD=BCAD, prob=prob)
-
   # calculate calendar axis limits
   modelranges <- range(ranges[!is.na(ranges)])
-  dates <- set$calib$probs
+
+  if(length(set$calib$probs) > 0) {
+    dates <- set$calib$probs
   dateranges <- c()
   for(i in 1:length(dates))
     if(BCAD)
-      dateranges <- range(dateranges, 1950-dates[[i]][,1]) else
-        dateranges <- range(dateranges, dates[[i]][,1])
+      dateranges <- range(dateranges, 1950-dates[[i]][,1], na.rm=TRUE) else
+        dateranges <- range(dateranges, dates[[i]][,1], na.rm=TRUE)
+  } else dateranges <- modelranges # plum with no additional dates
+
   if(length(age.min) == 0)
     age.min <- min(modelranges, dateranges)
   if(length(age.max) == 0)
     age.max <- max(modelranges, dateranges)
-
   if(set$isplum) 
     age.lim <- extendrange(c(min(ranges), max(ranges)), f=0.01) else
       age.lim <- extendrange(c(age.min, age.max), f=0.01)
@@ -205,21 +212,22 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(length(age.lab) == 0)
     age.lab <- ifelse(BCAD, "BC/AD", ifelse(kcal, "kcal BP", paste("cal", age.unit, "BP")))
 
+  newpar <- par(mar=mar.main) # was mar.middle. If this works, then no need to check for isplum
+  on.exit(par(oldpar))
+    
   if(kcal)
     ifelse(rotate.axes, xaxt <- "n", yaxt <- "n")
-  if(set$isplum) {
+#  if(set$isplum) {
      #oldpar <- par(mar=c(3,3,1,3)) # to make space for righthand Pb axis; should be mar.middle?
-     newpar <- par(mar=mar.middle)
-     on.exit(par(oldpar))         	
-  } else {
+#  } else {
       #oldpar <- par(mar=c(3,3,1,1)) # no need for righthand axis; should be mar.right?
-      newpar <- par(mar=mar.main) # was mar.right
-      on.exit(par(oldpar))         	
-  }
+ #     newpar <- par(mar=mar.main) # was mar.right
+ #     on.exit(par(oldpar))         	
+ # }
 
   if(rotate.axes)
-    plot(0, type="n", ylim=d.lim, xlim=age.lim, ylab=d.lab, xlab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt) else
-      plot(0, type="n", xlim=d.lim[2:1], ylim=age.lim, xlab=d.lab, ylab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt)
+    plot(0, type="n", ylim=d.lim, xlim=age.lim, ylab=d.lab, xlab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt, mar=mar.main) else
+      plot(0, type="n", xlim=d.lim[2:1], ylim=age.lim, xlab=d.lab, ylab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt, mar=mar.main)
   if(kcal)
     axis(ifelse(rotate.axes, 1, 2), pretty(age.lim), pretty(age.lim/1e3))
 
@@ -288,8 +296,8 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
   write.table(set$ranges, paste(set$prefix, "_ages.txt", sep=""), quote=FALSE, row.names=FALSE, sep="\t")
   rng <- abs(round(set$ranges[,3]-set$ranges[,2], rounded))
-  min.rng <- d[which(rng==min(rng))]
-  max.rng <- d[which(rng==max(rng))]
+  min.rng <- d[which(rng==min(rng, na.rm=TRUE))]
+  max.rng <- d[which(rng==max(rng, na.rm=TRUE))]
   if(length(min.rng)==1)
     min.rng <- paste(age.unit, "at", min.rng, noquote(depth.unit)) else
       min.rng <- paste(age.unit, "between", min(min.rng), "and", max(min.rng), noquote(depth.unit))

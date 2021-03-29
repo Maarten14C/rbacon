@@ -501,7 +501,7 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
       } else {
          pretty.pb <- pretty(c(pbmin, pbmax))
          onbp <- pb2bp(pretty.pb)
-         axis(4, onbp, pretty.pb, col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col)
+         axis(4, onbp, pretty.pb, col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col, line=2)
          pb.lab <- ifelse(set$Bq, "Bq/kg", "dpm/g")
          mtext(pb.lab, 4, 1.4, col=pbmeasured.col, cex=.8)
        }
@@ -554,7 +554,6 @@ A.modelled <- function(d.top, d.bottom, dens, set=get('info'), phi=set$phi, sup=
     stop("\n d.top should be above d.bottom", call.=FALSE)
   t.top <- Bacon.Age.d(d.top, BCAD=F) - set$theta0
   t.bottom <- Bacon.Age.d(d.bottom, BCAD=F) - set$theta0
-  # cat("\nhuh?", length(t.top), length(t.bottom), "\n") 
   multiply <-  ifelse(set$Bqkg, 10, 500)
   return(sup + ((phi / (.03114*multiply*dens) ) * (exp( -.03114*t.top) - exp(-.03114*t.bottom)) ) )
 } 
