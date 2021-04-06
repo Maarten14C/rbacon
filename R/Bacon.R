@@ -27,7 +27,7 @@ library(IntCal)
 
 # all src files between rbacon and rplum are exactly the same. But see above for dudas acerca de las diferencias
 
-# now place rplum's src code somewhere safe, and in the src folder place rbacon's src files. Then run rplum using rbacon:::bacon..
+# do: ensure that BCAD works for draw.pbmodelled.
 
 
 #if(!exists("info"))  info <- c() # a user reported that rbacon was looking for the variable info but not finding it. Not sure if the solution here is a good idea, so, deactivating this
@@ -197,7 +197,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   # set the calibration curve
   if(ccdir == "")
     ccdir <- system.file("extdata", package="IntCal")
-  ccdir <- .validateDirectoryName(ccdir)
+  ccdir <- validateDirectoryName(ccdir)
 
   # default_settings.txt is located within system.file
   defaults <- system.file("extdata", defaults, package=packageName())

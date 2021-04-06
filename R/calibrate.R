@@ -48,7 +48,7 @@
 add.dates <- function(mn, sdev, depth, cc=1, set=get('info'), above=1e-6, postbomb=0, normal=TRUE, delta.R=set$delta.R, delta.STD=set$delta.STD, t.a=set$t.a, t.b=set$t.b, date.res=100, height=1, calheight=1, agesteps=1, cutoff=0.005, col=rgb(1,0,0,.5), border=rgb(1,0,0,.5), rotate.axes=FALSE, mirror=TRUE, up=TRUE, BCAD=FALSE, pch=4, ccdir="") {
   if(ccdir == "")
     ccdir <- system.file("extdata", package="IntCal")
-  ccdir <- .validateDirectoryName(ccdir)
+  ccdir <- validateDirectoryName(ccdir)
 
   if(mn < 0 && cc > 0)
     if(postbomb == 0)

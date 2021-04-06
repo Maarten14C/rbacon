@@ -115,9 +115,11 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   }
   
   # sometimes runs don't go well, with the age-model totally lost. This is indicated by a very peaked posterior for memory, very close to 1
-  if(set$isplum)
-    if(min(set$output[,ncol(set$output)]) > 0.99) # probably has to be [,k+2]
-      message("\nWarning, this run has a very high posterior memory and probably didn't go very well. Please run again\n")  
+  if(set$isplum) {
+    if(mn <- mean(set$output[,set$K+2]) > 0.95)
+      if(mn > set$mem.mean)
+        message("\nWarning, this run has a very high posterior memory (", round(mn, 2), ") and probably didn't go very well. Please run again\n")
+  }
 
   # Adapt ages of sections which contain hiatuses
   if(!is.na(set$hiatus.depths[1]))

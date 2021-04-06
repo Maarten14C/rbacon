@@ -1,4 +1,4 @@
-.validateDirectoryName <- function(dir) {
+validateDirectoryName <- function(dir) {
   if(!dir.exists(dir))
     dir.create(dir, recursive=TRUE)
   dir <- suppressWarnings(normalizePath(dir))
@@ -151,7 +151,7 @@ assign_coredir <- function(coredir, core, ask=TRUE, isPlum=FALSE) {
       if(!dir.exists(coredir)) # if it still doesn't exist, we probably don't have enough permissions
         stop("cannot write into the current directory.\nPlease set coredir to somewhere where you have writing access, e.g. Desktop or ~.", call.=FALSE)
   }
-  coredir <- .validateDirectoryName(coredir)
+  coredir <- validateDirectoryName(coredir)
   cat("The run's files will be put in this folder: ", coredir, core, "\n", sep="")
   return(coredir)
 }
