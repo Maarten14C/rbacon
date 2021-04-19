@@ -212,7 +212,7 @@ PlotHiatusPost <- function(set=get('info'), mx=set$hiatus.max, main="", xlim=c()
 
 
 # plot the Supported data (for plum)
-PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, cex=.9, yaxt="n", prior.size=.9, panel.size=.9) {
+PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE,  yaxt="n", prior.size=.9, panel.size=.9) {
   lab <- ifelse(set$Bqkg, "Bq/kg", "dpm/g")
 
   if(set$nPs > 1) {
@@ -222,7 +222,7 @@ PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, cex=.
       rng[i,22] <- mean( set$ps[,i] )
     }
 
-    plot(0, type="n", ylim=c(min( rng[,1]), max(rng[,21])), xlim=c(min( set$detsPlum[,4]), max(set$detsPlum[,4])), main="", xlab="Depth (cm)", ylab=lab, yaxt=yaxt, cex=panel.size)
+    plot(0, type="n", ylim=c(min( rng[,1]), max(rng[,21])), xlim=c(min( set$detsPlum[,4]), max(set$detsPlum[,4])), main="", xlab="Depth (cm)", ylab=lab, yaxt=yaxt, cex.axis=panel.size)
     n = 21
     colorby = 1.0 / (n/2)
     for(i in 1:(n/2)) {
@@ -234,9 +234,17 @@ PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, cex=.
 
   } else {
     post <- density(set$ps)
-    plot(post, type="n", xlab=lab, main="", ylab="", yaxt=yaxt, cex.axis=panel.size)
+    suppdata <- set$supportedData[,1:2]
+    rng <- range(post$x, suppdata[,1]-suppdata[,2], suppdata[,1]+suppdata[,2])
+    plot(post, type="n", xlab=lab, xlim=rng, main="", ylab="", yaxt=yaxt, cex.axis=panel.size)
     polygon(post, col=grey(.8), border=grey(.4))
     lines(seq(min(set$ps),max(set$ps),.05), dgamma(seq(min(set$ps), max(set$ps), .05), shape=set$s.shape, scale=set$s.mean/set$s.shape), col=3, lwd=2)
+
+    # plot the measurements of supported
+    # extend the plot's horizontal axis, range(...)
+    y <- seq(0, max(post$y), length=nrow(suppdata)+50)[1+(1:nrow(suppdata))] # at bottom graph
+    segments(suppdata[,1]-suppdata[,2], y, suppdata[,1]+suppdata[,2], y, col=rgb(.5,0,.5,.5))
+    points(suppdata[,1], y, pch=20, col=rgb(.5,0,.5,.5))
   }
   txt <- paste0("supported", "\ns.shape: ", set$s.shape, "\ns.mean: ", set$s.mean)  
 
@@ -247,7 +255,7 @@ PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, cex=.
 
 
 # plot the Supply data (for plum)
-PlotPhiPost <- function(set=get('info'), xlab=paste0("Bq/",expression(m^2)," yr"), ylab="", xaxs="i", yaxs="i", legend=TRUE, cex=.9, yaxt="n", csize=.8, prior.size=.9, panel.size=.9) {
+PlotPhiPost <- function(set=get('info'), xlab=paste0("Bq/",expression(m^2)," yr"), ylab="", xaxs="i", yaxs="i", legend=TRUE, yaxt="n", csize=.8, prior.size=.9, panel.size=.9) {
   post <- density(set$phi)
   plot(post, type="n", xlab=xlab, ylab=ylab, main="", yaxt=yaxt, cex.axis=panel.size)
   polygon(post, col=grey(.8), border=grey(.4))

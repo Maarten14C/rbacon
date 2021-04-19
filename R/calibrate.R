@@ -440,11 +440,12 @@ calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, firs
 #' @param pbmodelled.col Colour of the modelled 210Pb values. Defaults to scales of blue: \code{pbmodelled.col=function(x) rgb(0,0,1,x)}.
 #' @param pbmeasured.col Colour of the measured 210Pb values. Defaults to blue.
 #' @param plot.measured Plot the measured 210Pb values (default \code{plot.measured=TRUE}).
+#' @param draw.background Whether or not to identify Pb-210 data that have probably reached background levels. Redscale indicates the probability (0-1).
 #' @param age.lim values of the age axis. Used to calculate where to plot the pb values on the secondary axis
 #' @author Maarten Blaauw, J. Andres Christen, Marco Aquino-Lopez
 #' @return A plot of the modelled (and optionally the measured) 210Pb values
 #' @export
-draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, pb.lim=c(), d.lim=c(), d.lab=c(), pb.lab=c(), pbmodelled.col=function(x) rgb(0,0,1,x), pbmeasured.col="blue", supp.col="red", plot.measured=TRUE, age.lim=c()) {
+draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, pb.lim=c(), d.lim=c(), d.lab=c(), pb.lab=c(), pbmodelled.col=function(x) rgb(0,0,1,x), pbmeasured.col="blue", supp.col="red", plot.measured=TRUE, draw.background=TRUE, age.lim=c()) {
   depths <- set$detsOrig[,2]
   dns <- set$detsOrig[,3]
   Pb <- set$detsOrig[,4]
@@ -460,13 +461,13 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
   if(length(d.lab) == 0)
     d.lab <- paste("depth (", set$depth.unit, ")", sep="")
   if(length(pb.lab) == 0)
-    pb.lab <- ifelse(set$Bqkg, "210Pb (Bq/kg)", "210Pb (dpm/g)")    
+    pb.lab <- ifelse(set$Bqkg, "210Pb (Bq/kg)", "210Pb (dpm/g)")
 
   if(length(d.lim) == 0)
     d.lim <- range(depths)
   if(rev.d)
     d.lim <- d.lim[2:1]
-   
+
   if(length(set$phi) > 0) {
     Ai <- list(x=NULL, y=NULL)
     hght <- 0; pbmin <- c(); pbmax <- 0
@@ -480,60 +481,86 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
       pbmin <- min(pbmin, Ai$y[[i]])
       pbmax <- max(pbmax, Ai$x[[i]])
       A.rng[i,] <- quantile(A, c((1-set$prob)/2, 1-(1-set$prob)/2))
-    } 
- 
-    if(length(pb.lim) == 0) 
+    }
+
+    if(length(pb.lim) == 0)
       pb.lim <- extendrange(c(0, Pb-2*err, Pb+2*err, pbmax), f=c(0,0.05))
- 
+
     # translate pb values to cal BP values for plotting on the age axis
-    pb2bp <- function(pb, pb.min=pb.lim[1], pb.max=pb.lim[2], agemin=age.lim[1], agemax=age.lim[2]) {
+    pb2bp <- function(pb, pb.min=pb.lim[1], pb.max=pb.lim[2], agemin=min(age.lim), agemax=max(age.lim)) {
       ex <- (agemax-agemin) / (pb.max - pb.min)
       agemin + ex*pb
-    }      
-      
-    # save the values for later; DOESN'T WORK and I don't understand why not
+    }
+
+    pb2ad <- function(pb, pb.min=pb.lim[1], pb.max=pb.lim[2], agemin=max(age.lim), agemax=min(age.lim)) {
+      ex <- (agemin-agemax) / (pb.max - pb.min)
+      agemin - ex*pb
+    }
+
+    # save the values for later
     set$Ai <- Ai
     set$A.rng <- A.rng
-    assign_to_global("info", set)
-  
+    assign_to_global("info", set, .GlobalEnv)
+
     if(rotate.axes) # add a secondary axis for the Pb values
       { # todo
       } else {
          pretty.pb <- pretty(c(pbmin, pbmax))
-         onbp <- pb2bp(pretty.pb)
-         axis(4, onbp, pretty.pb, col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col)
+         if(BCAD) {
+           onad <- pb2ad(pretty.pb)
+           axis(4, rev(onad), rev(pretty.pb), col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col)
+         } else
+         {
+           onbp <- pb2bp(pretty.pb)
+           axis(4, onbp, pretty.pb, col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col)
+         }
          pb.lab <- ifelse(set$Bq, "Bq/kg", "dpm/g")
          mtext(pb.lab, 4, 1.4, col=pbmeasured.col, cex=.8)
        }
-  exx=5
+
     for(i in 1:length(depths)) {
-      z <- t(Ai$y[[i]])/hght # normalise to the densest point
-     # z <- z[z>1e-6] # avoid very low numbers
-    #  pol <- cbind((depths[i]-(thickness[i]/2))+exx*c(z, -rev(z)), c(pb2bp(Ai$x[[i]]), pb2bp(rev(Ai$x[[i]]))))
-    #  polygon(pol, col=rgb(0,0,1,.5), border=rgb(0,0,1,.5)) # try blobs instead of bluescales
-      if(rotate.axes)
-        image(pb2bp(Ai$x[[i]]), c(depths[i]-thickness[i], depths[i]), z, col=pbmodelled.col(seq(0, 1-max(z), length=50)), add=TRUE) else
-          image(c(depths[i]-thickness[i], depths[i]), pb2bp(Ai$x[[i]]), z, col=pbmodelled.col(seq(0, 1-max(z), length=50)), add=TRUE) 
-    }  
+      if(BCAD)
+        ages <- pb2ad(rev(Ai$x[[i]])) else
+          ages <- pb2bp(Ai$x[[i]])
+
+    if(BCAD)
+      z <- t(rev(Ai$y[[i]]))/hght else
+        z <- t(Ai$y[[i]])/hght
+    if(rotate.axes)
+      image(ages, c(depths[i]-thickness[i], depths[i]), z, col=pbmodelled.col(seq(0, 1-max(z), length=50)), add=TRUE) else
+        image(c(depths[i]-thickness[i], depths[i]), ages, z, col=pbmodelled.col(seq(0, 1-max(z), length=50)), add=TRUE)
+    }
   }
 
-  if(plot.measured) 
+  # indicate in redscale which Pb-210 data have most likely reached background
+  if(draw.background) {
+    bg <- background(set)
+    set$background <- bg
+    assign_to_global("info", set, .GlobalEnv)
+    if(rotate.axes)
+      abline(h=set$dets[,4]-(set$dets[,5]/2), col=rgb(bg,0,0,bg), lty=3, lwd=bg) else
+        abline(v=set$dets[,4]-(set$dets[,5]/2), col=rgb(bg,0,0,bg), lty=3, lwd=bg)
+  }
+
+  if(BCAD)
+    pb2bp <- pb2ad
+
+  if(plot.measured)
     if(ncol(set$detsOrig) == 6) {
       if(rotate.axes)
-        rect(Pb-2*err, depths-thickness, Pb+2*err, depths, 
+        rect(Pb-2*err, depths-thickness, Pb+2*err, depths,
           border=c(rep(pbmeasured.col, n), rep(2, n)), lty=3) else
             rect(depths-thickness, pb2bp(Pb-2*err), depths, pb2bp(Pb+2*err), border=c(rep(pbmeasured.col, n), rep(2, n)), lty=3)
       } else {
           if(rotate.axes)
-            rect(pb2bp(c(Pb-2*err,supp-2*supperr)), c(depths-thickness,depths), 
+            rect(pb2bp(c(Pb-2*err,supp-2*supperr)), c(depths-thickness,depths),
               pb2bp(c(Pb+2*err,supp+2*supperr)), c(depths-thickness, depths),
                 border=c(rep(pbmeasured.col, n), rep(supp.col, n)), lty=3) else
-                rect(c(depths-thickness,depths), pb2bp(c(Pb-2*err,supp-2*supperr)), 
-                  c(depths-thickness, depths), pb2bp(c(Pb+2*err,supp+2*supperr)), 
+                rect(c(depths-thickness,depths), pb2bp(c(Pb-2*err,supp-2*supperr)),
+                  c(depths-thickness, depths), pb2bp(c(Pb+2*err,supp+2*supperr)),
                   border=c(rep(pbmeasured.col, n), rep(supp.col, n)), lty=3)
         }
 }
-
 
 
 ### for running Plum, but is looked for by generic agedepth() function (through draw.pbmodelled()), so is included in the rbacon code

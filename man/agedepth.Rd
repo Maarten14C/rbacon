@@ -57,6 +57,7 @@ agedepth(
   pbmodelled.col = function(x) rgb(0, 0, 1, 0.5 * x),
   pbmeasured.col = "blue",
   pb.lim = c(),
+  draw.background = TRUE,
   hiatus.col = grey(0.5),
   hiatus.lty = "12",
   rgb.scale = c(0, 0, 0),
@@ -197,6 +198,8 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 \item{pbmeasured.col}{Colour of the measured 210Pb values (default \code{pbmeasured.col="blue"}). Draws rectangles of the upper and lower depths as well as the Pb values with 95 percent error ranges.}
 
 \item{pb.lim}{Axis limits for the Pb-210 data. Calculated automatically by default (\code{pblim=c()}).}
+
+\item{draw.background}{Whether or not to identify Pb-210 data that have probably reached background levels. Redscale indicates the probability (0-1).}
 
 \item{hiatus.col}{The colour of the depths of any hiatuses. Default \code{hiatus.col=grey(0.5)}.}
 

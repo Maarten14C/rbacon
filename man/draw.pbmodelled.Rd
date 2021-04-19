@@ -18,6 +18,7 @@ draw.pbmodelled(
   pbmeasured.col = "blue",
   supp.col = "red",
   plot.measured = TRUE,
+  draw.background = TRUE,
   age.lim = c()
 )
 }
@@ -47,6 +48,8 @@ draw.pbmodelled(
 \item{supp.col}{Colour of the supported 210Pb data. Defaults to red: \code{supp.col="red"}.}
 
 \item{plot.measured}{Plot the measured 210Pb values (default \code{plot.measured=TRUE}).}
+
+\item{draw.background}{Whether or not to identify Pb-210 data that have probably reached background levels. Redscale indicates the probability (0-1).}
 
 \item{age.lim}{values of the age axis. Used to calculate where to plot the pb values on the secondary axis}
 }

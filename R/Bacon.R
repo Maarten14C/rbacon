@@ -25,14 +25,15 @@ library(IntCal)
 # kernel 3 hop, in kernel.cpp, line 155, has  intProd += (h[j]-x[j])*(h[j]-x[j]);, but x is xp in rplum's version
 # vector.cpp, lines 28-34, fver_vector differs between rplum and rbacon
 
-# all src files between rbacon and rplum are exactly the same. But see above for dudas acerca de las diferencias
+# do: ensure that BCAD works for draw.pbmodelled. -> update, also agedepth etc. from rplum, and check functionality darkness. Check for differences of entire agedepth.R files
+# adapt rbacon's scissors and thinner to read and write plumout if info$isplum
 
-# do: ensure that BCAD works for draw.pbmodelled.
+# something strange is still going on with par/mar (?). After plotting, an abline isn't plotted at the correct coordinates (e.g. Bacon(); agedepth(); abline(v=50) ). Corrected this by removing any storage of oldpar. Is this OK? Does CRAN allow non-resetting of par?
 
 
 #if(!exists("info"))  info <- c() # a user reported that rbacon was looking for the variable info but not finding it. Not sure if the solution here is a good idea, so, deactivating this
 
-# read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum. I tried the recommendation to avoid the use of ::: and instead exporting the bacon and events functions within the .cpp code, but this threw errors.
+# read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum. Currently done using utils::getFromNamespace which is basically a hidden way to allow :::
 
 # done: wrong by sign in postbomb dates corrected by calculating the absolute differences between calendar ages. 
 
