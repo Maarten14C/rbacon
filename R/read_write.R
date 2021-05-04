@@ -161,8 +161,8 @@ assign_coredir <- function(coredir, core, ask=TRUE, isPlum=FALSE) {
 # read the dets file, converting old formats to new ones if so required
 read.dets <- function(core, coredir, set=get('info'), sep=",", dec=".", cc=1) {
   # if a .csv file exists, read it (checking that it is more recent than any .dat file in the folder). Otherwise, read the .dat file, check the columns, report back if >4 (>5?) columns, and convert to .csv (report this also)
-  csv.file <- paste(coredir,  core, "/", core, ".csv", sep="")
-  dat.file <- paste(coredir,  core, "/", core, ".dat", sep="")
+  csv.file <- paste0(coredir,  core, "/", core, ".csv")
+  dat.file <- paste0(coredir,  core, "/", core, ".dat")
 
   dR.names <- c("r", "d", "d.r", "dr", "deltar", "r.mn", "rm", "rmn", "res.mean", "res.mn", "delta.r")
   dSTD.names <- c("d.std", "std", "std.1", "dstd", "r.std", "rstd", "res.sd", "delta.std", "deltastd")
@@ -505,6 +505,17 @@ Bacon.AnaOut <- function(fnam, set=get('info')) {
 }
 
 
+
+# function to read plum output files into memory
+Plum.AnaOut <- function(fnam, set=get('info')) {
+  out <- read.table(fnam)
+  n <- ncol(out)-1
+  set$nPs  <- n
+  set$TrPs <- nrow(out)
+  set$phi  <- out[,1]
+  set$ps   <- out[,2:(n+1)]
+  set
+}
 
 # function to load results in global environment
 # parameter position defaults to 1, which equals an assignment to the global environment

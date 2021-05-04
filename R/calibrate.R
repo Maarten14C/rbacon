@@ -376,10 +376,10 @@ calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rota
         abline(v=set$slump, lty=2, col=slump.col)
 
   if(plot.dists)
-    for(i in 1:length(set$calib$probs)) {
-      if( set$dets[i,9] != 5 ) {
+    for(i in 1:length(set$calib$probs)) { # set$calib has only non-210Pb dates
         cal <- cbind(set$calib$probs[[i]])
         d <- set$calib$d[[i]]
+        cc <- set$calib$cc[[i]]
         if(BCAD)
           cal[,1] <- 1950-cal[,1]
         o <- order(cal[,1])
@@ -392,7 +392,7 @@ calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rota
         cal <- cal[cal[,2] >= cutoff*max(cal[,2]),]
         # cal <- cal[cal[,2] >= cutoff,]
         cal[,2] <- height*cal[,2]
-        if(ncol(set$dets) > 4 && set$dets[i,9] == 0) # cal BP date
+        if(cc == 0) # cal BP date
           cal[,2] <- calheight*cal[,2]
 
         x = cal[,1]
@@ -401,7 +401,7 @@ calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rota
         y = y[!duplicated(x)]
         x = x[!duplicated(x)]
         #seq(min(cal[,1]), max(cal[,1]), length= length(cal[,1]) )
-        cal <- approx(x, y, seq(min(x), max(x), length= 100 ) ) # tmp
+        cal <- approx(x, y, seq(min(x), max(x), length= 100 ) ) # tmp but probably not a bad idea
 
         if(mirror)
           pol <- cbind(c(d-cal$y, d+rev(cal$y)), c(cal$x, rev(cal$x))) else
@@ -423,7 +423,6 @@ calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rota
         }
         polygon(pol, col=col, border=border)
       }
-    }
 
 }
 
@@ -610,7 +609,7 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
       axis(this, rev(onbp), rev(pretty.pb), col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col) else
         axis(this, onbp, pretty.pb, col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col)
 
-    mtext(pb.lab, this, 1.8, col=pbmeasured.col, cex=.8)
+    mtext(pb.lab, this, 2.5, col=pbmeasured.col, cex=.8)
 
     for(i in 1:length(depths)) {
       if(BCAD) {
@@ -673,3 +672,31 @@ A.modelled <- function(d.top, d.bottom, dens, set=get('info'), phi=set$phi, sup=
 } 
 
 
+
+### for running Plum, but is looked for by generic agedepth() function (through draw.pbmodelled()), so is included in the rbacon code
+#' @name background
+#' @title calculate probabilities that Pb-210 data have reached background levels
+#' @description Checks which of the Pb-210 data most likely have reached background levels and thus are below the detection limit Al (probabilities between 0 and 1)
+#' @author Maarten Blaauw
+#' @return a list of probabilities for each Pb-210 data point
+#' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
+#' @param Al The detection limit. Default \code{Al=0.1}.
+#' @export
+background <- function(set=get('info'), Al=set$Al) {
+  if(set$isplum) { # works with Pb-210 data only
+    pb <- 0
+    its <- nrow(set$output)
+#    dets <- set$detsOrig[,c(2,6,3)] # we need maxdepth, mindepth, density
+    dets <- set$dets[which(set$dets[,9] == 5),4:6] # should leave out any non-Pb data
+    ps <- cbind(set$ps)
+    for(i in 1:nrow(dets)) {
+      As <- A.modelled(dets[i,1]-dets[i,2], dets[i,1], dets[i,3])
+      if(set$radon.case == 2)
+        ps <- set$ps[,i] else
+          ps <- set$ps
+      bg <- which((As - ps) <= Al) # which modelled data are at or below the detection limit?
+      pb[i] <- length(bg) / its
+    }
+    return(pb)
+  }
+}

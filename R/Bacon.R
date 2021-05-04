@@ -25,7 +25,7 @@ library(IntCal)
 # kernel 3 hop, in kernel.cpp, line 155, has  intProd += (h[j]-x[j])*(h[j]-x[j]);, but x is xp in rplum's version
 # vector.cpp, lines 28-34, fver_vector differs between rplum and rbacon
 
-# do: check solution internal_plots.R, line 26 (hists length < 7). This happens when there are some very precise dates, causing non-creation of th0/th1.
+# do: check if a less ugly solution can be found to internal_plots.R, line 26 (hists length < 7). This happens when there are some very precise dates, causing non-creation of th0/th1.
 
 # read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum. Currently done using utils::getFromNamespace which is basically a hidden way to allow :::
 
