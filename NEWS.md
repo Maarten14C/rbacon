@@ -1,3 +1,7 @@
+# rbacon 2.5.4
+* further separation of rplum and rbacon
+* the functions thinner and scissors now deal with Plum runs
+
 # rbacon 2.5.3
 * corrected a bug where postbomb dates could not be plotted owing to wrong by sign
 * further improvements to how agedepth deals with plot margins

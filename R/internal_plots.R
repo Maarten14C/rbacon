@@ -22,7 +22,6 @@ agedepth.ghost <- function(set=get('info'), d.min=set$d.min, d.max=set$d.max, BC
   scales <- array(0, dim=c(length(dseq), age.res))
   ageseq <- seq(min(age.lim), max(age.lim), length=age.res)
   for(i in 1:length(hists)) { # was length(dseq)
-# cat(i, " ")
   if(length(hists[[i]]) < 7)
       ages <- sort(unlist(hists[[i]])) else {
        ages <- seq(hists[[i]]$th0, hists[[i]]$th1, length=hists[[i]]$n)
@@ -39,7 +38,7 @@ agedepth.ghost <- function(set=get('info'), d.min=set$d.min, d.max=set$d.max, BC
   dseq <- sort(dseq)
   cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))
   
-  scales[scales<cutoff] <- NA # so that 'gridpoints' with probs very close to 0 are not plotted as white but empty
+  scales[scales<cutoff] <- NA # so that pixels with probs very close to 0 are not plotted as white but empty
   
   if(rotate.axes)
     image(ageseq, dseq, t(scales), add=TRUE, col=cols, useRaster=FALSE) else

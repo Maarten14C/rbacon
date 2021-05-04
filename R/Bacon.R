@@ -16,7 +16,7 @@
 #' @name rbacon
 NULL
 
-# to be able to directly use copyCalibrationCurve, mix.curves, pMC.age & age.pMC (without having to type IntCal:: first)
+# to enable direct use of copyCalibrationCurve, mix.curves, pMC.age & age.pMC
 library(IntCal)
 
 # added line 133 to bacon.cpp, All.outputFiles(outputfile1); this line is present in rplum's bacon.cpp
@@ -25,20 +25,11 @@ library(IntCal)
 # kernel 3 hop, in kernel.cpp, line 155, has  intProd += (h[j]-x[j])*(h[j]-x[j]);, but x is xp in rplum's version
 # vector.cpp, lines 28-34, fver_vector differs between rplum and rbacon
 
-# do: ensure that BCAD works for draw.pbmodelled. -> update, also agedepth etc. from rplum, and check functionality darkness. Check for differences of entire agedepth.R files
-# adapt rbacon's scissors and thinner to read and write plumout if info$isplum
-
-# something strange is still going on with par/mar (?). After plotting, an abline isn't plotted at the correct coordinates (e.g. Bacon(); agedepth(); abline(v=50) ). Corrected this by removing any storage of oldpar. Is this OK? Does CRAN allow non-resetting of par?
-
-# check solution internal_plots.R, line 26 (hists length < 7). This happens when there are some very precise dates, then th0/th1 are not created.
-
-#if(!exists("info"))  info <- c() # a user reported that rbacon was looking for the variable info but not finding it. Not sure if the solution here is a good idea, so, deactivating this
+# do: check solution internal_plots.R, line 26 (hists length < 7). This happens when there are some very precise dates, causing non-creation of th0/th1.
 
 # read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum. Currently done using utils::getFromNamespace which is basically a hidden way to allow :::
 
-# done: wrong by sign in postbomb dates corrected by calculating the absolute differences between calendar ages. 
-
-# for future versions: check all greyscale functions, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
+# for future versions: check functionality darkness, check all greyscale functions, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
 #' @name Bacon
 #' @title Main age-depth modelling function

@@ -356,7 +356,6 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
   hists <- hist3(d, BCAD)
   assign_to_global("hists", hists)
 
-  # rng <- c()
   rng <- array(NA, dim=c(length(d), 4)) # R > 4.0 does not like to fill c() using loops
   if(calc.range)
     rng <- Bacon.rng(d, set, BCAD, prob)
