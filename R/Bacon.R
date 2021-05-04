@@ -30,6 +30,7 @@ library(IntCal)
 
 # something strange is still going on with par/mar (?). After plotting, an abline isn't plotted at the correct coordinates (e.g. Bacon(); agedepth(); abline(v=50) ). Corrected this by removing any storage of oldpar. Is this OK? Does CRAN allow non-resetting of par?
 
+# check solution internal_plots.R, line 26 (hists length < 7). This happens when there are some very precise dates, then th0/th1 are not created.
 
 #if(!exists("info"))  info <- c() # a user reported that rbacon was looking for the variable info but not finding it. Not sure if the solution here is a good idea, so, deactivating this
 

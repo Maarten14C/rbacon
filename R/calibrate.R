@@ -168,6 +168,9 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
   if(plot.dists)
     for(i in 1:length(set$calib$probs)) {
       cal <- cbind(set$calib$probs[[i]])
+      dupl <- which(diff(cal[,1]) == 0)
+      if(length(dupl) > 0) # avoid warning of collapsing to unique values
+        cal <- cal[-dupl,]
       d <- set$calib$d[[i]]
       if(BCAD)
         cal[,1] <- 1950-cal[,1]
@@ -184,6 +187,7 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
          if(up)
            pol <- cbind(d-c(0, cal[,2], 0), c(min(cal[,1]), cal[,1], max(cal[,1]))) else
              pol <- cbind(d+c(0, cal[,2], 0), c(min(cal[,1]), cal[,1], max(cal[,1])))
+
       if(rotate.axes)
         pol <- cbind(pol[,2], pol[,1])
       if(ncol(set$dets)==4 && cc > 0 || (ncol(set$dets) > 4 && set$dets[i,5] > 0)) {
@@ -193,6 +197,7 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
           col <- cal.col
           border <- cal.border
         }
+
       if(length(dates.col) > 0) {
         col <- dates.col[i]
         border <- dates.col[i]
@@ -224,7 +229,10 @@ bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.005, postbo
           if(postbomb==4) bomb <- read.table(paste0(ccdir,"postbomb_SH1-2.14C"))[,1:3] else
             if(postbomb==5) bomb <- read.table(paste0(ccdir,"postbomb_SH3.14C"))[,1:3] else
               stop("cannot find postbomb curve #", postbomb, " (use values of 1 to 5 only)", call.=FALSE)
-      bomb.x <- seq(max(bomb[,1]), min(bomb[,1]), by=-.1) # interpolate
+      # bomb.x <- seq(max(bomb[,1]), min(bomb[,1]), by=-.1) # interpolate
+      bomb <- bomb[order(bomb[,1], decreasing=FALSE),]
+     # bomb <<- bomb
+      bomb.x <- seq(min(bomb[,1]), max(bomb[,1]), by=.1) # interpolate
       bomb.y <- approx(bomb[,1], bomb[,2], bomb.x)$y
       bomb.z <- approx(bomb[,1], bomb[,3], bomb.x)$y
       bomb <- cbind(bomb.x, bomb.y, bomb.z, deparse.level=0)
@@ -302,7 +310,6 @@ bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.005, postbo
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param BCAD The calendar scale of graphs is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
 #' @param cc Calibration curve to be used (defaults to info$cc)
-#' @param firstPlot description
 #' @param rotate.axes The default of plotting age on the horizontal axis and event probability on the vertical one can be changed with \code{rotate.axes=TRUE}.
 #' @param rev.d The direction of the depth axis can be reversed from the default (\code{rev.d=TRUE}).
 #' @param rev.age The direction of the calendar age axis can be reversed from the default (\code{rev.age=TRUE})
@@ -335,8 +342,8 @@ bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.005, postbo
 #'   calib.plot()
 #' @export
 ### produce plots of the calibrated distributions
-calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, firstPlot = FALSE, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, rev.yr=rev.age, age.lim=c(), yr.lim=age.lim, date.res=100, d.lab=c(), age.lab=c(), yr.lab=age.lab, height=15, calheight=1, mirror=TRUE, up=TRUE, cutoff=.001, C14.col=rgb(0,0,1,.5), C14.border=rgb(0,0,1,.75), cal.col=rgb(0,.5,.5,.5), cal.border=rgb(0,.5,.5,.75), dates.col=c(), slump.col=grey(0.8), new.plot=TRUE, plot.dists=TRUE, same.heights=FALSE, normalise.dists=TRUE) {
-  height <- length(set$d.min:set$d.max) * height/50
+calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, rev.yr=rev.age, age.lim=c(), yr.lim=age.lim, date.res=100, d.lab=c(), age.lab=c(), yr.lab=age.lab, height=15, calheight=1, mirror=TRUE, up=TRUE, cutoff=.001, C14.col=rgb(0,0,1,.5), C14.border=rgb(0,0,1,.75), cal.col=rgb(0,.5,.5,.5), cal.border=rgb(0,.5,.5,.75), dates.col=c(), slump.col=grey(0.8), new.plot=TRUE, plot.dists=TRUE, same.heights=FALSE, normalise.dists=TRUE) {
+  #height <- length(set$d.min:set$d.max) * height/50
   if(length(age.lim) == 0)
     lims <- c()
   for(i in 1:length(set$calib$probs))
@@ -352,7 +359,7 @@ calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, firs
   age.lim <- extendrange(c(age.min, age.max), f=0.01)
   if(rev.age)
     age.lim <- age.lim[2:1]
-  dlim <- range(set$elbows)
+  dlim <- extendrange(set$elbows, f=0.05)
   if(rev.d)
     dlim <- dlim[2:1]
   if(length(d.lab) == 0)
@@ -370,7 +377,7 @@ calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, firs
 
   if(plot.dists)
     for(i in 1:length(set$calib$probs)) {
-      if( set$dets[i,9] != 5 ){
+      if( set$dets[i,9] != 5 ) {
         cal <- cbind(set$calib$probs[[i]])
         d <- set$calib$d[[i]]
         if(BCAD)
@@ -381,7 +388,9 @@ calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, firs
           cal[,2] <- cal[,2]/max(cal[,2])
         if(normalise.dists)
           cal[,2] <- cal[,2]/sum(cal[,2])
-        cal <- cal[cal[,2] >= cutoff,]
+        cal[,2] <- (height * cal[,2])/1 * (max(dlim) - min(dlim)) # 1 is just a scaling factor that looks nice in the examples I tested. Adapt by changing parameter height
+        cal <- cal[cal[,2] >= cutoff*max(cal[,2]),]
+        # cal <- cal[cal[,2] >= cutoff,]
         cal[,2] <- height*cal[,2]
         if(ncol(set$dets) > 4 && set$dets[i,9] == 0) # cal BP date
           cal[,2] <- calheight*cal[,2]
@@ -395,11 +404,10 @@ calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, firs
         cal <- approx(x, y, seq(min(x), max(x), length= 100 ) ) # tmp
 
         if(mirror)
-          pol <- cbind(c(d-cal$y, d+rev(cal$y)), c(cal$x, rev(cal$x)))
-        else if(up)
-          pol <- cbind(d-c(0, cal$y, 0), c(min(cal$x), cal$x, max(cal$x)))
-        else
-          pol <- cbind(d+c(0, cal$y, 0), c(min(cal$x), cal$x, max(cal$x)))
+          pol <- cbind(c(d-cal$y, d+rev(cal$y)), c(cal$x, rev(cal$x))) else
+            if(up)
+              pol <- cbind(d-c(0, cal$y, 0), c(min(cal$x), cal$x, max(cal$x))) else
+                pol <- cbind(d+c(0, cal$y, 0), c(min(cal$x), cal$x, max(cal$x)))
         if(rotate.axes)
           pol <- cbind(pol[,2], pol[,1])
         if(ncol(set$dets)==4 && cc > 0 || (ncol(set$dets) > 4 && set$dets[i,9] > 0)) {
@@ -417,6 +425,90 @@ calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, firs
       }
     }
 
+}
+
+
+
+#' @name draw.pbmeasured
+#' @title Plot the 210Pb data
+#' @description Produce a plot of the 210Pb data and their depths
+#' @details This function is generally called internally to produce the age-depth graph.
+#' It can be used to produce custom-built graphs.
+#' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
+#' @param rotate.axes The default of plotting age on the horizontal axis and event probability on the vertical one can be changed with \code{rotate.axes=TRUE}.
+#' @param rev.d The direction of the depth axis can be reversed from the default (\code{rev.d=TRUE}).
+#' @param rev.age The direction of the calendar age axis can be reversed from the default (\code{rev.age=TRUE})
+#' @param BCAD The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
+#' @param pb.lim Minimum and maximum of the 210Pb axis ranges, calculated automatically by default (\code{pb.lim=c()}).
+#' @param age.lim Minimum and maximum of the age ranges to be used to plot 210Pb values. Calculated automatically by default (\code{age.lim=c()}).
+#' @param d.lim Minimum and maximum depths to plot; calculated automatically by default (\code{d.lim=c()}).
+#' @param d.lab The labels for the depth axis. Default \code{d.lab="Depth (cm)"}.
+#' @param pb.lab The label for the 210Pb axis (default \code{pb.lab="210Pb (Bq/kg)"} or \code{"210Pb (dpm/g)"}).
+#' @param pbmeasured.col The label for the measured 210Pb data. \code{pbmeasured.col="blue"}.
+#' @param pbmeasured.lty Line type of the measured 210Pb data. Defaults to continuous lines.
+#' @param pb.log Use a log scale for the 210Pb-axis (default \code{pb.log=FALSE}).
+#' @param supp.col Colour of the supported 210Pb data. Defaults to red: \code{supp.col="red"}.
+#' @param newplot make new plot (default TRUE)
+#' @param on.agescale Plot the Pb-210 on the cal BP scale. Defaults to FALSE.
+#' @author Maarten Blaauw, J. Andres Christen, Marco Aquino-Lopez
+#' @return A plot of the measured 210Pb values
+#' @export
+draw.pbmeasured <- function(set=get('info'), rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, BCAD=set$BCAD, pb.lim=c(), age.lim=c(), d.lim=c(), d.lab=c(), pb.lab=c(), pbmeasured.col="blue", pbmeasured.lty=1, pb.log=FALSE, supp.col="purple", newplot=TRUE, on.agescale=FALSE) {
+  depths <- set$detsOrig[,2]
+  dns <- set$detsOrig[,3]
+  Pb <- set$detsOrig[,4]
+  err <- set$detsOrig[,5]
+  thickness <- set$detsOrig[,6]
+  n <- nrow(set$detsOrig)
+
+  if(length(pb.lim) == 0)
+    pb.lim <- extendrange(c(0, Pb+2*err), f=c(0,0.05))
+
+  # translate pb values to cal BP/AD values for plotting on the age axis
+  pb2bp <- function(pb, pb.min=pb.lim[1], pb.max=pb.lim[2], agemin=min(age.lim), agemax=max(age.lim), AD=BCAD) {
+    if(on.agescale) {
+        if(AD) {
+          ex <- (agemin - agemax) / (pb.max - pb.min)
+          return(agemax + ex*pb)
+        } else {
+            ex <- (agemax - agemin) / (pb.max - pb.min)
+            return(agemin + ex*pb)
+        }
+      } else
+        return(pb)
+  }
+
+  if(newplot) {
+    if(length(d.lab) == 0)
+      d.lab <- paste0("depth (", set$depth.unit, ")")
+    if(length(pb.lab) == 0)
+      pb.lab <- ifelse(set$Bqkg, "210Pb (Bq/kg)", "210Pb (dpm/g)")
+
+    if(length(d.lim) == 0)
+      d.lim <- range(depths, set$supportedData[,3])
+    if(rev.d)
+      d.lim <- d.lim[2:1]
+    if(rotate.axes)
+      plot(0, type="n", ylim=d.lim, ylab=d.lab, xlim=pb2bp(pb.lim), xlab=pb.lab) else
+        plot(0, type="n", xlim=d.lim, xlab=d.lab, ylim=pb2bp(pb.lim), ylab=pb.lab)
+  }
+
+  if(rotate.axes)
+    rect(pb2bp(Pb-err), depths-thickness, pb2bp(Pb+err), depths, border=pbmeasured.col, lty=pbmeasured.lty) else
+      rect(depths-thickness, pb2bp(Pb-err), depths, pb2bp(Pb+err), lty=pbmeasured.lty, border=pbmeasured.col)
+
+  if(length(set$supportedData) > 0) {
+    supp <- set$supportedData[,1]
+    supperr <- set$supportedData[,2]
+    suppd <- set$supportedData[,3]
+    suppthick <- set$supportedData[,4]
+
+    if(rotate.axes)
+      rect(pb2bp(supp-supperr), suppd-suppthick, pb2bp(supp+supperr), suppd,
+        border=supp.col, lty=pbmeasured.lty) else
+        rect(suppd-suppthick, pb2bp(supp-supperr), suppd, pb2bp(supp+supperr),
+          border=supp.col, lty=pbmeasured.lty)
+  }
 }
 
 
@@ -440,28 +532,37 @@ calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, firs
 #' @param pbmodelled.col Colour of the modelled 210Pb values. Defaults to scales of blue: \code{pbmodelled.col=function(x) rgb(0,0,1,x)}.
 #' @param pbmeasured.col Colour of the measured 210Pb values. Defaults to blue.
 #' @param plot.measured Plot the measured 210Pb values (default \code{plot.measured=TRUE}).
-#' @param draw.background Whether or not to identify Pb-210 data that have probably reached background levels. Redscale indicates the probability (0-1).
 #' @param age.lim values of the age axis. Used to calculate where to plot the pb values on the secondary axis
+#' @param mgp Axis text margins (where should titles, labels and tick marks be plotted). Defaults to \code{mgp=c(1.7, .7, .0)}.
+#' @param pb.lty Line type of measured Pb-210 data.
 #' @author Maarten Blaauw, J. Andres Christen, Marco Aquino-Lopez
 #' @return A plot of the modelled (and optionally the measured) 210Pb values
 #' @export
-draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, pb.lim=c(), d.lim=c(), d.lab=c(), pb.lab=c(), pbmodelled.col=function(x) rgb(0,0,1,x), pbmeasured.col="blue", supp.col="red", plot.measured=TRUE, draw.background=TRUE, age.lim=c()) {
-  depths <- set$detsOrig[,2]
-  dns <- set$detsOrig[,3]
-  Pb <- set$detsOrig[,4]
-  err <- set$detsOrig[,5]
-  thickness <- set$detsOrig[,6]
-  n <- nrow(set$detsOrig)
+draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, pb.lim=c(), d.lim=c(), d.lab=c(), pb.lab=c(), pbmodelled.col=function(x) rgb(0,0,1,x), pbmeasured.col="blue", supp.col="purple", plot.measured=TRUE, age.lim=c(), mgp=mgp, pb.lty=1) {
+  pb <- set$dets[set$dets[,9] == 5,]
+  depths <- pb[,4] # set$detsOrig[,2]
+  dns <- pb[,6] # set$detsOrig[,3]
+  Pb <- pb[,2] # set$detsOrig[,4]
+  err <- pb[,3] # set$detsOrig[,5]
+  thickness <- pb[,5] # set$detsOrig[,6]
+  n <- nrow(pb)
 
-  if(ncol(set$detsPlum) > 6) {
-    supp <- set$detsOrig[,7]
-    supperr <- set$detsOrig[,8]
+  if(ncol(pb) > 6) {
+    supp <- pb[,7] # set$detsOrig[,7]
+    supperr <- pb[,8] # set$detsOrig[,8]
+  } else {
+    supp <- set$supportedData[,1]
+    supperr <- set$supportedData[,2]
+    suppd <- set$supportedData[,3]
+    suppthick <- set$supportedData[,4]
   }
 
   if(length(d.lab) == 0)
     d.lab <- paste("depth (", set$depth.unit, ")", sep="")
   if(length(pb.lab) == 0)
-    pb.lab <- ifelse(set$Bqkg, "210Pb (Bq/kg)", "210Pb (dpm/g)")
+    pb.lab <- ifelse(set$Bqkg,
+      expression(""^210*"Pb (Bq/kg)"),
+        expression(""^210*"Pb (dpm/g)"))
 
   if(length(d.lim) == 0)
     d.lim <- range(depths)
@@ -478,45 +579,40 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
       Ai$x[[i]] <- tmp$x
       Ai$y[[i]] <- tmp$y
       hght <- max(hght, Ai$y[[i]])
-      pbmin <- min(pbmin, Ai$y[[i]])
+      pbmin <- min(pbmin, Ai$x[[i]])
       pbmax <- max(pbmax, Ai$x[[i]])
       A.rng[i,] <- quantile(A, c((1-set$prob)/2, 1-(1-set$prob)/2))
     }
 
     if(length(pb.lim) == 0)
-      pb.lim <- extendrange(c(0, Pb-2*err, Pb+2*err, pbmax), f=c(0,0.05))
+      pb.lim <- extendrange(c(0, Pb-2*err, Pb+2*err, pbmax), f=c(0, 0.05))
 
-    # translate pb values to cal BP values for plotting on the age axis
-    pb2bp <- function(pb, pb.min=pb.lim[1], pb.max=pb.lim[2], agemin=min(age.lim), agemax=max(age.lim)) {
-      ex <- (agemax-agemin) / (pb.max - pb.min)
-      agemin + ex*pb
-    }
-
-    pb2ad <- function(pb, pb.min=pb.lim[1], pb.max=pb.lim[2], agemin=max(age.lim), agemax=min(age.lim)) {
-      ex <- (agemin-agemax) / (pb.max - pb.min)
-      agemin - ex*pb
+    pb2bp <- function(pb, pb.min=pb.lim[1], pb.max=pb.lim[2], agemin=min(age.lim), agemax=max(age.lim), AD=BCAD) {
+      if(AD) {
+        ex <- (agemin - agemax) / (pb.max - pb.min)
+        return(agemax + ex*pb)
+      } else {
+          ex <- (agemax - agemin) / (pb.max - pb.min)
+          return(agemin + ex*pb)
+      }
     }
 
     # save the values for later
     set$Ai <- Ai
     set$A.rng <- A.rng
-    assign_to_global("info", set, .GlobalEnv)
+    assign_to_global("info", set, .GlobalEnv) # doesn't work
 
-    if(rotate.axes) # add a secondary axis for the Pb values
-      { # todo
-      } else {
-         pretty.pb <- pretty(c(pbmin, pbmax))
-         if(BCAD) {
-           onad <- pb2ad(pretty.pb)
-           axis(4, rev(onad), rev(pretty.pb), col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col)
-         } else
-         {
-           onbp <- pb2bp(pretty.pb)
-           axis(4, onbp, pretty.pb, col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col)
-         }
-         pb.lab <- ifelse(set$Bq, "Bq/kg", "dpm/g")
-         mtext(pb.lab, 4, 1.4, col=pbmeasured.col, cex=.8)
-       }
+    this <- ifelse(rotate.axes, 3, 4)
+    pretty.pb <- pretty(c(pbmin, pbmax)) # not OK?
+    pretty.pb <- pretty(pb.lim)
+    if(BCAD) {
+      onad <- pb2ad(pretty.pb)
+      axis(this, rev(onad), rev(pretty.pb), col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col)
+    } else {
+        onbp <- pb2bp(pretty.pb)
+        axis(this, onbp, pretty.pb, col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col)
+      }
+    mtext(pb.lab, this, 1.7, col=pbmeasured.col, cex=.8)
 
     for(i in 1:length(depths)) {
       if(BCAD)
@@ -526,40 +622,25 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
     if(BCAD)
       z <- t(rev(Ai$y[[i]]))/hght else
         z <- t(Ai$y[[i]])/hght
+
     if(rotate.axes)
       image(ages, c(depths[i]-thickness[i], depths[i]), z, col=pbmodelled.col(seq(0, 1-max(z), length=50)), add=TRUE) else
         image(c(depths[i]-thickness[i], depths[i]), ages, z, col=pbmodelled.col(seq(0, 1-max(z), length=50)), add=TRUE)
     }
   }
 
-  # indicate in redscale which Pb-210 data have most likely reached background
-  if(draw.background) {
-    bg <- background(set)
-    set$background <- bg
-    assign_to_global("info", set, .GlobalEnv)
-    if(rotate.axes)
-      abline(h=set$dets[,4]-(set$dets[,5]/2), col=rgb(bg,0,0,bg), lty=3, lwd=bg) else
-        abline(v=set$dets[,4]-(set$dets[,5]/2), col=rgb(bg,0,0,bg), lty=3, lwd=bg)
-  }
+#   # indicate in redscale which Pb-210 data have most likely reached background
+#   if(draw.background) {
+#     bg <- background(set)
+#     set$background <- bg
+#     assign_to_global("info", set, .GlobalEnv)
+#     if(rotate.axes)
+#       abline(h=set$dets[,4]-(set$dets[,5]/2), col=rgb(bg,0,0,bg), lty=3, lwd=bg) else
+#         abline(v=set$dets[,4]-(set$dets[,5]/2), col=rgb(bg,0,0,bg), lty=3, lwd=bg)
+#   }
 
-  if(BCAD)
-    pb2bp <- pb2ad
-
-  if(plot.measured)
-    if(ncol(set$detsOrig) == 6) {
-      if(rotate.axes)
-        rect(Pb-2*err, depths-thickness, Pb+2*err, depths,
-          border=c(rep(pbmeasured.col, n), rep(2, n)), lty=3) else
-            rect(depths-thickness, pb2bp(Pb-2*err), depths, pb2bp(Pb+2*err), border=c(rep(pbmeasured.col, n), rep(2, n)), lty=3)
-      } else {
-          if(rotate.axes)
-            rect(pb2bp(c(Pb-2*err,supp-2*supperr)), c(depths-thickness,depths),
-              pb2bp(c(Pb+2*err,supp+2*supperr)), c(depths-thickness, depths),
-                border=c(rep(pbmeasured.col, n), rep(supp.col, n)), lty=3) else
-                rect(c(depths-thickness,depths), pb2bp(c(Pb-2*err,supp-2*supperr)),
-                  c(depths-thickness, depths), pb2bp(c(Pb+2*err,supp+2*supperr)),
-                  border=c(rep(pbmeasured.col, n), rep(supp.col, n)), lty=3)
-        }
+    if(plot.measured)
+      draw.pbmeasured(newplot=FALSE, rotate.axes=rotate.axes, BCAD=BCAD, on.agescale=TRUE, pb.lim=pb.lim, age.lim=age.lim, supp.col=supp.col)
 }
 
 
@@ -576,12 +657,19 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
 #' @author Maarten Blaauw
 #' @return a list of modelled values of A
 #' @export
-A.modelled <- function(d.top, d.bottom, dens, set=get('info'), phi=set$phi, sup=set$ps) {
+A.modelled <- function(d.top, d.bottom, dens, set=get('info'), phi=set$phi, sup=set$ps, multiply=1) {
   if(d.top >= d.bottom)
     stop("\n d.top should be above d.bottom", call.=FALSE)
+  dd <- 1
+  if(ncol(cbind(sup)) > 1) { # then multiple, varying estimates of supported, find the one belonging to the specified depth interval
+    dd <- set$supportedData[,3] # bottom depths
+    dd <- max(1, which(dd <= d.bottom))
+    sup <- sup[,dd]
+  }
+
   t.top <- Bacon.Age.d(d.top, BCAD=F) - set$theta0
   t.bottom <- Bacon.Age.d(d.bottom, BCAD=F) - set$theta0
-  multiply <-  ifelse(set$Bqkg, 10, 500)
+  #  multiply <- ifelse(set$Bqkg, 10, 500)
   return(sup + ((phi / (.03114*multiply*dens) ) * (exp( -.03114*t.top) - exp(-.03114*t.bottom)) ) )
 } 
 

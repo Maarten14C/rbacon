@@ -21,10 +21,14 @@ agedepth.ghost <- function(set=get('info'), d.min=set$d.min, d.max=set$d.max, BC
   hists <- get('hists')
   scales <- array(0, dim=c(length(dseq), age.res))
   ageseq <- seq(min(age.lim), max(age.lim), length=age.res)
-  for(i in 1:length(dseq)) {
-    ages <- seq(hists[[i]]$th0, hists[[i]]$th1, length=hists[[i]]$n)
-    if(length(!is.na(ages)) > 0)
-      scales[i,] <- approx(ages, hists[[i]]$counts, ageseq, rule=2)$y
+  for(i in 1:length(hists)) { # was length(dseq)
+# cat(i, " ")
+  if(length(hists[[i]]) < 7)
+      ages <- sort(unlist(hists[[i]])) else {
+       ages <- seq(hists[[i]]$th0, hists[[i]]$th1, length=hists[[i]]$n)
+       if(length(!is.na(ages)) > 0)
+        scales[i,] <- approx(ages, hists[[i]]$counts, ageseq, rule=2)$y
+     }
   }
   minmax <- hists[[length(hists)]]$min
   maxmax <- hists[[length(hists)]]$max

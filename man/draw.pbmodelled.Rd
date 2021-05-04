@@ -16,10 +16,11 @@ draw.pbmodelled(
   pb.lab = c(),
   pbmodelled.col = function(x) rgb(0, 0, 1, x),
   pbmeasured.col = "blue",
-  supp.col = "red",
+  supp.col = "purple",
   plot.measured = TRUE,
-  draw.background = TRUE,
-  age.lim = c()
+  age.lim = c(),
+  mgp = mgp,
+  pb.lty = 1
 )
 }
 \arguments{
@@ -49,9 +50,11 @@ draw.pbmodelled(
 
 \item{plot.measured}{Plot the measured 210Pb values (default \code{plot.measured=TRUE}).}
 
-\item{draw.background}{Whether or not to identify Pb-210 data that have probably reached background levels. Redscale indicates the probability (0-1).}
-
 \item{age.lim}{values of the age axis. Used to calculate where to plot the pb values on the secondary axis}
+
+\item{mgp}{Axis text margins (where should titles, labels and tick marks be plotted). Defaults to \code{mgp=c(1.7, .7, .0)}.}
+
+\item{pb.lty}{Line type of measured Pb-210 data.}
 }
 \value{
 A plot of the modelled (and optionally the measured) 210Pb values

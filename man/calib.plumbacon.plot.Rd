@@ -8,7 +8,6 @@ calib.plumbacon.plot(
   set = get("info"),
   BCAD = set$BCAD,
   cc = set$cc,
-  firstPlot = FALSE,
   rotate.axes = FALSE,
   rev.d = FALSE,
   rev.age = FALSE,
@@ -42,8 +41,6 @@ calib.plumbacon.plot(
 \item{BCAD}{The calendar scale of graphs is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
 
 \item{cc}{Calibration curve to be used (defaults to info$cc)}
-
-\item{firstPlot}{description}
 
 \item{rotate.axes}{The default of plotting age on the horizontal axis and event probability on the vertical one can be changed with \code{rotate.axes=TRUE}.}
 
