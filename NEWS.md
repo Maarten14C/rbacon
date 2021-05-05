@@ -1,6 +1,7 @@
 # rbacon 2.5.4
 * further separation of rplum and rbacon
 * the functions thinner and scissors now deal with Plum runs
+* repaired bug in accrate.age.ghost when BCAD=TRUE
 
 # rbacon 2.5.3
 * corrected a bug where postbomb dates could not be plotted owing to wrong by sign

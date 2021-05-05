@@ -1,8 +1,8 @@
 Bacon(ask=FALSE)
-agedepth()
 agedepth(rotate.axes=TRUE)
 agedepth(BCAD=TRUE)
 agedepth(rotate.axes=TRUE, BCAD=TRUE)
+agedepth()
 accrate.age.ghost()
 accrate.depth.ghost()
 

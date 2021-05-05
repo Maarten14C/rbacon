@@ -127,6 +127,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     set$background <- bg
   }
 
+  set$BCAD <- BCAD # tmp May 2021
   # Adapt ages of sections which contain hiatuses
   if(!is.na(set$hiatus.depths[1]))
     set <- hiatus.slopes(set, hiatus.option)
