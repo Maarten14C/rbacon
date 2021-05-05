@@ -330,7 +330,6 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
         axis(1, ticks, labels=1950-ticks)
       }
 
-      age.seq <<- age.seq; acc.seq <<- acc.seq; z <<- z; acc.rng <<- acc.rng; acc.mean <<- acc.mean; acc.median <<- acc.median; acc.lim <<- acc.lim
       image(age.seq, acc.seq, t(t(z)), col=cols, add=TRUE)
       if(plot.range) {
         lines(age.seq, acc.rng[,1], pch=".", col=range.col, lty=range.lty)
