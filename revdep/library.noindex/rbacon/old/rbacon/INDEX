@@ -1,0 +1,35 @@
+A.modelled              Calculate modelled 210Pb
+AgesOfEvents            Event probabilities against calendar age
+Bacon                   Main age-depth modelling function
+Bacon.Age.d             Output all ages for a single depth.
+Bacon.cleanup           Remove files made to produce the current core's
+                        age-depth model.
+Bacon.d.Age             Output all depths for a single age.
+Bacon.hist              Calculate age distributions of depths.
+Baconvergence           Test to identify poorly mixed MCMC runs.
+accrate.age             Obtain estimated accumulation rates for any age
+                        of a core.
+accrate.age.ghost       Plot a core's accumulation rates against
+                        calendar time.
+accrate.depth           Obtain estimated accumulation rates as for any
+                        depth of a core.
+accrate.depth.ghost     Plot modelled accumulation rates against the
+                        depths of a core.
+add.dates               Add dates to age-depth plots
+agedepth                Plot an age-depth model
+agemodel.it             Extract one age-model iteration
+bacon2clam              Translate Bacon .csv files to clam .csv files.
+calib.plot              Plot the dates
+calib.plumbacon.plot    Plot the dates
+clam2bacon              Translate clam .csv files to Bacon .csv files.
+draw.pbmodelled         Plot the 210Pb data
+flux.age.ghost          Plot flux rates for proxies.
+proxy.ghost             Proxies analysed along the depths of a core can
+                        be plotted as 'proxy-ghost' graphs against
+                        calendar time while taking into account
+                        chronological uncertainties. Here darker grey
+                        indicates more likely calendar ages for
+                        specific proxy values.
+rbacon                  rbacon
+scissors                Remove the first n iterations.
+thinner                 Thin iterations.
