@@ -9,6 +9,7 @@ validateDirectoryName <- function(dir) {
 }
 
 
+
 #' @name clam2bacon
 #' @title Translate clam .csv files to Bacon .csv files.
 #' @description Reads a clam .csv file containing the dates, and transforms it into a Bacon .csv file.
@@ -159,10 +160,15 @@ assign_coredir <- function(coredir, core, ask=TRUE, isPlum=FALSE) {
 
 
 # read the dets file, converting old formats to new ones if so required
-read.dets <- function(core, coredir, set=get('info'), sep=",", dec=".", cc=1) {
+read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", dec=".", cc=1) {
   # if a .csv file exists, read it (checking that it is more recent than any .dat file in the folder). Otherwise, read the .dat file, check the columns, report back if >4 (>5?) columns, and convert to .csv (report this also)
-  csv.file <- paste0(coredir,  core, "/", core, ".csv")
-  dat.file <- paste0(coredir,  core, "/", core, ".dat")
+  if(length(othername)> 0) {
+    csv.file <- paste0(coredir, core, "/", othername)
+    dat.file <- csv.file
+  } else {
+      csv.file <- paste0(coredir, core, "/", core, ".csv")
+      dat.file <- paste0(coredir, core, "/", core, ".dat")
+    }
 
   dR.names <- c("r", "d", "d.r", "dr", "deltar", "r.mn", "rm", "rmn", "res.mean", "res.mn", "delta.r")
   dSTD.names <- c("d.std", "std", "std.1", "dstd", "r.std", "rstd", "res.sd", "delta.std", "deltastd")
@@ -516,6 +522,8 @@ Plum.AnaOut <- function(fnam, set=get('info')) {
   set$ps   <- out[,2:(n+1)]
   set
 }
+
+
 
 # function to load results in global environment
 # parameter position defaults to 1, which equals an assignment to the global environment

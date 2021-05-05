@@ -182,11 +182,17 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
       if(ncol(set$dets) > 4 && set$dets[i,5] == 0) # cal BP dates could have different relative height:
         cal[,2] <- calheight * cal[,2]
 
+      x = cal[,1]
+      y = cal[,2]
+      y = y[!duplicated(x)]
+      x = x[!duplicated(x)]
+      cal <- approx(x, y, seq(min(x), max(x), length= 100)) # tmp but probably not a bad idea
+
       if(mirror)
-        pol <- cbind(c(d-cal[,2], d+rev(cal[,2])), c(cal[,1], rev(cal[,1]))) else
+        pol <- cbind(c(d-cal$y, d+rev(cal$y)), c(cal$x, rev(cal$x))) else
          if(up)
-           pol <- cbind(d-c(0, cal[,2], 0), c(min(cal[,1]), cal[,1], max(cal[,1]))) else
-             pol <- cbind(d+c(0, cal[,2], 0), c(min(cal[,1]), cal[,1], max(cal[,1])))
+           pol <- cbind(d-c(0, cal$y, 0), c(min(cal$x), cal$x, max(cal$x))) else
+             pol <- cbind(d+c(0, cal$y, 0), c(min(cal$x), cal$x, max(cal$x)))
 
       if(rotate.axes)
         pol <- cbind(pol[,2], pol[,1])
@@ -208,7 +214,7 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
 
 
 # calibrate C14 dates and calculate distributions for any calendar dates
-bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.005, postbomb=set$postbomb, normal=set$normal, t.a=set$t.a, t.b=set$t.b, delta.R=set$delta.R, delta.STD=set$delta.STD, ccdir="") {
+bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.01, postbomb=set$postbomb, normal=set$normal, t.a=set$t.a, t.b=set$t.b, delta.R=set$delta.R, delta.STD=set$delta.STD, ccdir="") {
   # read in the curves
   if(set$cc1=="IntCal20" || set$cc1=="\"IntCal20\"")
     cc1 <- read.table(paste0(ccdir, "3Col_intcal20.14C")) else
@@ -240,26 +246,28 @@ bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.005, postbo
         cc1 <- rbind(bomb, cc1, deparse.level=0) else
           cc3 <- rbind(bomb, cc3, deparse.level=0)
   }
+
   ## use Gaussian or t (Christen and Perez Radiocarbon 2009) calibration
-  if(round(set$t.b-set$t.a) !=1)
+  if(round(set$t.b-set$t.a) != 1)
     stop("t.b - t.a should always be 1, check the manual", call.=FALSE)
 
   d.cal <- function(cc, rcmean, w2, t.a, t.b) { # formula updated Oct 2020
     if(set$normal)
       cal <- cbind(cc[,1], dnorm(cc[,2], rcmean, sqrt(cc[,3]^2+w2))) else
-        cal <- cbind(cc[,1], (t.b+ ((rcmean-cc[,2])^2) / (2*(cc[,3]^2 + w2))) ^ (-1*(t.a+0.5))) # student-t
+        cal <- cbind(cc[,1], (t.b + ((rcmean-cc[,2])^2) / (2*(cc[,3]^2 + w2))) ^ (-1*(t.a+0.5))) # student-t
     cal[,2] <- cal[,2] / sum(cal[,2]) # normalise
     
-    cal.left <- min(which(cal[,2]/max(cal[,2]) >= cutoff)) # remove outer bits
-    cal.right <- nrow(cal) - min(which(cal[nrow(cal):1,2]/max(cal[,2]) >= cutoff)) # ... here too
-     #   cat(i, ", ", cal[cal.left,1], ", ", cal[cal.right,1], "\n")
-    return(cal[cal.left:cal.right,])
+    above <- which(cal[,2]/max(cal[,2]) > cutoff)
+    if(length(above) > 5)
+      return(cal[min(above):max(above),]) else
+        return(cal)
   }
 
   # now calibrate all dates
-  calib <- list(d=dat[,4])
+  calib <- list(d=dat[,4], cc=dat[,4])
   if(ncol(dat)==4) { # only one type of dates (e.g., calBP, or all IntCal20 C14 dates)
     if(set$cc==0) {
+      calib$cc <- rep(0, nrow(dat))
       xsteps <- min(dat[,3])/5 # minimum step size to cover the smallest error
       xseq1 <- seq(min(dat[,2])-(4*max(dat[,3])), max(dat[,2])+(4*max(dat[,3])), length=100*date.res)
       xseq2 <- seq(min(dat[,2])-(4*max(dat[,3])), max(dat[,2])+(4*max(dat[,3])), by=xsteps)
@@ -267,6 +275,7 @@ bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.005, postbo
       x <- seq(min(dat[,2])-(4*max(dat[,3])), max(dat[,2])+(4*max(dat[,3])), length=xlength)
       ccurve <- cbind(x, x, rep(0,length(x))) # dummy 1:1 curve
     } else {
+        calib$cc <- rep(set$cc, nrow(dat))
         if(set$cc==1) ccurve <- cc1 else
           if(set$cc==2) ccurve <- cc2 else
             if(set$cc==3) ccurve <- cc3 else
@@ -274,7 +283,8 @@ bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.005, postbo
       }
     for(i in 1:nrow(dat))
       calib$probs[[i]] <- d.cal(ccurve, dat[i,2]-delta.R, dat[i,3]^2+delta.STD^2, set$t.a, set$t.b)
-  } else
+  } else {
+      calib$cc <- dat[,5]
       for(i in 1:nrow(dat)) {
         dets <- c(NA, as.numeric(dat[i,-1])) # the first column is not numeric
         if(dets[5]==0) {
@@ -289,7 +299,7 @@ bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.005, postbo
           delta.R <- dets[6]
           delta.STD <- dets[7]
         }
-      if(length(dets) >= 9) { # the user provided t.a and t.b values for each date
+        if(length(dets) >= 9) { # the user provided t.a and t.b values for each date
           t.a <- dets[8]
           t.b <- dets[9]
           if(round(t.b-t.a) != 1)
@@ -297,133 +307,8 @@ bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.005, postbo
         }
         calib$probs[[i]] <- d.cal(ccurve, dets[2]-delta.R, dets[3]^2+delta.STD^2, t.a, t.b)
       }
-  calib
-}
-
-
-### for running Plum, but is looked for by generic agedepth() function, so is included in the rbacon code
-#' @name calib.plumbacon.plot
-#' @title Plot the dates
-#' @description Produce a plot of the dated depths and their dates
-#' @details This function is generally called internally to produce the age-depth graph.
-#' It can be used to produce custom-built graphs.
-#' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
-#' @param BCAD The calendar scale of graphs is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
-#' @param cc Calibration curve to be used (defaults to info$cc)
-#' @param rotate.axes The default of plotting age on the horizontal axis and event probability on the vertical one can be changed with \code{rotate.axes=TRUE}.
-#' @param rev.d The direction of the depth axis can be reversed from the default (\code{rev.d=TRUE}).
-#' @param rev.age The direction of the calendar age axis can be reversed from the default (\code{rev.age=TRUE})
-#' @param rev.yr Deprecated - use rev.age instead
-#' @param age.lim Minimum and maximum calendar age ranges, calculated automatically by default (\code{age.lim=c()}).
-#' @param yr.lim Deprecated - use age.lim instead
-#' @param d.lab The labels for the depth axis. Default \code{d.lab="Depth (cm)"}.
-#' @param age.lab The labels for the calendar axis (default \code{yr.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}).
-#' @param yr.lab Deprecated - use age.lab instead
-#' @param height The heights of the distributions of the dates. See also \code{normalise.dists}.
-#' @param calheight Multiplier for the heights of the distributions of dates on the calendar scale. Defaults to \code{calheight=1}.
-#' @param mirror Plot the dates as 'blobs'. Set to \code{mirror=FALSE} to plot simple distributions.
-#' @param up Directions of distributions if they are plotted non-mirrored. Default \code{up=TRUE}.
-#' @param cutoff Avoid plotting very low probabilities of date distributions (default \code{cutoff=0.001}).
-#' @param date.res Date distributions are plotted using \code{date.res=100} points by default.
-#' @param C14.col Colour of the calibrated distributions of the dates. Default is semi-transparent blue: \code{rgb(0,0,1,.35)}.
-#' @param C14.border Colours of the borders of calibrated 14C dates. Default is transparent dark blue: cal.col
-#' @param cal.col Colour of the non-14C dates in the age-depth plot: default semi-transparent blue-green: \code{rgb(0,.5,.5,.35)}.
-#' @param cal.border Colour of the of the border of non-14C dates in the age-depth plot: default semi-transparent dark blue-green: \code{rgb(0,.5,.5,.5)}.
-#' @param dates.col As an alternative to colouring dates based on whether they are 14C or not, sets of dates can be coloured as, e.g., \code{dates.col=colours()[2:100]}.
-#' @param slump.col Colour of slumps. Defaults to \code{slump.col=grey(0.8)}.
-#' @param new.plot Start a new plot (\code{new.plot=TRUE}) or plot over an existing plot (\code{new.plot=FALSE}).
-#' @param plot.dists Plot the distributions of the dates (default \code{plot.dists=TRUE}).
-#' @param same.heights Plot the distributions of the dates all at the same maximum height (default \code{same.height=FALSE}).
-#' @param normalise.dists By default, the distributions of more precise dates will cover less time and will thus peak higher than less precise dates. This can be avoided by specifying \code{normalise.dists=FALSE}.
-#' @author Maarten Blaauw, J. Andres Christen
-#' @return NA
-#' @examples
-#'   Bacon(run=FALSE, coredir=tempfile())
-#'   calib.plot()
-#' @export
-### produce plots of the calibrated distributions
-calib.plumbacon.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, rev.yr=rev.age, age.lim=c(), yr.lim=age.lim, date.res=100, d.lab=c(), age.lab=c(), yr.lab=age.lab, height=15, calheight=1, mirror=TRUE, up=TRUE, cutoff=.001, C14.col=rgb(0,0,1,.5), C14.border=rgb(0,0,1,.75), cal.col=rgb(0,.5,.5,.5), cal.border=rgb(0,.5,.5,.75), dates.col=c(), slump.col=grey(0.8), new.plot=TRUE, plot.dists=TRUE, same.heights=FALSE, normalise.dists=TRUE) {
-  #height <- length(set$d.min:set$d.max) * height/50
-  if(length(age.lim) == 0)
-    lims <- c()
-  for(i in 1:length(set$calib$probs))
-    lims <- c(lims, set$calib$probs[[i]][,1])
-  age.min <- min(lims)
-  age.max <- max(lims)
-  if(BCAD) {
-    age.min <- 1950 - age.min
-    age.max <- 1950 - age.max
     }
-  if(length(age.lab) == 0)
-    age.lab <- ifelse(set$BCAD, "BC/AD", paste("cal", set$age.unit, " BP"))
-  age.lim <- extendrange(c(age.min, age.max), f=0.01)
-  if(rev.age)
-    age.lim <- age.lim[2:1]
-  dlim <- extendrange(set$elbows, f=0.05)
-  if(rev.d)
-    dlim <- dlim[2:1]
-  if(length(d.lab) == 0)
-    d.lab <- paste("depth (", set$depth.unit, ")", sep="")
-
-  if(new.plot)
-    if(rotate.axes)
-      plot(0, type="n", xlim=age.lim, ylim=dlim[2:1], xlab=age.lab, ylab=d.lab, main="") else
-        plot(0, type="n", xlim=dlim, ylim=age.lim, xlab=d.lab, ylab=age.lab, main="")
-
-  if(length(set$slump) > 0)
-    if(rotate.axes)
-      abline(h=set$slump, lty=2, col=slump.col) else
-        abline(v=set$slump, lty=2, col=slump.col)
-
-  if(plot.dists)
-    for(i in 1:length(set$calib$probs)) { # set$calib has only non-210Pb dates
-        cal <- cbind(set$calib$probs[[i]])
-        d <- set$calib$d[[i]]
-        cc <- set$calib$cc[[i]]
-        if(BCAD)
-          cal[,1] <- 1950-cal[,1]
-        o <- order(cal[,1])
-        cal <- cbind(cal[o,1], cal[o,2])
-        if(same.heights)
-          cal[,2] <- cal[,2]/max(cal[,2])
-        if(normalise.dists)
-          cal[,2] <- cal[,2]/sum(cal[,2])
-        cal[,2] <- (height * cal[,2])/1 * (max(dlim) - min(dlim)) # 1 is just a scaling factor that looks nice in the examples I tested. Adapt by changing parameter height
-        cal <- cal[cal[,2] >= cutoff*max(cal[,2]),]
-        # cal <- cal[cal[,2] >= cutoff,]
-        cal[,2] <- height*cal[,2]
-        if(cc == 0) # cal BP date
-          cal[,2] <- calheight*cal[,2]
-
-        x = cal[,1]
-        y = cal[,2]
-
-        y = y[!duplicated(x)]
-        x = x[!duplicated(x)]
-        #seq(min(cal[,1]), max(cal[,1]), length= length(cal[,1]) )
-        cal <- approx(x, y, seq(min(x), max(x), length= 100 ) ) # tmp but probably not a bad idea
-
-        if(mirror)
-          pol <- cbind(c(d-cal$y, d+rev(cal$y)), c(cal$x, rev(cal$x))) else
-            if(up)
-              pol <- cbind(d-c(0, cal$y, 0), c(min(cal$x), cal$x, max(cal$x))) else
-                pol <- cbind(d+c(0, cal$y, 0), c(min(cal$x), cal$x, max(cal$x)))
-        if(rotate.axes)
-          pol <- cbind(pol[,2], pol[,1])
-        if(ncol(set$dets)==4 && cc > 0 || (ncol(set$dets) > 4 && set$dets[i,9] > 0)) {
-          col <- C14.col
-          border <- C14.border
-        } else {
-          col <- cal.col
-          border <- cal.border
-        }
-        if(length(dates.col) > 0) {
-          col <- dates.col[i]
-          border <- dates.col[i]
-        }
-        polygon(pol, col=col, border=border)
-      }
-
+  calib
 }
 
 
