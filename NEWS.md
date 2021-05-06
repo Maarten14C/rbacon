@@ -1,3 +1,6 @@
+# rbacon 2.5.5
+* removed revdep folder which caused issues when submitting to CRAN
+
 # rbacon 2.5.4
 * further separation of rplum and rbacon
 * the functions thinner and scissors now deal with Plum runs
