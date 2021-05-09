@@ -35,6 +35,7 @@ agedepth.ghost <- function(set=get('info'), d.min=set$d.min, d.max=set$d.max, BC
   if(length(dark) == 0)
     dark <- 10 * minmax/maxmax
   scales[scales > dark] <- dark
+  scales <- scales/max(scales) # May 2021
   dseq <- sort(dseq)
   cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))
   

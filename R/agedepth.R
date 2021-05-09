@@ -216,7 +216,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(length(age.max) == 0)
     age.max <- max(modelranges, dateranges)
   if(set$isplum) 
-    age.lim <- extendrange(c(min(ranges), max(ranges)), f=0.01) else
+    age.lim <- extendrange(c(min(modelranges, dateranges), max(modelranges, dateranges)), f=0.01) else
       age.lim <- extendrange(c(age.min, age.max), f=0.01)
 
   if(BCAD)
