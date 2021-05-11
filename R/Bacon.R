@@ -19,6 +19,8 @@ NULL
 # to enable direct use of copyCalibrationCurve, mix.curves, pMC.age & age.pMC
 library(IntCal)
 
+# do: check darkness option (found a better way in rplum)
+
 # added line 133 to bacon.cpp, All.outputFiles(outputfile1); this line is present in rplum's bacon.cpp
 # added #include <vector> at line 14 of input.h. 
 # twalk.h, line 306, delete phi; was delete[] phi (as this is what it says on jac's site)

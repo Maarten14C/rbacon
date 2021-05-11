@@ -576,7 +576,7 @@ background <- function(set=get('info'), Al=set$Al) {
     ps <- cbind(set$ps)
     for(i in 1:nrow(dets)) {
       As <- A.modelled(dets[i,1]-dets[i,2], dets[i,1], dets[i,3])
-      if(set$radon.case == 2)
+      if(set$ra.case == 2)
         ps <- set$ps[,i] else
           ps <- set$ps
       bg <- which((As - ps) <= Al) # which modelled data are at or below the detection limit?

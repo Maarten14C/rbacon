@@ -1,6 +1,7 @@
 # rbacon 2.5.6
 * adapted agedepth() for further Plum corrections
 * corrected the behaviour of the dark option
+* renamed rplum's option radon.case to ra.case
 
 # rbacon 2.5.5
 * removed revdep folder which caused issues when submitting to CRAN

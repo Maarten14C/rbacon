@@ -191,7 +191,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     d <- sort(unique(c(i+after, i, d)))
 
   if(set$isplum) # new May 2021
-    if(set$radon.case == 0)
+    if(set$ra.case == 0) # renamed from incorrectly named radon.case
       d <- d[which(d <= max(set$detsOrig[,2]))]
 
   if(verbose)
