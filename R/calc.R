@@ -412,8 +412,8 @@ Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
   if(length(d) > 1)
     setTxtProgressBar(pb, i)
   }
-  if(length(d) > 1)
-    close(pb)
+  #if(length(d) > 1)
+  #  close(pb)
   return(rng)
 }
 

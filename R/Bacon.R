@@ -441,6 +441,5 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
               message("  OK. Please adapt settings")
         }
   if(close.connections)
-    closeAllConnections()
-    
+    close(outfile)
 }

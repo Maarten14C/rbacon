@@ -226,6 +226,7 @@ AgesOfEvents <- function(window, move, set=get('info'), plot.steps=FALSE, BCAD=s
     o <- order(probs[,1])
     probs <- probs[o,]
   }
+  #close(outfile) # May 2021
 
   if(plot.steps) {
     d.sort <- sort(rep(1:nrow(probs),2))
