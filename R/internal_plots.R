@@ -58,7 +58,8 @@ PlotLogPost <- function(set, from=0, to=set$Tr, xaxs="i", yaxs="i", panel.size=.
 # plot the prior for the accumulation rate
 PlotAccPrior <- function(s, mn, set=get('info'), depth.unit=depth.unit, age.unit=age.unit, main="", xlim=c(0, 3*max(mn)), xlab=c(), ylab="Density", add=FALSE, legend=TRUE, csize=.9) {
   o <- order(s, decreasing=TRUE)
-  priors <- unique(cbind(s[o],mn[o])[,1:2])
+#  priors <- unique(cbind(s[o],mn[o])[,1:2])
+  priors <- cbind(unique(s[o]), unique(mn[o]))[,1:2]
   x <- 0
   if(length(xlab) == 0)
     xlab <- paste0("Acc. rate (", noquote(age.unit), "/", noquote(depth.unit), ")")
@@ -82,7 +83,8 @@ PlotAccPrior <- function(s, mn, set=get('info'), depth.unit=depth.unit, age.unit
 # plot the prior for the memory (= accumulation rate varibility between neighbouring depths)
 PlotMemPrior <- function(s, mn, thick, ds=1, set=get('info'), xlab="Memory (ratio)", ylab="Density", main="", add=FALSE, legend=TRUE, csize=.9) {
   o <- order(s, decreasing=TRUE)
-  priors <- unique(cbind(s[o],mn[o])[,1:2])
+#  priors <- unique(cbind(s[o],mn[o])[,1:2])
+  priors <- cbind(unique(s[o]), unique(mn[o]))[,1:2]
   x <- 0
 
   if(length(priors)==2) {

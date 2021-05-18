@@ -19,7 +19,11 @@ NULL
 # to enable direct use of copyCalibrationCurve, mix.curves, pMC.age & age.pMC
 library(IntCal)
 
-# do: check darkness option (found a better way in rplum)
+# do: check darkness option (found a better way in rplum), check that all updates in rplum replicated in rbacon, adapt white space for topright panel if isplum
+
+# done: repaired close() bug, added plot.median to flux.age.ghost, repaired BCAD in flux.age.ghost, removed error that acc.shape cannot be equal to acc.mean
+
+# for future versions: check if a less ugly solution can be found to internal_plots.R, line 26 (hists length < 7). This happens when there are some very precise dates, causing non-creation of th0/th1, check functionality darkness, check all greyscale functions, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
 # added line 133 to bacon.cpp, All.outputFiles(outputfile1); this line is present in rplum's bacon.cpp
 # added #include <vector> at line 14 of input.h. 
@@ -27,11 +31,7 @@ library(IntCal)
 # kernel 3 hop, in kernel.cpp, line 155, has  intProd += (h[j]-x[j])*(h[j]-x[j]);, but x is xp in rplum's version
 # vector.cpp, lines 28-34, fver_vector differs between rplum and rbacon
 
-# do: check if a less ugly solution can be found to internal_plots.R, line 26 (hists length < 7). This happens when there are some very precise dates, causing non-creation of th0/th1.
-
 # read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum. Currently done using utils::getFromNamespace which is basically a hidden way to allow :::
-
-# for future versions: check functionality darkness, check all greyscale functions, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, why do we warn that "acc.shape cannot be equal to acc.mean"?, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
 #' @name Bacon
 #' @title Main age-depth modelling function
@@ -253,8 +253,8 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   info$isplum <- FALSE
 
   ### check for initial mistakes
-  if(any(info$acc.shape == info$acc.mean))
-    stop("acc.shape cannot be equal to acc.mean", call.=FALSE)
+  #if(any(info$acc.shape == info$acc.mean))
+  #  stop("acc.shape cannot be equal to acc.mean", call.=FALSE)
   if(info$t.b - info$t.a != 1)
     warning("t.b - t.a should always be 1, check the manual", call.=FALSE)
   if(min(acc.shape) < 1)
@@ -440,6 +440,6 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
             cook() else
               message("  OK. Please adapt settings")
         }
-  if(close.connections)
-    close(outfile)
+ # if(close.connections)
+ #   close(outfile)
 }

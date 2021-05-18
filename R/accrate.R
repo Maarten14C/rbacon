@@ -372,6 +372,9 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
 #' @param plot.mean Plot the mean fluxes.
 #' @param mean.col Red seems nice.
 #' @param mean.lty Line type of the means.
+#' @param plot.median Plot the median fluxes.
+#' @param median.col Blue seems nice.
+#' @param median.lty Line type of the medians.
 #' @param upper Maximum flux rates to plot. Defaults to the upper 99\%; \code{upper=0.99}.
 #' @param rgb.scale The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}). 
 #' @param rgb.res Resolution of the colour spectrum depicting the age-depth model. Default \code{rgb.res=100}.
@@ -392,7 +395,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
 #'   flux.age.ghost(1)
 #' }
 #' @export
-flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr.res=age.res, set=get('info'), flux=c(), plot.range=TRUE, prob=.8, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, flux.lim=c(), flux.lab="flux", upper=.95, rgb.scale=c(0,0,0), rgb.res=100, dark=set$dark, BCAD=set$BCAD, age.lab=c(), yr.lab=age.lab, rotate.axes=FALSE, rev.flux=FALSE, rev.age=FALSE, rev.yr=rev.age) {
+flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr.res=age.res, set=get('info'), flux=c(), plot.range=TRUE, prob=.8, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, flux.lim=c(), flux.lab=expression("flux (g cm"^-1*" yr"^-1*")"), upper=.95, rgb.scale=c(0,0,0), rgb.res=100, dark=set$dark, BCAD=set$BCAD, age.lab=c(), yr.lab=age.lab, rotate.axes=FALSE, rev.flux=FALSE, rev.age=FALSE, rev.yr=rev.age) {
   if(length(flux) == 0) { # then read a .csv file, expecting data in columns with headers
     flux <- read.csv(paste(set$coredir, set$core, "/", set$core, "_flux.csv", sep=""))
     flux <- cbind(flux[,1], flux[,1+proxy])
@@ -433,15 +436,23 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr
   if(length(age.lab) == 0)
     age.lab <- ifelse(BCAD, "BC/AD", "cal BP")
   if(rotate.axes)
-    plot(0, type="n", ylim=age.lim, ylab=age.lab, xlim=flux.lim, xlab=flux.lab) else
-      plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=flux.lim, ylab=flux.lab)
-  min.rng <- numeric(length(age.seq)); max.rng <- numeric(length(age.seq)); mn.rng <- numeric(length(age.seq))
+    plot(0, type="n", ylim=age.lim, ylab=age.lab, xlim=flux.lim, xlab=flux.lab, yaxt="n") else
+      plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=flux.lim, ylab=flux.lab, xaxt="n")
+  if(BCAD && !set$BCAD) {
+    if(rotate.axes)
+      axis(2, pretty(age.lim), labels=1950-pretty(age.lim)) else
+        axis(1, pretty(age.lim), labels=1950-pretty(age.lim))
+  } else
+      ifelse(rotate.axes, axis(2), axis(1))
+
+  min.rng <- numeric(length(age.seq)); max.rng <- numeric(length(age.seq)); mean.rng <- numeric(length(age.seq)); median.rng <- numeric(length(age.seq))
   for(i in 2:length(age.seq)) {
     tmp <- fluxes[!is.na(fluxes[,i]),i] # all fluxes that fall at the required age.seq age
     rng <- quantile(tmp, c((1-prob)/2, 1-((1-prob)/2)))
     min.rng[i] <- rng[1]
     max.rng[i] <- rng[2]
-    mn.rng[i] <- mean(tmp)
+    mean.rng[i] <- mean(tmp)
+    median.rng[i] <- median(tmp)
     if(length(tmp[tmp>=0]) > 2) {
       flux.hist <- density(tmp, from=0, to=max(flux.lim))
       flux.hist$y <- flux.hist$y - min(flux.hist$y) # no negative fluxes
@@ -461,6 +472,10 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr
    }
   if(plot.mean)
     if(rotate.axes)
-      lines(mn.rng, age.seq, col=mean.col, lty=mean.lty) else
-       lines(age.seq, mn.rng, col=mean.col, lty=mean.lty)
+      lines(mean.rng, age.seq, col=mean.col, lty=mean.lty) else
+       lines(age.seq, mean.rng, col=mean.col, lty=mean.lty)
+  if(plot.median)
+    if(rotate.axes)
+      lines(median.rng, age.seq, col=median.col, lty=median.lty) else
+       lines(age.seq, median.rng, col=median.col, lty=median.lty)
 }

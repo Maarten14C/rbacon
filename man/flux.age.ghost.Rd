@@ -19,8 +19,11 @@ flux.age.ghost(
   plot.mean = TRUE,
   mean.col = "red",
   mean.lty = 2,
+  plot.median = TRUE,
+  median.col = "blue",
+  median.lty = 2,
   flux.lim = c(),
-  flux.lab = "flux",
+  flux.lab = expression("flux (g cm"^-1 * " yr"^-1 * ")"),
   upper = 0.95,
   rgb.scale = c(0, 0, 0),
   rgb.res = 100,
@@ -63,6 +66,12 @@ flux.age.ghost(
 \item{mean.col}{Red seems nice.}
 
 \item{mean.lty}{Line type of the means.}
+
+\item{plot.median}{Plot the median fluxes.}
+
+\item{median.col}{Blue seems nice.}
+
+\item{median.lty}{Line type of the medians.}
 
 \item{flux.lim}{Limits of the flux axes.}
 

@@ -192,12 +192,13 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
   if(set$isplum) # new May 2021
     if(set$ra.case == 0) # renamed from incorrectly named radon.case
-      d <- d[which(d <= max(set$detsOrig[,2]))]
+      if(!set$hasBaconData) # new May 2021
+        d <- d[which(d <= max(set$detsOrig[,2]))]
 
   if(verbose)
     message("Calculating age ranges...\n")
   modelranges <- c()
-  ranges <-  Bacon.rng(d, set, BCAD=BCAD, prob=prob)
+  ranges <- Bacon.rng(d, set, BCAD=BCAD, prob=prob)
   d.rng <- d
   # calculate calendar axis limits
   modelranges <- range(ranges[!is.na(ranges)])
@@ -274,8 +275,8 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
   if(!dates.only) {
     if(verbose)
-      message("Preparing ghost graph... ")
-     agedepth.ghost(set, rotate.axes=rotate.axes, d.min=d.min, d.max=d.max, BCAD=BCAD, d.res=d.res, age.res=age.res, rgb.res=rgb.res, dark=dark, rgb.scale=rgb.scale, age.lim=age.lim)
+      message("\nPreparing ghost graph... ")
+    agedepth.ghost(set, rotate.axes=rotate.axes, d.min=d.min, d.max=d.max, BCAD=BCAD, d.res=d.res, age.res=age.res, rgb.res=rgb.res, dark=dark, rgb.scale=rgb.scale, age.lim=age.lim)
   }
 
   if(length(set$slump) > 0 )
