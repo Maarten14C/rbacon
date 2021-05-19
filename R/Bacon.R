@@ -19,11 +19,11 @@ NULL
 # to enable direct use of copyCalibrationCurve, mix.curves, pMC.age & age.pMC
 library(IntCal)
 
-# do: adapt white space for topright panel if isplum
+# do:
 
-# done: repaired close() bug, added plot.median to flux.age.ghost, repaired BCAD in flux.age.ghost, removed error that acc.shape cannot be equal to acc.mean, made the dark options in agedepth, accrate.depth.ghost, accrate.age.ghost, flux.age.ghost and proxy.ghost more consistent
+# done:
 
-# for future versions: check if a less ugly solution can be found to internal_plots.R, line 26 (hists length < 7). This happens when there are some very precise dates, causing non-creation of th0/th1, check functionality darkness, check all greyscale functions, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), remove darkest?, proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
+# for future versions: check if a less ugly solution can be found to internal_plots.R, line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), roxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
 # added line 133 to bacon.cpp, All.outputFiles(outputfile1); this line is present in rplum's bacon.cpp
 # added #include <vector> at line 14 of input.h. 

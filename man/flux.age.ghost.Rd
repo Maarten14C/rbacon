@@ -28,6 +28,7 @@ flux.age.ghost(
   rgb.scale = c(0, 0, 0),
   rgb.res = 100,
   dark = set$dark,
+  cutoff = 0.001,
   BCAD = set$BCAD,
   age.lab = c(),
   yr.lab = age.lab,
@@ -84,6 +85,8 @@ flux.age.ghost(
 \item{rgb.res}{Resolution of the colour spectrum depicting the age-depth model. Default \code{rgb.res=100}.}
 
 \item{dark}{The darkest grey value is \code{dark=1} by default; lower values will result in lighter grey but \code{values >1} are not allowed.}
+
+\item{cutoff}{Point below which colours will no longer be printed. Default \code{cutoff=0.001}.}
 
 \item{BCAD}{The calendar scale of graphs and age output-files is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
 
