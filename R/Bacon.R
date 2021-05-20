@@ -19,11 +19,11 @@ NULL
 # to enable direct use of copyCalibrationCurve, mix.curves, pMC.age & age.pMC
 library(IntCal)
 
-# do:
+# do: check S14 command, where acc prior is plotted twice and mem is not plotted: length(mem.mean) or length(mem.strength) should not be > 1?
 
 # done:
 
-# for future versions: check if a less ugly solution can be found to internal_plots.R, line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, check fs::path(dir, data_name) as cross-platform alternative to specifying paths, check flux, add vignette(s), produce greyscale proxy graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), make more consistent use of dark for all functions (incl. flux and accrate.age.ghost), roxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
+# for future versions: check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, check flux, add vignette(s), produce proxy.ghost graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
 # added line 133 to bacon.cpp, All.outputFiles(outputfile1); this line is present in rplum's bacon.cpp
 # added #include <vector> at line 14 of input.h. 
@@ -233,7 +233,11 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
 
   # check values for the prior's mean, Jan 2021
   if(mem.mean < 0 || mem.mean >1)
-    stop("The prior for the mean of the memory should be between 0 and 1", FALSE)
+    stop("The prior for the mean of the memory should be between 0 and 1", call.=FALSE)
+  if(length(mem.mean) > 1)
+    stop("Can only use one value for mem.mean across a core", call.=FALSE)
+  if(length(mem.strength) > 1)
+    stop("Can only use one value for mem.strength across a core", call.=FALSE)
     
   if(!is.na(boundary[1]))
     boundary <- sort(unique(boundary))
