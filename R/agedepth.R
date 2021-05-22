@@ -216,9 +216,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     age.min <- min(modelranges, dateranges)
   if(length(age.max) == 0)
     age.max <- max(modelranges, dateranges)
-  if(set$isplum) 
-    age.lim <- extendrange(c(min(modelranges, dateranges), max(modelranges, dateranges)), f=0.01) else
-      age.lim <- extendrange(c(age.min, age.max), f=0.01)
+  age.lim <- extendrange(c(age.min, age.max), f=0.01)
 
   if(BCAD)
     age.lim <- rev(age.lim)
@@ -233,16 +231,8 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(length(age.lab) == 0)
     age.lab <- ifelse(BCAD, "BC/AD", ifelse(kcal, "kcal BP", paste("cal", age.unit, "BP")))
 
-#  if(set$isplum) # removed May 2021 because this is already done further up
-#    mar.main[4] <- mar.main[4] + righthand # to enable space for righthand axis
-#  par(mar=mar.main)
-  #on.exit(par(oldpar))
-    
   if(kcal)
     ifelse(rotate.axes, xaxt <- "n", yaxt <- "n")
-#  if(set$isplum)
-#     oldpar <- par(mar=c(3,3,1,3)) else {
-#      oldpar <- par(mar=c(3,3,1,1)) # no need for righthand axis; should be mar.right?
 
   if(set$isplum)
     if(remove.tail)

@@ -19,7 +19,7 @@ NULL
 # to enable direct use of copyCalibrationCurve, mix.curves, pMC.age & age.pMC
 library(IntCal)
 
-# do: check S14 command, where acc prior is plotted twice and mem is not plotted: length(mem.mean) or length(mem.strength) should not be > 1?
+# do:
 
 # done:
 
