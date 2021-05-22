@@ -269,7 +269,6 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
       acc.lim <- 1/acc.lim
     acc.lim[is.infinite(acc.lim)] <- 0  
   }  
-  acc.lim <<- acc.lim # tmp
   acc.seq <- seq(min(acc.lim, na.rm=TRUE), max(acc.lim, na.rm=TRUE), length=acc.res)
   
   z <- array(0, dim=c(age.res, acc.res))
@@ -286,7 +285,6 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
     setTxtProgressBar(pb, i)
     acc <- accrate.age(age.seq[i], cmyr=cmyr, ages=ages, silent=TRUE, BCAD=FALSE)
     if(length(acc[!is.na(acc)]) > 1) {
-      acc <<- acc
       z[i,] <- density(acc, from=min(acc.lim, na.rm=TRUE), to=max(acc.lim, na.rm=TRUE), n=acc.res)$y
       acc.rng[i,] <- quantile(acc, c((1-prob)/2, 1-((1-prob)/2)))
       acc.mean[i] <- mean(acc)
@@ -337,7 +335,6 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
         ticks <- pretty(age.lim)
         axis(1, ticks, labels=1950-ticks)
       }
-tmp <<- c(length(age.seq), length(acc.rng), length(acc.mean), length(acc.median))
       image(age.seq, acc.seq, t(t(z)), col=cols, add=TRUE)
       if(plot.range) {
         lines(age.seq, acc.rng[,1], pch=".", col=range.col, lty=range.lty)

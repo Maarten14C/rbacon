@@ -452,7 +452,6 @@ agemodel.it <- function(it, set=get('info'), BCAD=set$BCAD) {
 toslump <- function(d, slump, remove=FALSE) {
   d <- sort(d)
   slump <- matrix(sort(slump), ncol=2, byrow=TRUE)
- # slump <<- slump
   slices <- c(0, slump[,2] - slump[,1])
   dfree <- d
   for(i in 1:nrow(slump)) {
