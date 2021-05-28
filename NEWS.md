@@ -1,8 +1,8 @@
 # rbacon 2.5.6
+* removed closeAllConnections() as requested by Kurt Hornik (CRAN)
 * adapted agedepth() for further Plum corrections
 * corrected the behaviour of the dark option in agedepth(), accrate.depth.ghost(), accrate.age.ghost(), flux.age.ghost() and proxy.ghost()
 * renamed rplum's option radon.case to ra.case
-* removed closeAllConnections() as requested by Kurt Hornik (CRAN)
 * added plot.median to flux.age.ghost() and accrate.age.ghost()
 * repaired BCAD in flux.age.ghost()
 * removed the error message that acc.shape cannot be equal to acc.mean (shouldn't be a problem any more)
