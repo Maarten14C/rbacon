@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Calculate age distributions of depths.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for Bacon.hist {rbacon}"><tr><td>Bacon.hist {rbacon}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Calculate age distributions of depths.</h2>
+
+<h3>Description</h3>
+
+<p>Calculate the distribution of age estimates of single or multiple depths.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Bacon.hist(
+  d,
+  set = get("info"),
+  BCAD = set$BCAD,
+  age.lab = c(),
+  age.lim = c(),
+  hist.lab = "Frequency",
+  calc.range = TRUE,
+  hist.lim = c(),
+  draw = TRUE,
+  prob = set$prob,
+  hist.col = grey(0.5),
+  hist.border = grey(0.2),
+  range.col = "blue",
+  med.col = "green",
+  mean.col = "red",
+  verbose = TRUE
+)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>d</code></td>
+<td>
+<p>The depth or depths for which a histogram and age ranges should be provided. If multiple depths are given, then just the age ranges, median and means (no graphs) are provided for each depth.</p>
+</td></tr>
+<tr valign="top"><td><code>set</code></td>
+<td>
+<p>Detailed information of the current run, stored within this session's memory as variable info.</p>
+</td></tr>
+<tr valign="top"><td><code>BCAD</code></td>
+<td>
+<p>The calendar scale of graphs and age output-files is in <code>cal BP</code> by default, but can be changed to BC/AD using <code>BCAD=TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>age.lab</code></td>
+<td>
+<p>The labels for the calendar axis (default <code>age.lab="cal BP"</code> or <code>"BC/AD"</code> if <code>BCAD=TRUE</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>age.lim</code></td>
+<td>
+<p>Minimum and maximum calendar age ranges, calculated automatically by default (<code>age.lim=c()</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>hist.lab</code></td>
+<td>
+<p>The y-axis is labelled <code>ylab="Frequency"</code> by default.</p>
+</td></tr>
+<tr valign="top"><td><code>calc.range</code></td>
+<td>
+<p>Calculate ranges? Takes time so can be left out</p>
+</td></tr>
+<tr valign="top"><td><code>hist.lim</code></td>
+<td>
+<p>Limits of the y-axis.</p>
+</td></tr>
+<tr valign="top"><td><code>draw</code></td>
+<td>
+<p>Draw a plot or not. Defaults to <code>draw=TRUE</code>, however no plots are made if more than one depth <code>d</code> is provided.
+If <code>draw=FALSE</code>, then the age ranges, median and mean are given for each depth (as four columns).</p>
+</td></tr>
+<tr valign="top"><td><code>prob</code></td>
+<td>
+<p>Age ranges are given as quantiles, e.g., 2.5% and 97.5% for the default of 95% confidence limits (<code>prob=0.95</code>)).</p>
+</td></tr>
+<tr valign="top"><td><code>hist.col</code></td>
+<td>
+<p>Colour of the histogram. Default grey, <code>hist.col=grey(0.5)</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>hist.border</code></td>
+<td>
+<p>Colour of the histogram's outline. Default dark grey, <code>hist.border=grey(0.2)</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>range.col</code></td>
+<td>
+<p>Colour of confidence ranges. Defaults to <code>range.col="blue"</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>med.col</code></td>
+<td>
+<p>Colour of the median. Defaults to <code>med.col="green"</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>mean.col</code></td>
+<td>
+<p>Colour of the mean. Defaults to <code>mn.col="red"</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>verbose</code></td>
+<td>
+<p>Provide feedback on what is happening (default <code>verbose=TRUE</code>).</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>Age estimates of specific depths can also be plotted.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A plot with the histogram and the age ranges, median and mean, or just the age ranges, medians and means if more than one depth <code>d</code> is given.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Maarten Blaauw, J. Andres Christen
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+  Bacon(run=FALSE, coredir=tempfile())
+  agedepth(age.res=50, d.res=50, d.by=10)
+  Bacon.hist(20)
+  Bacon.hist(20:30)
+
+## End(Not run)
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>rbacon</em> version 2.5.6 <a href="00Index.html">Index</a>]</div>
+</body></html>

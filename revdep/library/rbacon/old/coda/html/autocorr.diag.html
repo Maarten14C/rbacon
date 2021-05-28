@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Autocorrelation function for Markov chains</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for autocorr.diag {coda}"><tr><td>autocorr.diag {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Autocorrelation function for Markov chains</h2>
+
+<h3>Description</h3>
+
+<p><code>autocorr.diag</code> calculates the autocorrelation function for the
+Markov chain <code>mcmc.obj</code> at the lags given by <code>lags</code>.
+The lag values are taken to be relative to the thinning interval
+if <code>relative=TRUE</code>.  Unlike <code>autocorr</code>, if <code>mcmc.obj</code>
+has many parmeters it only computes the autocorrelations with itself and
+not the cross correlations.  In cases where <code>autocorr</code> would
+return a matrix, this function returns the diagonal of the matrix.
+Hence it is more useful for chains with many parameters, but may not
+be as helpful at spotting parameters. 
+</p>
+<p>If <code>mcmc.obj</code> is of class <code>mcmc.list</code> then the returned
+vector is the average autocorrelation across all chains.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>autocorr.diag(mcmc.obj, ...)</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>mcmc.obj</code></td>
+<td>
+<p>an object of class <code>mcmc</code> or <code>mcmc.list</code></p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>optional arguments to be passed to <code>autocorr</code></p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>A vector containing the autocorrelations.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Russell Almond</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="autocorr.html">autocorr</a></code>, <code><a href="../../stats/html/acf.html">acf</a></code>, <code><a href="autocorr.plot.html">autocorr.plot</a></code>.
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Extract one age-model iteration</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for agemodel.it {rbacon}"><tr><td>agemodel.it {rbacon}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Extract one age-model iteration</h2>
+
+<h3>Description</h3>
+
+<p>For one MCMC iteration (it), extract the corresponding age-depth model.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+agemodel.it(it, set = get("info"), BCAD = set$BCAD)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>it</code></td>
+<td>
+<p>The MCMC iteration of which the age-model should be calculated.</p>
+</td></tr>
+<tr valign="top"><td><code>set</code></td>
+<td>
+<p>Detailed information of the current run, stored within this session's memory as variable info.</p>
+</td></tr>
+<tr valign="top"><td><code>BCAD</code></td>
+<td>
+<p>The calendar scale of graphs and age output-files is in <code>cal BP</code> by default, but can be changed to BC/AD using <code>BCAD=TRUE</code>.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>A variable with two columns - depth and the age-depth model of a single iteration.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Maarten Blaauw, J. Andres Christen
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+  Bacon(run=FALSE, coredir=tempfile())
+  agedepth(age.res=50, d.res=50, d.by=10)
+  lines(agemodel.it(5), col="red")
+
+## End(Not run)
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>rbacon</em> version 2.5.5 <a href="00Index.html">Index</a>]</div>
+</body></html>

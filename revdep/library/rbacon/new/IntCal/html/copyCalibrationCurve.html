@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Copy a calibration curve.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for copyCalibrationCurve {IntCal}"><tr><td>copyCalibrationCurve {IntCal}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Copy a calibration curve.</h2>
+
+<h3>Description</h3>
+
+<p>Copy one of the the calibration curves into memory.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+copyCalibrationCurve(cc = 1, postbomb = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>cc</code></td>
+<td>
+<p>Calibration curve for 14C dates: <code>cc=1</code> for IntCal20 (northern hemisphere terrestrial), <code>cc=2</code> for Marine20 (marine),
+<code>cc=3</code> for SHCal20 (southern hemisphere terrestrial).</p>
+</td></tr>
+<tr valign="top"><td><code>postbomb</code></td>
+<td>
+<p>Use <code>postbomb=TRUE</code> to get a postbomb calibration curve (default <code>postbbomb=FALSE</code>).</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>Copy the radiocarbon calibration curve defined by cc into memory.
+</p>
+
+
+<h3>Value</h3>
+
+<p>The calibration curve (invisible).
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+intcal20 &lt;- copyCalibrationCurve(1)
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>IntCal</em> version 0.1.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

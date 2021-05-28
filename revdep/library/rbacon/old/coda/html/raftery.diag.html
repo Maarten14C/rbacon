@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Raftery and Lewis's diagnostic</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for raftery.diag {coda}"><tr><td>raftery.diag {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Raftery and Lewis's diagnostic</h2>
+
+<h3>Description</h3>
+
+<p><code>raftery.diag</code> is a run length control diagnostic based on a
+criterion of accuracy of estimation of the quantile <code>q</code>.  It is
+intended for use on a short pilot run of a Markov chain.  The number
+of iterations required to estimate the quantile <i>q</i> to within an
+accuracy of +/- <i>r</i> with probability <i>p</i> is calculated. Separate
+calculations are performed for each variable within each chain.
+</p>
+<p>If the number of iterations in <code>data</code> is too small,
+an error message is printed indicating the minimum length of
+pilot run.  The minimum length is the required sample size for a
+chain with no correlation between consecutive samples. Positive
+autocorrelation will increase the required sample size above this
+minimum value. An estimate <code>I</code> (the &lsquo;dependence factor&rsquo;) of the
+extent to which autocorrelation inflates the required sample size
+is also provided. Values of <code>I</code> larger than 5 indicate strong
+autocorrelation which may be due to a poor choice of starting value,
+high posterior correlations or &lsquo;stickiness&rsquo; of the MCMC algorithm.
+</p>
+<p>The number of &lsquo;burn in&rsquo; iterations to be discarded at the beginning
+of the chain is also calculated.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+raftery.diag(data, q=0.025, r=0.005, s=0.95, converge.eps=0.001)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+<p>an <code>mcmc</code> object</p>
+</td></tr>
+<tr valign="top"><td><code>q</code></td>
+<td>
+<p>the quantile to be estimated.</p>
+</td></tr>
+<tr valign="top"><td><code>r</code></td>
+<td>
+<p>the desired margin of error of the estimate.</p>
+</td></tr>
+<tr valign="top"><td><code>s</code></td>
+<td>
+<p>the probability of obtaining an estimate in the interval (q-r,q+r).</p>
+</td></tr>
+<tr valign="top"><td><code>converge.eps</code></td>
+<td>
+<p>Precision required for estimate of time to convergence.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>A list with class <code>raftery.diag</code>.  A print method is available
+for objects of this class. the contents of the list are
+</p>
+<table summary="R valueblock">
+<tr valign="top"><td><code>tspar</code></td>
+<td>
+<p>The time series parameters of <code>data</code></p>
+</td></tr>
+<tr valign="top"><td><code>params</code></td>
+<td>
+<p>A vector containing the parameters <code>r</code>, <code>s</code>
+and <code>q</code></p>
+</td></tr>
+<tr valign="top"><td><code>Niters</code></td>
+<td>
+<p>The number of iterations in <code>data</code></p>
+</td></tr>
+<tr valign="top"><td><code>resmatrix</code></td>
+<td>
+<p>A 3-d array containing the results: <i>M</i> the
+length of &quot;burn in&quot;, <i>N</i> the required sample size, <i>Nmin</i>
+the minimum sample size based on zero autocorrelation and 
+<i>I = (M+N)/Nmin</i> the &quot;dependence factor&quot;</p>
+</td></tr>
+</table>
+
+
+<h3>Theory</h3>
+
+<p>The estimated sample size for variable U is based on the process <i>Z_t
+   = d(U_t &lt;= u)</i> where <i>d</i> is the indicator function and u is the
+qth quantile of U. The process <i>Z_t</i> is derived from the Markov
+chain <code>data</code> by marginalization and truncation, but is not itself
+a Markov chain.  However, <i>Z_t</i> may behave as a Markov chain if
+it is sufficiently thinned out.  <code>raftery.diag</code> calculates the
+smallest value of thinning interval <i>k</i> which makes the thinned
+chain <i>Z^k_t</i> behave as a Markov chain. The required sample size is
+calculated from this thinned sequence.  Since some data is &lsquo;thrown away&rsquo;
+the sample size estimates are conservative.
+</p>
+<p>The criterion for the number of &lsquo;burn in&rsquo; iterations <i>m</i> to be
+discarded, is that the conditional distribution of <i>Z^k_m</i>
+given <i>Z_0</i> should be within <code>converge.eps</code> of the equilibrium
+distribution of the chain <i>Z^k_t</i>.
+</p>
+
+
+<h3>Note</h3>
+
+<p><code>raftery.diag</code> is based on the FORTRAN program &lsquo;gibbsit&rsquo; 
+written by Steven Lewis, and available from the Statlib archive.
+</p>
+
+
+<h3>References</h3>
+
+<p>Raftery, A.E. and Lewis, S.M. (1992).  One long run with diagnostics:
+Implementation strategies for Markov chain Monte Carlo.
+<em>Statistical Science</em>, <b>7</b>, 493-497.
+</p>
+<p>Raftery, A.E. and Lewis, S.M. (1995).  The number of iterations,
+convergence diagnostics and generic Metropolis algorithms.  <em>In</em>
+Practical Markov Chain Monte Carlo (W.R. Gilks, D.J. Spiegelhalter
+and S. Richardson, eds.). London, U.K.: Chapman and Hall.
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

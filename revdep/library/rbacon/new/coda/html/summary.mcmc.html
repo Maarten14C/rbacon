@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Summary statistics for Markov Chain Monte Carlo chains</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for summary.mcmc {coda}"><tr><td>summary.mcmc {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Summary statistics for  Markov Chain Monte Carlo chains</h2>
+
+<h3>Description</h3>
+
+<p><code>summary.mcmc</code> produces two sets of summary statistics for
+each variable:
+</p>
+<p>Mean, standard deviation, naive standard error of the mean
+(ignoring autocorrelation of the chain) and time-series standard
+error based on an estimate of the spectral density at 0.
+</p>
+<p>Quantiles of the sample distribution using the <code>quantiles</code>
+argument.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+## S3 method for class 'mcmc'
+summary(object, quantiles = c(0.025, 0.25, 0.5, 0.75, 0.975), ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>object</code></td>
+<td>
+<p>an object of class <code>mcmc</code> or <code>mcmc.list</code></p>
+</td></tr>
+<tr valign="top"><td><code>quantiles</code></td>
+<td>
+<p>a vector of quantiles to evaluate for each variable</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>a list of further arguments</p>
+</td></tr>
+</table>
+
+
+<h3>Author(s)</h3>
+
+<p>Martyn Plummer</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="mcmc.html">mcmc</a></code>,
+<code><a href="mcmc.list.html">mcmc.list</a></code>.
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

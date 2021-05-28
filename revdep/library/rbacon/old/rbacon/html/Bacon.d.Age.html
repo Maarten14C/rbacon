@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Output all depths for a single age.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for Bacon.d.Age {rbacon}"><tr><td>Bacon.d.Age {rbacon}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Output all depths for a single age.</h2>
+
+<h3>Description</h3>
+
+<p>Output all depths of a single given MCMC-derived age estimate.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Bacon.d.Age(
+  age,
+  set = get("info"),
+  BCAD = set$BCAD,
+  its = set$output,
+  na.rm = FALSE
+)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>age</code></td>
+<td>
+<p>The age estimate for which depths are to be returned. Has to be a single age.</p>
+</td></tr>
+<tr valign="top"><td><code>set</code></td>
+<td>
+<p>Detailed information of the current run, stored within this session's memory as variable info.</p>
+</td></tr>
+<tr valign="top"><td><code>BCAD</code></td>
+<td>
+<p>The calendar scale of graphs and age output-files is in <code>cal BP</code> by default, but can be changed to BC/AD using <code>BCAD=TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>its</code></td>
+<td>
+<p>The set of MCMC iterations to be used. Defaults to the entire MCMC output, <code>its=set$output</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>na.rm</code></td>
+<td>
+<p>Whether or not to remove NA values (ages within slumps)</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>Obtaining an age-depth model is often only a step towards a goal, e.g., plotting a core's
+fossil series ('proxies') against calendar time. Bacon.d.Age can be used to list all MCMC-derived depths belonging to a given (single) age, for example to calculate mean depths belonging to a modelled depth. 
+This function was kindly written and provided by Timon Netzel (Bonn University). See also Bacon.Age.d, which calculates the ages for a single depth.
+</p>
+
+
+<h3>Value</h3>
+
+<p>Outputs all MCMC-derived ages for a given depth.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Maarten Blaauw, J. Andres Christen
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+  Bacon(run=FALSE, coredir=tempfile())
+  agedepth(age.res=50, d.res=50, d.by=10)
+  ages.d20 = Bacon.Age.d(20)
+  mean(ages.d20)
+
+## End(Not run)
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>rbacon</em> version 2.5.5 <a href="00Index.html">Index</a>]</div>
+</body></html>

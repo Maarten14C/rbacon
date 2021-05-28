@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Estimate spectral density at zero</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for spectrum0.ar {coda}"><tr><td>spectrum0.ar {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Estimate spectral density at zero</h2>
+
+<h3>Description</h3>
+
+<p>The spectral density at frequency zero is estimated by fitting an
+autoregressive model.  <code>spectrum0(x)/length(x)</code> estimates the
+variance of <code>mean(x)</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+spectrum0.ar(x) 
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>A time series.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The <code>ar()</code> function to fit an autoregressive model to the time
+series x. For multivariate time series, separate models are fitted for
+each column. The value of the spectral density at zero is then given
+by a well-known formula.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A list with the following values
+</p>
+<table summary="R valueblock">
+<tr valign="top"><td><code>spec</code></td>
+<td>
+<p>The predicted value of the spectral density at frequency zero.</p>
+</td></tr>
+<tr valign="top"><td><code>order</code></td>
+<td>
+<p>The order of the fitted model</p>
+</td></tr>
+</table>
+
+
+<h3>Note</h3>
+
+<p>The definition of the spectral density used here differs from that used by
+<code>spec.pgram</code>. We consider the frequency range to be between 0 and 0.5,
+not between 0 and <code>frequency(x)/2</code>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="../../stats/html/spectrum.html">spectrum</a></code>, <code><a href="spectrum0.html">spectrum0</a></code>, <code><a href="../../stats/html/glm.html">glm</a></code>.
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

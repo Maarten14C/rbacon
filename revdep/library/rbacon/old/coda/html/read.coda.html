@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Read output files in CODA format</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for read.coda {coda}"><tr><td>read.coda {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Read output files in CODA format</h2>
+
+<h3>Description</h3>
+
+<p><code>read.coda</code> reads Markov Chain Monte Carlo output in
+the CODA format produced by OpenBUGS and JAGS. By default, all
+of the data in the file is read, but the arguments <code>start</code>,
+<code>end</code> and <code>thin</code> may be used to read a subset of the
+data.  If the arguments given to <code>start</code>, <code>end</code> or
+<code>thin</code> are incompatible with the data, they are ignored.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+read.coda(output.file, index.file, start, end, thin, quiet=FALSE)
+read.jags(file = "jags.out", start, end, thin, quiet=FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>output.file</code></td>
+<td>
+<p>The name of the file containing the monitored
+output</p>
+</td></tr>
+<tr valign="top"><td><code>index.file</code></td>
+<td>
+<p>The name of the file containing the index, showing
+which rows of the output file correspond to which variables</p>
+</td></tr>
+<tr valign="top"><td><code>file</code></td>
+<td>
+<p>For JAGS output, the name of the output file.  The
+extension &quot;.out&quot; may be omitted. There must be a corresponding
+&quot;.ind&quot; file with the same file stem.</p>
+</td></tr>
+<tr valign="top"><td><code>start</code></td>
+<td>
+<p>First iteration of chain</p>
+</td></tr>
+<tr valign="top"><td><code>end</code></td>
+<td>
+<p>Last iteration of chain</p>
+</td></tr>
+<tr valign="top"><td><code>thin</code></td>
+<td>
+<p>Thinning interval for chain</p>
+</td></tr>
+<tr valign="top"><td><code>quiet</code></td>
+<td>
+<p>Logical flag. If true, a progress summary will be printed</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>An object of class <code>mcmc</code> containing a representation of 
+the data in the file.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Karen Vines, Martyn Plummer</p>
+
+
+<h3>References</h3>
+
+<p>Spiegelhalter DJ, Thomas A, Best NG and Gilks WR (1995).
+<em>BUGS: Bayesian inference Using Gibbs Sampling, Version 0.50.</em>
+MRC Biostatistics Unit, Cambridge.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="mcmc.html">mcmc</a></code>, 
+<code><a href="read.coda.interactive.html">read.coda.interactive</a></code>,
+<code><a href="read.openbugs.html">read.openbugs</a></code>.
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

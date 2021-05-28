@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Remove the first n iterations.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for scissors {rbacon}"><tr><td>scissors {rbacon}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Remove the first n iterations.</h2>
+
+<h3>Description</h3>
+
+<p>Removes iterations of the MCMC time series, and then updates the output file.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+scissors(burnin, set = get("info"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>burnin</code></td>
+<td>
+<p>Number of iterations to remove  of the iterative time series. If this value is higher than the amount of remaining iterations,
+a warning is given and the iterations are not removed. If the provided number is negative, the iterations will be removed from the end of the run, not from the start. If a range is given, this range of iterations is removed.</p>
+</td></tr>
+<tr valign="top"><td><code>set</code></td>
+<td>
+<p>Detailed information of the current run, stored within this session's memory as variable <code>info</code>.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>Bacon will perform millions of MCMC iterations for each age-model run by default, although only a fraction
+of these will be stored. In most cases the remaining MCMC iterations will be well mixed (the upper left panel
+of the fit of the iterations shows no undesirable features such as trends or sudden systematic drops or rises).
+If the run has a visible remaining burn-in, scissors can be used to remove them.
+To remove, e.g., the first 300 iterations, type <code>scissors(300)</code>. To remove the last 300 iterations, type <code>scissors(-300)</code>. To remove iterations 300 to 600, type <code>scissors(300:600)</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>NA
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Maarten Blaauw, J. Andres Christen
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+## Not run: 
+  Bacon(ask=FALSE, coredir=tempfile())
+  scissors(100)
+  agedepth()
+
+## End(Not run)
+
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>rbacon</em> version 2.5.6 <a href="00Index.html">Index</a>]</div>
+</body></html>

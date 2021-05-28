@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Convert WinBUGS data file to JAGS data file</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for bugs2jags {coda}"><tr><td>bugs2jags {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Convert WinBUGS data file to JAGS data file</h2>
+
+<h3>Description</h3>
+
+<p><code>bugs2jags</code> converts a WinBUGS data in the format called &quot;S-Plus&quot;
+(i.e. the format created by the <code>dput</code> function) and writes it in
+<code>dump</code> format used by JAGS.
+</p>
+<p>NB WinBUGS stores its arrays in row order.  This is different
+from R and JAGS which both store arrays in column order. This
+difference is taken into account by <code>bugs2jags</code> which will
+automatically reorder the data in arrays, without changing the
+dimension.
+</p>
+<p>Not yet available in S-PLUS.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+bugs2jags(infile, outfile)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>infile</code></td>
+<td>
+<p>name of the input file</p>
+</td></tr>
+<tr valign="top"><td><code>outfile</code></td>
+<td>
+<p>name of the output file</p>
+</td></tr>
+</table>
+
+
+<h3>Note</h3>
+
+<p>If the input file is saved from WinBUGS, it must be saved in plain text
+format. The default format for files saved from WinBUGS is a binary
+compound document format (with extension odc) that cannot be read by
+bugs2jags.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martyn Plummer</p>
+
+
+<h3>References</h3>
+
+<p>Spiegelhalter DJ, Thomas A, Best NG and Lunn D (2003).
+<em>WinBUGS version 1.4 user manual</em>
+MRC Biostatistics Unit, Cambridge, UK.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="../../base/html/dput.html">dput</a></code>, 
+<code><a href="../../base/html/dump.html">dump</a></code>.
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

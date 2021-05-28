@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Plot flux rates for proxies.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for flux.age.ghost {rbacon}"><tr><td>flux.age.ghost {rbacon}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Plot flux rates for proxies.</h2>
+
+<h3>Description</h3>
+
+<p>Plot grey-scale representation of estimated flux rates for proxies against calendar age.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+flux.age.ghost(
+  proxy = 1,
+  age.lim = c(),
+  yr.lim = age.lim,
+  age.res = 200,
+  yr.res = age.res,
+  set = get("info"),
+  flux = c(),
+  plot.range = TRUE,
+  prob = 0.8,
+  range.col = grey(0.5),
+  range.lty = 2,
+  plot.mean = TRUE,
+  mean.col = "red",
+  mean.lty = 2,
+  flux.lim = c(),
+  flux.lab = "flux",
+  upper = 0.95,
+  rgb.scale = c(0, 0, 0),
+  rgb.res = 100,
+  dark = set$dark,
+  BCAD = set$BCAD,
+  age.lab = c(),
+  yr.lab = age.lab,
+  rotate.axes = FALSE,
+  rev.flux = FALSE,
+  rev.age = FALSE,
+  rev.yr = rev.age
+)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>proxy</code></td>
+<td>
+<p>Which proxy to use (counting from the column number in the .csv file after the depths column).</p>
+</td></tr>
+<tr valign="top"><td><code>age.lim</code></td>
+<td>
+<p>Minimum and maximum calendar age ranges, calculated automatically by default (<code>age.lim=c()</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>yr.lim</code></td>
+<td>
+<p>Deprecated - use age.lim instead</p>
+</td></tr>
+<tr valign="top"><td><code>age.res</code></td>
+<td>
+<p>Resolution or amount of greyscale pixels to cover the age scale of the plot. Default <code>age.res=200</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>yr.res</code></td>
+<td>
+<p>Deprecated - use age.res instead</p>
+</td></tr>
+<tr valign="top"><td><code>set</code></td>
+<td>
+<p>Detailed information of the current run, stored within this session's memory as variable info.</p>
+</td></tr>
+<tr valign="top"><td><code>flux</code></td>
+<td>
+<p>Define a flux variable within the R session (consisting of depths and their proxy concentrations in two columns) and provide the name of this variable, e.g.:
+<code>flux.age.ghost(flux=flux1)</code>. If left empty (<code>flux=c()</code>), a flux file is expected (see <code>proxy</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>plot.range</code></td>
+<td>
+<p>Plot curves that indicate a probability range, at resolution of yr.res.</p>
+</td></tr>
+<tr valign="top"><td><code>prob</code></td>
+<td>
+<p>Probability range, defaults to <code>prob=0.8</code> (10 % at each side).</p>
+</td></tr>
+<tr valign="top"><td><code>range.col</code></td>
+<td>
+<p>Red seems nice.</p>
+</td></tr>
+<tr valign="top"><td><code>range.lty</code></td>
+<td>
+<p>Line type of the confidence ranges.</p>
+</td></tr>
+<tr valign="top"><td><code>plot.mean</code></td>
+<td>
+<p>Plot the mean fluxes.</p>
+</td></tr>
+<tr valign="top"><td><code>mean.col</code></td>
+<td>
+<p>Red seems nice.</p>
+</td></tr>
+<tr valign="top"><td><code>mean.lty</code></td>
+<td>
+<p>Line type of the means.</p>
+</td></tr>
+<tr valign="top"><td><code>flux.lim</code></td>
+<td>
+<p>Limits of the flux axes.</p>
+</td></tr>
+<tr valign="top"><td><code>flux.lab</code></td>
+<td>
+<p>Axis labels. Defaults to <code>flux.lab="flux"</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>upper</code></td>
+<td>
+<p>Maximum flux rates to plot. Defaults to the upper 99%; <code>upper=0.99</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>rgb.scale</code></td>
+<td>
+<p>The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: <code>rgb.scale=c(0,0,0)</code>, but could also be, say, scales of red (<code>rgb.scale=c(1,0,0)</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>rgb.res</code></td>
+<td>
+<p>Resolution of the colour spectrum depicting the age-depth model. Default <code>rgb.res=100</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>dark</code></td>
+<td>
+<p>The darkest grey value is <code>dark=1</code> by default; lower values will result in lighter grey but <code>values &gt;1</code> are not allowed.</p>
+</td></tr>
+<tr valign="top"><td><code>BCAD</code></td>
+<td>
+<p>The calendar scale of graphs and age output-files is in <code>cal BP</code> by default, but can be changed to BC/AD using <code>BCAD=TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>age.lab</code></td>
+<td>
+<p>The labels for the calendar axis (default <code>age.lab="cal BP"</code> or <code>"BC/AD"</code> if <code>BCAD=TRUE</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>yr.lab</code></td>
+<td>
+<p>Deprecated - use age.lab instead</p>
+</td></tr>
+<tr valign="top"><td><code>rotate.axes</code></td>
+<td>
+<p>The default of plotting calendar year on the horizontal axis and fluxes on the vertical one can be changed with <code>rotate.axes=TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>rev.flux</code></td>
+<td>
+<p>The flux axis can be reversed with <code>rev.flux=TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>rev.age</code></td>
+<td>
+<p>The direction of the age axis can be reversed using <code>rev.age=TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>rev.yr</code></td>
+<td>
+<p>Deprecated - use rev.age instead</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>To plot flux rates (e.g. pollen grains/cm2/yr) as greyscales,
+provide a plain text file with headers and the data in columns separated by commas, ending in '_flux.csv'
+and saved in your core's folder. The first column should contain the depths, and the next columns should contain
+the proxy concentration values (leaving missing values empty). Then type for example <code>flux.age.ghost(1)</code> to plot the
+flux values for the first proxy in the .csv file. Instead of using a _flux.csv file, a flux variable can also be defined
+within the R session (consisting of depths and their proxy concentrations in two columns). Then provide the name of this variable, e.g.: <code>flux.age.ghost(flux=flux1)</code>.
+See Bacon_runs/MSB2K/MSB2K_flux.csv for an example.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A plot of flux rates.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Maarten Blaauw, J. Andres Christen
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+  Bacon(run=FALSE, coredir=tempfile())
+  agedepth(yr.res=50)
+  flux.age.ghost(1)
+
+## End(Not run)
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>rbacon</em> version 2.5.5 <a href="00Index.html">Index</a>]</div>
+</body></html>

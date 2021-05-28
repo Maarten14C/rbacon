@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Plot the dates</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for calib.plot {rbacon}"><tr><td>calib.plot {rbacon}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Plot the dates</h2>
+
+<h3>Description</h3>
+
+<p>Produce a plot of the dated depths and their dates
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+calib.plot(
+  set = get("info"),
+  BCAD = set$BCAD,
+  cc = set$cc,
+  rotate.axes = FALSE,
+  rev.d = FALSE,
+  rev.age = FALSE,
+  rev.yr = rev.age,
+  age.lim = c(),
+  yr.lim = age.lim,
+  date.res = 100,
+  d.lab = c(),
+  age.lab = c(),
+  yr.lab = age.lab,
+  height = 1,
+  calheight = 1,
+  mirror = TRUE,
+  up = TRUE,
+  cutoff = 0.1,
+  C14.col = rgb(0, 0, 1, 0.5),
+  C14.border = rgb(0, 0, 1, 0.75),
+  cal.col = rgb(0, 0.5, 0.5, 0.5),
+  cal.border = rgb(0, 0.5, 0.5, 0.75),
+  dates.col = c(),
+  slump.col = grey(0.8),
+  new.plot = TRUE,
+  plot.dists = TRUE,
+  same.heights = FALSE
+)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>set</code></td>
+<td>
+<p>Detailed information of the current run, stored within this session's memory as variable <code>info</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>BCAD</code></td>
+<td>
+<p>The calendar scale of graphs is in <code>cal BP</code> by default, but can be changed to BC/AD using <code>BCAD=TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>cc</code></td>
+<td>
+<p>Calibration curve to be used (defaults to info$cc)</p>
+</td></tr>
+<tr valign="top"><td><code>rotate.axes</code></td>
+<td>
+<p>The default of plotting age on the horizontal axis and event probability on the vertical one can be changed with <code>rotate.axes=TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>rev.d</code></td>
+<td>
+<p>The direction of the depth axis can be reversed from the default (<code>rev.d=TRUE</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>rev.age</code></td>
+<td>
+<p>The direction of the calendar age axis can be reversed from the default (<code>rev.age=TRUE</code>)</p>
+</td></tr>
+<tr valign="top"><td><code>rev.yr</code></td>
+<td>
+<p>Deprecated - use rev.age instead</p>
+</td></tr>
+<tr valign="top"><td><code>age.lim</code></td>
+<td>
+<p>Minimum and maximum calendar age ranges, calculated automatically by default (<code>age.lim=c()</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>yr.lim</code></td>
+<td>
+<p>Deprecated - use age.lim instead</p>
+</td></tr>
+<tr valign="top"><td><code>date.res</code></td>
+<td>
+<p>Date distributions are plotted using <code>date.res=100</code> points by default.</p>
+</td></tr>
+<tr valign="top"><td><code>d.lab</code></td>
+<td>
+<p>The labels for the depth axis. Default <code>d.lab="Depth (cm)"</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>age.lab</code></td>
+<td>
+<p>The labels for the calendar axis (default <code>yr.lab="cal BP"</code> or <code>"BC/AD"</code> if <code>BCAD=TRUE</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>yr.lab</code></td>
+<td>
+<p>Deprecated - use age.lab instead</p>
+</td></tr>
+<tr valign="top"><td><code>height</code></td>
+<td>
+<p>The heights of the distributions of the dates. See also <code>normalise.dists</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>calheight</code></td>
+<td>
+<p>Multiplier for the heights of the distributions of dates on the calendar scale. Defaults to <code>calheight=1</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>mirror</code></td>
+<td>
+<p>Plot the dates as 'blobs'. Set to <code>mirror=FALSE</code> to plot simple distributions.</p>
+</td></tr>
+<tr valign="top"><td><code>up</code></td>
+<td>
+<p>Directions of distributions if they are plotted non-mirrored. Default <code>up=TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>cutoff</code></td>
+<td>
+<p>Avoid plotting very low probabilities of date distributions (default <code>cutoff=0.1</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>C14.col</code></td>
+<td>
+<p>Colour of the calibrated distributions of the dates. Default is semi-transparent blue: <code>rgb(0,0,1,.35)</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>C14.border</code></td>
+<td>
+<p>Colours of the borders of calibrated 14C dates. Default is transparent dark blue: cal.col</p>
+</td></tr>
+<tr valign="top"><td><code>cal.col</code></td>
+<td>
+<p>Colour of the non-14C dates in the age-depth plot: default semi-transparent blue-green: <code>rgb(0,.5,.5,.35)</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>cal.border</code></td>
+<td>
+<p>Colour of the of the border of non-14C dates in the age-depth plot: default semi-transparent dark blue-green: <code>rgb(0,.5,.5,.5)</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>dates.col</code></td>
+<td>
+<p>As an alternative to colouring dates based on whether they are 14C or not, sets of dates can be coloured as, e.g., <code>dates.col=colours()[2:100]</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>slump.col</code></td>
+<td>
+<p>Colour of slumps. Defaults to <code>slump.col=grey(0.8)</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>new.plot</code></td>
+<td>
+<p>Start a new plot (<code>new.plot=TRUE</code>) or plot over an existing plot (<code>new.plot=FALSE</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>plot.dists</code></td>
+<td>
+<p>Plot the distributions of the dates (default <code>plot.dists=TRUE</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>same.heights</code></td>
+<td>
+<p>Plot the distributions of the dates all at the same maximum height (default <code>same.height=FALSE</code>), which instead normalises the distributions (all have an area of 1).</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>This function is generally called internally to produce the age-depth graph.
+It can be used to produce custom-built graphs.
+</p>
+
+
+<h3>Value</h3>
+
+<p>NA
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Maarten Blaauw, J. Andres Christen
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+  Bacon(run=FALSE, coredir=tempfile())
+  calib.plot()
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>rbacon</em> version 2.5.6 <a href="00Index.html">Index</a>]</div>
+</body></html>

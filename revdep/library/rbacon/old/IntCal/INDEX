@@ -1,0 +1,5 @@
+IntCal                  IntCal
+age.pMC                 Calculate pMC values from C14 ages
+copyCalibrationCurve    Copy a calibration curve.
+mix.curves              Build a custom-made, mixed calibration curve.
+pMC.age                 Calculate C14 ages from pMC values.

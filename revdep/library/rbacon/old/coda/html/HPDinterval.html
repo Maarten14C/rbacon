@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Highest Posterior Density intervals</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for HPDinterval {coda}"><tr><td>HPDinterval {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Highest Posterior Density intervals</h2>
+
+<h3>Description</h3>
+
+<p>Create Highest Posterior Density (HPD) intervals for the parameters in
+an MCMC sample.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+HPDinterval(obj, prob = 0.95, ...)
+## S3 method for class 'mcmc'
+HPDinterval(obj, prob = 0.95, ...)
+## S3 method for class 'mcmc.list'
+HPDinterval(obj, prob = 0.95, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>obj</code></td>
+<td>
+<p>The object containing the MCMC sample - usually of class
+<code>"mcmc"</code> or <code>"mcmc.list"</code></p>
+</td></tr></table>
+<p>.
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>prob</code></td>
+<td>
+<p>A numeric scalar in the interval (0,1) giving the target
+probability content of the intervals.  The nominal probability
+content of the intervals is the multiple of <code>1/nrow(obj)</code>
+nearest to <code>prob</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>Optional additional arguments for methods.  None are used
+at present.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>For each parameter the interval is constructed from the empirical cdf
+of the sample as the shortest interval for which the difference in
+the ecdf values of the endpoints is the nominal probability.  Assuming
+that the distribution is not severely multimodal, this is the HPD interval.
+</p>
+
+
+<h3>Value</h3>
+
+<p>For an <code>"mcmc"</code> object, a matrix with columns <code>"lower"</code> and
+<code>"upper"</code> and rows corresponding to the parameters.  The
+attribute <code>"Probability"</code> is the nominal probability content of
+the intervals.  A list of such matrices is returned for an
+<code>"mcmc.list"</code> object.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Douglas Bates</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(line)
+HPDinterval(line)
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

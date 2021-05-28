@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Estimate spectral density at zero</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for spectrum0 {coda}"><tr><td>spectrum0 {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Estimate spectral density at zero</h2>
+
+<h3>Description</h3>
+
+<p>The spectral density at frequency zero is estimated by fitting a glm to
+the low-frequency end of the periodogram.  <code>spectrum0(x)/length(x)</code>
+estimates the variance of <code>mean(x)</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+spectrum0(x, max.freq = 0.5, order = 1, max.length = 200) 
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>A time series.</p>
+</td></tr>
+<tr valign="top"><td><code>max.freq</code></td>
+<td>
+<p>The glm is fitted on the frequency range (0, max.freq]</p>
+</td></tr>
+<tr valign="top"><td><code>order</code></td>
+<td>
+<p>Order of the polynomial to fit to the periodogram.</p>
+</td></tr>
+<tr valign="top"><td><code>max.length</code></td>
+<td>
+<p>The data <code>x</code> is aggregated if necessary by
+taking batch means so that the length of the series is less than
+<code>max.length</code>.  If this is set to <code>NULL</code> no aggregation occurs.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The raw periodogram is calculated for the series <code>x</code> and a generalized
+linear model with family <code>Gamma</code> and log link is fitted to
+the periodogram.
+</p>
+<p>The linear predictor is a polynomial in terms of the frequency.  The
+degree of the polynomial is determined by the parameter <code>order</code>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A list with the following values
+</p>
+<table summary="R valueblock">
+<tr valign="top"><td><code>spec</code></td>
+<td>
+<p>The predicted value of the spectral density at frequency zero.</p>
+</td></tr>
+</table>
+
+
+<h3>Theory</h3>
+
+<p>Heidelberger and Welch (1991) observed that the usual non-parametric
+estimator of the spectral density, obtained by smoothing the periodogram,
+is not appropriate for frequency zero.  They proposed an alternative
+parametric method which consisted of fitting a linear model to the
+log periodogram of the batched time series. Some technical problems 
+with model fitting in their original proposal can be overcome by using
+a generalized linear model.
+</p>
+<p>Batching of the data, originally proposed in order to save space, has the
+side effect of flattening the spectral density and making a polynomial
+fit more reasonable.  Fitting a polynomial of degree zero is equivalent
+to using the &lsquo;batched means&rsquo; method.
+</p>
+
+
+<h3>Note</h3>
+
+<p>The definition of the spectral density used here differs from that used by
+<code>spec.pgram</code>. We consider the frequency range to be between 0 and 0.5,
+not between 0 and <code>frequency(x)/2</code>.
+</p>
+<p>The model fitting may fail on chains with very high autocorrelation.
+</p>
+
+
+<h3>References</h3>
+
+<p>Heidelberger, P and Welch, P.D. A spectral method for confidence interval
+generation and run length control in simulations. Communications of the
+ACM, Vol 24, pp233-245, 1981.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="../../stats/html/spectrum.html">spectrum</a></code>, <code><a href="spectrum0.ar.html">spectrum0.ar</a></code>, <code><a href="../../stats/html/glm.html">glm</a></code>.
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

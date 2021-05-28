@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Remove files made to produce the current core's age-depth...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for Bacon.cleanup {rbacon}"><tr><td>Bacon.cleanup {rbacon}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Remove files made to produce the current core's age-depth model.</h2>
+
+<h3>Description</h3>
+
+<p>Remove files ending in .bacon, .plum (if it exists), .out, .pdf, _ages.txt, and _settings.txt of current core.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Bacon.cleanup(set = get("info"))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>set</code></td>
+<td>
+<p>Detailed information of the current run, stored within this session's memory as variable <code>info</code>.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>If cores behave badly, you can try cleaning up previous runs and settings, by
+removing files *.bacon, *.plum, *.out, *.pdf, *_ages.txt, and *_settings.txt of current core.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A message stating that the files and settings of this run have been deleted.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Maarten Blaauw, J. Andres Christen
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+  Bacon(run=FALSE, coredir=tempfile())
+  Bacon.cleanup()
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>rbacon</em> version 2.5.6 <a href="00Index.html">Index</a>]</div>
+</body></html>

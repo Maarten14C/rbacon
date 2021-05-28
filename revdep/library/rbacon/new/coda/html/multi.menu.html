@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Choose multiple options from a menu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for multi.menu {coda}"><tr><td>multi.menu {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Choose multiple options from a menu</h2>
+
+<h3>Description</h3>
+
+<p><code>multi.menu</code> presents the user with a menu of choices
+labelled from 1 to the number of choices.  The user may choose
+one or more options by entering a comma separated list. A range
+of values may also be specified using the &quot;:&quot; operator. Mixed
+expressions such as &quot;1,3:5, 6&quot; are permitted.
+</p>
+<p>If <code>allow.zero</code> is set to TRUE, one can select &lsquo;0&rsquo; to exit
+without choosing an item.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+multi.menu(choices, title, header, allow.zero = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>choices</code></td>
+<td>
+<p>Character vector of labels for choices</p>
+</td></tr>
+<tr valign="top"><td><code>title</code></td>
+<td>
+<p>Title printed before menu</p>
+</td></tr>
+<tr valign="top"><td><code>header</code></td>
+<td>
+<p>Character vector of length 2 giving column titles</p>
+</td></tr>
+<tr valign="top"><td><code>allow.zero</code></td>
+<td>
+<p>Permit 0 as an acceptable response</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>Numeric vector giving the numbers of the options selected, or
+0 if no selection is made.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martyn Plummer</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="../../utils/html/menu.html">menu</a></code>.
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

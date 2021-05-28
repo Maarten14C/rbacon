@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Replicated Markov Chain Monte Carlo Objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for mcmc.list {coda}"><tr><td>mcmc.list {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Replicated Markov Chain Monte Carlo Objects</h2>
+
+<h3>Description</h3>
+
+<p>The function &lsquo;mcmc.list&rsquo; is used to represent parallel runs of the same
+chain, with different starting values and random seeds.  The list must
+be balanced: each chain in the list must have the same iterations and
+the same variables.
+</p>
+<p>Diagnostic functions which act on <code>mcmc</code> objects may also be applied
+to <code>mcmc.list</code> objects. In general, the chains will be combined,
+if this makes sense, otherwise the diagnostic function will be applied
+separately to each chain in the list.
+</p>
+<p>Since all the chains in the list have the same iterations, a single time
+dimension can be ascribed to the list. Hence there are time series methods
+<code>time</code>, <code>window</code>, <code>start</code>, <code>end</code>, <code>frequency</code>
+and <code>thin</code> for <code>mcmc.list</code> objects.
+</p>
+<p>An <code>mcmc.list</code> can be indexed as if it were a single mcmc object
+using the <code>[</code> operator (see examples below). The <code>[[</code> operator
+selects a single <code>mcmc</code> object from the list.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+mcmc.list(...)
+as.mcmc.list(x, ...)
+is.mcmc.list(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>a list of mcmc objects</p>
+</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>an object that may be coerced to mcmc.list</p>
+</td></tr>
+</table>
+
+
+<h3>Author(s)</h3>
+
+<p>Martyn Plummer</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="mcmc.html">mcmc</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(line)
+x1 &lt;- line[[1]]                    #Select first chain
+x2 &lt;- line[,1, drop=FALSE]         #Select first var from all chains
+varnames(x2) == varnames(line)[1]  #TRUE
+</pre>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

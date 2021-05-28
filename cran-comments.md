@@ -9,4 +9,4 @@
 
 Note that from this version on, closeAllConnections() has been removed as requested by Kurt Hornik (CRAN; e-mail 11 May 2021)
 
-Problems with R-release on windows-ix86+x86_64 must be owing to server error. All other flavors compile without problems.
+Problems with R-release on windows-ix86+x86_64 must be owing to a server error. All other flavors compile without problems.

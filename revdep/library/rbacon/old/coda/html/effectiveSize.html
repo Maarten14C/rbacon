@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Effective sample size for estimating the mean</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for effectiveSize {coda}"><tr><td>effectiveSize {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Effective sample size for estimating the mean</h2>
+
+<h3>Description</h3>
+
+<p>Sample size adjusted for autocorrelation.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+effectiveSize(x) 
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>An mcmc or mcmc.list object.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>For a time series <code>x</code> of length <code>N</code>, the standard error of the
+mean is the square root of <code>var(x)/n</code> where <code>n</code> is the
+effective sample size.  <code>n = N</code> only when there is no
+autocorrelation.
+</p>
+<p>Estimation of the effective sample size requires estimating the
+spectral density at frequency zero.  This is done by the function
+<code>spectrum0.ar</code>
+</p>
+<p>For a <code>mcmc.list</code> object, the effective sizes are summed across
+chains.  To get the size for each chain individually use
+<code>lapply(x,effectiveSize)</code>.  
+</p>
+
+
+<h3>Value</h3>
+
+<p>A vector giving the effective sample size for each column of <code>x</code>.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="spectrum0.ar.html">spectrum0.ar</a></code>.
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

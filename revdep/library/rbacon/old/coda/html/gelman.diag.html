@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Gelman and Rubin's convergence diagnostic</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for gelman.diag {coda}"><tr><td>gelman.diag {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Gelman and Rubin's convergence diagnostic</h2>
+
+<h3>Description</h3>
+
+<p>The &lsquo;potential scale reduction factor&rsquo; is calculated for each variable in
+<code>x</code>, together with upper and lower confidence limits. Approximate
+convergence is diagnosed when the upper limit is close to 1. For
+multivariate chains, a multivariate value is calculated that bounds
+above the potential scale reduction factor for any linear combination
+of the (possibly transformed) variables.
+</p>
+<p>The confidence limits are based on the assumption that the stationary
+distribution of the variable under examination is normal. Hence the
+&lsquo;transform&rsquo; parameter may be used to improve the normal approximation.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>gelman.diag(x, confidence = 0.95, transform=FALSE, autoburnin=TRUE,
+                   multivariate=TRUE)</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>An <code>mcmc.list</code> object with more than one chain,
+and with starting values that are overdispersed with respect to the
+posterior distribution.</p>
+</td></tr>
+<tr valign="top"><td><code>confidence</code></td>
+<td>
+<p>the coverage probability of the confidence interval for the
+potential scale reduction factor</p>
+</td></tr>
+<tr valign="top"><td><code>transform</code></td>
+<td>
+<p>a logical flag indicating whether variables in
+<code>x</code> should be transformed to improve the normality of the
+distribution. If set to TRUE, a log transform or logit transform, as
+appropriate, will be applied.</p>
+</td></tr>
+<tr valign="top"><td><code>autoburnin</code></td>
+<td>
+<p>a logical flag indicating whether only the second half
+of the series should be used in the computation.  If set to TRUE
+(default) and <code>start(x)</code> is less than <code>end(x)/2</code> then start
+of series will be adjusted so that only second half of series is used.</p>
+</td></tr>
+<tr valign="top"><td><code>multivariate</code></td>
+<td>
+<p>a logical flag indicating whether the multivariate
+potential scale reduction factor should be calculated for multivariate
+chains</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>An object of class <code>gelman.diag</code>. This is a list with the
+following elements:
+</p>
+<table summary="R valueblock">
+<tr valign="top"><td><code>psrf</code></td>
+<td>
+<p>A list containing the point estimates of the potential
+scale reduction factor (labelled <code>Point est.</code>)  and their upper
+confidence limits (labelled <code>Upper C.I.</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>mpsrf</code></td>
+<td>
+<p>The point estimate of the multivariate potential scale reduction
+factor. This is NULL if there is only one variable in <code>x</code>.</p>
+</td></tr>
+</table>
+<p>The <code>gelman.diag</code> class has its own <code>print</code> method.
+</p>
+
+
+<h3>Theory</h3>
+
+<p>Gelman and Rubin (1992) propose a general approach to monitoring
+convergence of MCMC output in which <i>m &gt; 1</i> parallel chains are run
+with starting values that are overdispersed relative to the posterior
+distribution. Convergence is diagnosed when the chains have &lsquo;forgotten&rsquo;
+their initial values, and the output from all chains is
+indistinguishable.  The <code>gelman.diag</code> diagnostic is applied to a
+single variable from the chain. It is based a comparison of within-chain
+and between-chain variances, and is similar to a classical analysis of
+variance.
+</p>
+<p>There are two ways to estimate the variance of the stationary distribution:
+the mean of the empirical variance within each chain, <i>W</i>, and
+the empirical variance from all chains combined, which can be expressed as
+</p>
+<p style="text-align: center;"><i> sigma.hat^2 =  (n-1)W/n + B/n </i></p>
+
+<p>where <i>n</i> is the number of iterations and <i>B/n</i> is the empirical
+between-chain variance.
+</p>
+<p>If the chains have converged, then both estimates are
+unbiased. Otherwise the first method will <em>underestimate</em> the
+variance, since the individual chains have not had time to range all
+over the stationary distribution, and the second method will
+<em>overestimate</em> the variance, since the starting points were chosen
+to be overdispersed.
+</p>
+<p>The convergence diagnostic is based on the assumption that the
+target distribution is normal. A Bayesian credible interval can
+be constructed using a t-distribution with mean
+</p>
+<p style="text-align: center;"><i>mu.hat = Sample mean of all chains combined</i></p>
+
+<p>and variance
+</p>
+<p style="text-align: center;"><i>V.hat=sigma.hat2 + B/(mn)</i></p>
+
+<p>and degrees of freedom estimated by the method of moments
+</p>
+<p style="text-align: center;"><i>d = 2*V.hat^2/Var(V.hat)</i></p>
+
+<p>Use of the t-distribution accounts for the fact that the mean
+and variance of the posterior distribution are estimated.
+</p>
+<p>The convergence diagnostic itself is
+</p>
+<p style="text-align: center;"><i>R=sqrt((d+3) V.hat /((d+1)W)</i></p>
+
+<p>Values substantially above 1 indicate lack of convergence.  If the
+chains have not converged, Bayesian credible intervals based on the
+t-distribution are too wide, and have the potential to shrink by this
+factor if the MCMC run is continued.
+</p>
+
+
+<h3>Note</h3>
+
+<p>The multivariate a version of Gelman and Rubin's diagnostic was
+proposed by Brooks and Gelman (1998). Unlike the univariate proportional
+scale reduction factor, the multivariate version does not include an
+adjustment for the estimated number of degrees of freedom.
+</p>
+
+
+<h3>References</h3>
+
+<p>Gelman, A and Rubin, DB (1992) Inference from iterative simulation
+using multiple sequences, <em>Statistical Science</em>, <b>7</b>, 457-511.
+</p>
+<p>Brooks, SP. and Gelman, A. (1998) General methods for monitoring
+convergence of iterative simulations. <em>Journal of Computational and
+Graphical Statistics</em>, <b>7</b>, 434-455.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="gelman.plot.html">gelman.plot</a></code>.
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Geweke's convergence diagnostic</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for geweke.diag {coda}"><tr><td>geweke.diag {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Geweke's convergence diagnostic</h2>
+
+<h3>Description</h3>
+
+<p>Geweke (1992) proposed a convergence diagnostic for Markov chains
+based on a test for equality of the means of the first and last part
+of a Markov chain (by default the first 10% and the last 50%).  If the
+samples are drawn from the stationary distribution of the chain, the two
+means are equal and Geweke's statistic has an asymptotically standard
+normal distribution.
+</p>
+<p>The test statistic is a standard Z-score: the difference between the
+two sample means divided by its estimated standard error.  The standard
+error is estimated from the spectral density at zero and so takes into
+account any autocorrelation.
+</p>
+<p>The Z-score is calculated under the assumption that the two parts of
+the chain are asymptotically independent, which requires that the sum
+of <code>frac1</code> and <code>frac2</code> be strictly less than 1.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>geweke.diag(x, frac1=0.1, frac2=0.5)</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>an mcmc object</p>
+</td></tr>
+<tr valign="top"><td><code>frac1</code></td>
+<td>
+<p>fraction to use from beginning of chain</p>
+</td></tr>
+<tr valign="top"><td><code>frac2</code></td>
+<td>
+<p>fraction to use from end of chain</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>Z-scores for a test of equality of means
+between the first and last parts of the chain. A separate
+statistic is calculated for each variable in each chain.
+</p>
+
+
+<h3>References</h3>
+
+<p>Geweke, J. Evaluating the accuracy of sampling-based approaches
+to calculating posterior moments. In <em>Bayesian Statistics 4</em>
+(ed JM Bernado, JO Berger, AP Dawid and AFM Smith). Clarendon Press,
+Oxford, UK.</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="geweke.plot.html">geweke.plot</a></code>.
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

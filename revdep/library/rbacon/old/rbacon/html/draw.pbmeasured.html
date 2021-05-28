@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Plot the 210Pb data</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for draw.pbmeasured {rbacon}"><tr><td>draw.pbmeasured {rbacon}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Plot the 210Pb data</h2>
+
+<h3>Description</h3>
+
+<p>Produce a plot of the 210Pb data and their depths
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+draw.pbmeasured(
+  set = get("info"),
+  rotate.axes = FALSE,
+  rev.d = FALSE,
+  rev.age = FALSE,
+  BCAD = set$BCAD,
+  pb.lim = c(),
+  age.lim = c(),
+  d.lim = c(),
+  d.lab = c(),
+  pb.lab = c(),
+  pbmeasured.col = "blue",
+  pbmeasured.lty = 1,
+  pb.log = FALSE,
+  supp.col = "purple",
+  newplot = TRUE,
+  on.agescale = FALSE
+)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>set</code></td>
+<td>
+<p>Detailed information of the current run, stored within this session's memory as variable <code>info</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>rotate.axes</code></td>
+<td>
+<p>The default of plotting age on the horizontal axis and event probability on the vertical one can be changed with <code>rotate.axes=TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>rev.d</code></td>
+<td>
+<p>The direction of the depth axis can be reversed from the default (<code>rev.d=TRUE</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>rev.age</code></td>
+<td>
+<p>The direction of the calendar age axis can be reversed from the default (<code>rev.age=TRUE</code>)</p>
+</td></tr>
+<tr valign="top"><td><code>BCAD</code></td>
+<td>
+<p>The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using <code>BCAD=TRUE</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>pb.lim</code></td>
+<td>
+<p>Minimum and maximum of the 210Pb axis ranges, calculated automatically by default (<code>pb.lim=c()</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>age.lim</code></td>
+<td>
+<p>Minimum and maximum of the age ranges to be used to plot 210Pb values. Calculated automatically by default (<code>age.lim=c()</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>d.lim</code></td>
+<td>
+<p>Minimum and maximum depths to plot; calculated automatically by default (<code>d.lim=c()</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>d.lab</code></td>
+<td>
+<p>The labels for the depth axis. Default <code>d.lab="Depth (cm)"</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>pb.lab</code></td>
+<td>
+<p>The label for the 210Pb axis (default <code>pb.lab="210Pb (Bq/kg)"</code> or <code>"210Pb (dpm/g)"</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>pbmeasured.col</code></td>
+<td>
+<p>The label for the measured 210Pb data. <code>pbmeasured.col="blue"</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>pbmeasured.lty</code></td>
+<td>
+<p>Line type of the measured 210Pb data. Defaults to continuous lines.</p>
+</td></tr>
+<tr valign="top"><td><code>pb.log</code></td>
+<td>
+<p>Use a log scale for the 210Pb-axis (default <code>pb.log=FALSE</code>).</p>
+</td></tr>
+<tr valign="top"><td><code>supp.col</code></td>
+<td>
+<p>Colour of the supported 210Pb data. Defaults to red: <code>supp.col="red"</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>newplot</code></td>
+<td>
+<p>make new plot (default TRUE)</p>
+</td></tr>
+<tr valign="top"><td><code>on.agescale</code></td>
+<td>
+<p>Plot the Pb-210 on the cal BP scale. Defaults to FALSE.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>This function is generally called internally to produce the age-depth graph.
+It can be used to produce custom-built graphs.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A plot of the measured 210Pb values
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Maarten Blaauw, J. Andres Christen, Marco Aquino-Lopez
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>rbacon</em> version 2.5.5 <a href="00Index.html">Index</a>]</div>
+</body></html>

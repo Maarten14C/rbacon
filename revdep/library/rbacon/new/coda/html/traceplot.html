@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Trace plot of MCMC output</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for traceplot {coda}"><tr><td>traceplot {coda}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Trace plot of MCMC output</h2>
+
+<h3>Description</h3>
+
+<p>Displays a plot of iterations <em>vs.</em> sampled values for each variable
+in the chain, with a separate plot per variable.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>traceplot(x, smooth = FALSE,
+       col = 1:6, type = "l", xlab = "Iterations", ylab = "", ...)</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>An <code>mcmc</code> or <code>mcmc.list</code> object</p>
+</td></tr>
+<tr valign="top"><td><code>smooth</code></td>
+<td>
+<p>draw smooth line through trace plot</p>
+</td></tr>
+<tr valign="top"><td><code>col</code></td>
+<td>
+<p>graphical parameter (see <code>par</code>)</p>
+</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+<p>graphical parameter (see <code>plot</code>)</p>
+</td></tr>
+<tr valign="top"><td><code>xlab</code></td>
+<td>
+<p>graphical parameter (see <code>plot</code>)</p>
+</td></tr>
+<tr valign="top"><td><code>ylab</code></td>
+<td>
+<p>graphical parameter (see <code>plot</code>)</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>further graphical parameters</p>
+</td></tr>
+</table>
+
+
+<h3>Note</h3>
+
+<p>You can call this function directly, but it is more usually
+called by the <code>plot.mcmc</code> function.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="densplot.html">densplot</a></code>, <code><a href="plot.mcmc.html">plot.mcmc</a></code>.
+</p>
+
+<hr /><div style="text-align: center;">[Package <em>coda</em> version 0.19-4 <a href="00Index.html">Index</a>]</div>
+</body></html>

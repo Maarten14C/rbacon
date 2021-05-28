@@ -1,0 +1,11 @@
+Library: /home/maarten/Dropbox/devsoftware/rbacon/revdep/library/rbacon/new
+coda   (0.19-4)
+IntCal (0.1.3)
+rbacon (2.5.6)
+Rcpp   (1.0.6)
+
+Library: /home/maarten/Dropbox/devsoftware/rbacon/revdep/library/rplum
+coda    (0.19-4)
+IntCal  (0.1.3)
+lattice (0.20-44)
+Rcpp    (1.0.6)
