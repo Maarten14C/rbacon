@@ -1,0 +1,28 @@
+---
+title: "Locations of Bacon folders and files"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{"foldersfiles"}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+It is important to understand where rbacon goes to look for files and will place new files.
+
+... Bacon will tell
+
+
+... Adapt coredir... (write access problem)
+
+... Your own core...
+
+... add cc, add delta.R, t.a/b...
+
+
+
+***
+
+[contents](./contents.html)
+<br>
+[<- previous [priors and settings]](./priorssettings.html)
+<br>
+[next [post-run analysis] ->](./postrun.html)

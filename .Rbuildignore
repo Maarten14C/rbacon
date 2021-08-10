@@ -1,3 +1,5 @@
 ^cran-comments\.md$
 ^checkTheseRunCommands.txt$
 ^CRAN-RELEASE$
+^doc$
+^Meta$

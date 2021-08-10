@@ -1,0 +1,25 @@
+---
+title: "Post-run analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{"postrun"}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+proxy.ghost...
+
+accrate.depth.ghost
+
+accrate.age.ghost
+
+flux
+
+some more analysis
+
+***
+
+[contents](./contents.html)
+<br>
+[<- previous [folders and files]](./foldersfiles.html)
+<br>
+[next [FAQ] ->](./FAQ.html)

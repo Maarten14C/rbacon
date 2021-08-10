@@ -1,0 +1,82 @@
+---
+title: "FAQ"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{"FAQ"}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+### What does Bacon stand for?
+
+Bayesian accumulation model. It also stands for a breakfast item which can be cooked floppy/thick or crunchy/thin, much like the prior settings for Bacon.
+
+Moreover, Francis Bacon once said "If we begin with certainties, we shall end in doubts; but if we begin with doubts, and are patient in them, we shall end in certainties". This quote is quite appropriate for Bayesian age-models, which aim to express and robustly quantify chronological uncertainties (and do a better job at this than classical approaches).
+
+### I don't like Bacon
+
+Try `tofu()`, which does exactly the same but without the meat.
+
+### How do I cite Bacon?
+
+
+(check version, check for possible updates)
+
+### I need help
+
+
+
+### I found a bug or have an idea for a new feature
+
+
+
+### How can I set a different calibration curve?
+
+
+
+### How do I include non-14C dates?
+
+
+(for Pb-210 data, please consider using Plum rather than inputting CRS model output as cal BP dates into Bacon)
+
+
+
+### Can I extrapolate beyond the dated levels?
+
+
+
+### My core has a hiatus or a slump
+
+
+
+### What value should I use for `thick`?
+
+
+
+### Can I set different accumulation rates for different parts of my core?
+
+
+
+### Should I use the mean ages or the median ages?
+
+(use proxy.ghost)
+
+### Should I use Bayesian age-models only for cores with many dates?
+
+
+
+### Why are the calibrated distributions on the depth scale?
+
+
+
+### What indicates a good age-depth model?
+
+
+
+
+
+
+***
+
+[contents](./contents.html)
+<br>
+[<- previous [post-run analysis]](./postrun.html)

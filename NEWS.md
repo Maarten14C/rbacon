@@ -1,3 +1,7 @@
+# rbacon 2.5.7
+* added an option to agedepth to plot date labels (plot.labels)
+* added vignettes
+
 # rbacon 2.5.6
 * removed closeAllConnections() as requested by Kurt Hornik (CRAN)
 * adapted agedepth() for further Plum corrections
