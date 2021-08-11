@@ -138,8 +138,10 @@ assign_coredir <- function(coredir, core, ask=TRUE, isPlum=FALSE) {
         if(dir.exists(runs))
           coredir <- runs else {
             coredir <- runs
-            ans <- readline(paste0("I will create a folder called ", coredir, ", is that OK? (y/n)  "))
-            if(ask)
+            if(!ask)
+              ans <- "y" else
+                ans <- readline(paste0("I will create a folder called ", coredir, ", is that OK? (y/n)  "))
+
               if(tolower(substr(ans,1,1)) == "y")
                 wdir <- dir.create(coredir, FALSE) else
                   stop("No problem. Please provide an alternative folder location using coredir\n", call.=FALSE)

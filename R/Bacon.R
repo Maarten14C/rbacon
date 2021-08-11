@@ -5,7 +5,7 @@
 #'
 #' @docType package
 #' @author Maarten Blaauw <maarten.blaauw@qub.ac.uk> J. Andres Christen <jac@cimat.mx> 
-#' @importFrom grDevices dev.cur dev.off pdf dev.copy2pdf grey rgb dev.list extendrange
+#' @importFrom grDevices dev.copy2pdf dev.cur dev.list dev.off extendrange grey pdf rgb
 #' @importFrom graphics abline axis box curve hist image layout legend lines mtext par plot points polygon rect segments text
 #' @importFrom stats approx coef dbeta density dgamma dnorm dunif lm median quantile rnorm weighted.mean  
 #' @importFrom utils packageName read.csv read.table setTxtProgressBar txtProgressBar write.table 
@@ -16,12 +16,12 @@
 #' @name rbacon
 NULL
 
-# to enable direct use of copyCalibrationCurve, mix.curves, pMC.age & age.pMC
+# to enable direct use of ccurve, mix.curves, pMC.age & age.pMC
 library(IntCal)
 
-# do: update Vignettes, add function to estimate best thick value
+# do: add function to estimate best thick value. Why is hiatus.max listed twice in _settings.txt?
 
-# done: added tofu wrapper for Bacon function, added Vignettes, added option to print date labels to the age-depth model plot
+# done: added tofu wrapper for Bacon function, added Vignettes, added option to print date labels to the age-depth model plot, if ask was FALSE, Bacon still asked about producing a Bacon_runs folder (if not present)
 
 # for future versions: check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), can ssize be predicted more accurately?, produce proxy.ghost graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, add function to estimate best thickness, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
@@ -103,7 +103,7 @@ library(IntCal)
 #' @param cc4 Use an alternative curve (3 columns: cal BP, 14C age, error, separated by white spaces and saved as a plain-text file). See \code{ccdir}.
 #' @param ccdir Directory where the calibration curves for C14 dates \code{cc} are located. By default \code{ccdir=""}.
 #' For example, use \code{ccdir="."} to choose current working directory, or \code{ccdir="Curves/"} to choose sub-folder \code{Curves/}. Note that all calibration curves should reside in the same directory. If you want to add a custom-built curve, put it in the directory where the default calibration curves are (probably \code{list.files(paste0(.libPaths(), "/IntCal/extdata"))}).
-#' Alternatively produce a new folder, and add your curve as well as the default calibration curves there (cc1, cc2 and cc3; e.g., \code{write.table(copyCalibrationCurve(1), "./3Col_intcal20.14C", sep="\t")}.)
+#' Alternatively produce a new folder, and add your curve as well as the default calibration curves there (cc1, cc2 and cc3; e.g., \code{write.table(ccurve(1), "./3Col_intcal20.14C", sep="\t")}.)
 #' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages. \code{0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}
 #' @param delta.R Mean of core-wide age offsets (e.g., regional marine offsets).
 #' @param delta.STD Error of core-wide age offsets (e.g., regional marine offsets).

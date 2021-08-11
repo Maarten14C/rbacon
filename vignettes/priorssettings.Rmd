@@ -6,7 +6,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
-Another core that comes with rbacon is RLGH3 (Jones et al. 1989 J. Ecol 77: 1-23). This core has a lower dating density than MSB2K and also has a section where there appear to be outlying dates (or in other words, some of the dates don't seem to agree with other nearby dates). Since initial checks seem a slower accumulation rate (or rather, sedimentation time) than rbacon's default of 20 yr/cm, rbacon will ask if the prior should be changed to 50 yr/cm. For now, respond with `n` or `Enter`, so that the default, non-adapted settings will be used.
+Another core that comes with rbacon is RLGH3[^1]. This core has a lower dating density than MSB2K and has a section where there appear to be outlying dates (or in other words, some of the dates don't seem to agree with other nearby dates). Since initial checks indicate a slower accumulation rate (or rather, sedimentation time) than rbacon's default of 20 yr/cm, rbacon will ask if the prior should be changed to 50 yr/cm. For now, respond with `n` or `Enter`, so that the default, non-adapted settings will be used.
 
 ```{R, eval=FALSE}
 Bacon('RLGH3')
@@ -14,8 +14,7 @@ Bacon('RLGH3')
 
 ![age-depth model of RLGH3 using the default settings](./images/RLGH3_default.png)
 
-Note that with the default settings, the age-model bypasses some of the younger dates between 130 and 60 cm core depth, since the older dates seem to fit better with the model and the dates further downcore and higher up the core. On top of this, the model bypasses the bottom date, because if the age-model were to go through this date, it would require large-scale changes in sedimentation times which seem to be prohibited by the default settings for the prior information. So let's run the model again, this time accepting the suggested default of 50 yr/cm for the accumulation rate (type `y` and press `Enter`):
-
+Note that with the default settings, the age-model bypasses some of the younger dates between 130 and 60 cm core depth, since the older dates seem to fit better with the model and the dates further downcore and higher up the core. On top of this, the model bypasses the bottom date, because if the age-model were to go through this date, it would require large-scale changes in sedimentation times which seem to be prohibited by the default settings for the prior information. So let's run the model again, this time accepting the suggested value of 50 yr/cm for the accumulation rate `acc.mean` (type `y` and press `Enter`):
 
 ```{R, eval=FALSE}
 Bacon('RLGH3')
@@ -23,7 +22,7 @@ Bacon('RLGH3')
 
 ![age-depth model of RLGH3 using suggested settings](./images/RLGH3_50yrcm.png)
 
-With the adapted prior for the accumulation rate, now the lowermost date *is* taken into account. Now, what if someone you trusted told you that they had some very strong information from other nearby lakes that sedimentation times are very likely to be 50 yr/cm? Then we can set the prior to be much more restrictive than the default - we let it peak higher so that the accumulation rates are 'forced' to values around 50 yr/cm:
+With the adapted prior for the accumulation rate, now the lowermost date *is* taken into account. Now, what if someone you trusted told you that they had some very strong information from other nearby lakes that sedimentation times are very likely to be 50 yr/cm? Then we can set the prior to be much more restrictive than the default - we let the green curve peak higher so that the accumulation rates are 'forced' to values around 50 yr/cm:
 
 ```{R, eval=FALSE}
 Bacon('RLGH3', acc.mean=50, acc.shape=100)
@@ -31,7 +30,9 @@ Bacon('RLGH3', acc.mean=50, acc.shape=100)
 
 ![age-depth model of RLGH3 using a much stronger accumulation rate prior](./images/RLGH3_50yrcm_strong.png)
 
-Bacon did what it was told to do. The posterior accumulation rates fit very well with the prior of 50 yr/cm. The age-depth model itself however is very straight and isn't very realistic, as most of the dates don't fit with the model. Note also the top-left panel which shows the MCMC run; the first thousand or so iterations are still sub-optimal and should really be removed using the `scissors` function. In all, not a good age-depth model, and it's probably a good idea to find another expert with more realistic prior information.
+Bacon did what it was told to do. The posterior accumulation rates fit very well with the prior's mean of 50 yr/cm. The age-depth model itself however is very straight and isn't very realistic, and most of the dates don't fit with the model. Note also the top-left panel which shows the MCMC run; the first thousand or so iterations are still sub-optimal and should really be removed using the `scissors` function. In all, not a good age-depth model, and it's probably a good idea to talk to your expert again, or find another one with more realistic prior information.
+
+When comparing the prior (green) and posterior (grey) distributions of the accumulation rate and the memory, it can be helpful to consider that the Bayesian approach aims to combine prior information with new data in order to 'learn' about the process, in other words to update its information about the parameters involved. The default priors were chosen to be sufficiently broad to allow the data to inform us about the accumulation rate and its variability.
 
 ## memory
 
@@ -80,3 +81,5 @@ and to see all options and settings for the age-model plot, type:
 [<- previous [intro]](./intro.html)
 <br>
 [next [files and folders] ->](./foldersfiles.html)
+
+[^1]: Jones, V.J., Stevenson, A.C., Battarbee, R.W., 1989. Acidification of lakes in Galloway, south west Scotland - a diatom and pollen study of the post-glacial history of the Round Loch of Glenhead. *Journal of Ecology* 77, 1-23
