@@ -21,8 +21,6 @@ Baconvergence("MSB2K", thick=5, runs=5, ssize=100, coredir=tempfile())
  Probably not a robust MCMC run! Too much difference between runs, above the 1.05 threshold. Increase sample size?
 ```
 
-***
-
 ### greyscale plots
 
 Once a robust, reliable and realistic age-depth model has been produced, the fun starts. Greyscale plots for example can be used to show not just one age-depth curve but the entire MCMC run output. If pollen or other 'proxies' have been analysed across a range of depths of your core, then these proxies can be plotted on the time-scale as grey-scale 'ghosts' where less certain sections are plotted in lighter grey than more certain sections. Bacon looks for a file in the core's folder, starting with the core's name and ending in `_proxies.csv`, e.g., `Bacon_runs/MSB2K/MSB2K_proxies.csv`. This file should have columns separated by commas, with the first column being the depth, followed by columns for the proxies. The first row should contain the names of the columns. To produce a proxy ghost of the seventh proxy of MSB2K:
@@ -44,8 +42,6 @@ accrate.age.ghost()
 
 ![ghost-graph of the accumulation rate of core MSB2K over time](./images/accrateageghost.png)
 
-
-***
 
 ### Other analyses
 
