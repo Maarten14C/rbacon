@@ -28,7 +28,7 @@ library(IntCal)
 # added line 133 to bacon.cpp, All.outputFiles(outputfile1); this line is present in rplum's bacon.cpp
 # added #include <vector> at line 14 of input.h. 
 # twalk.h, line 306, delete phi; was delete[] phi (as this is what it says on jac's site)
-# kernel 3 hop, in kernel.cpp, line 155, has  intProd += (h[j]-x[j])*(h[j]-x[j]);, but x is xp in rplum's version
+# kernel 3 hop, in kernel.cpp, line 155, has intProd += (h[j]-x[j])*(h[j]-x[j]);, but x is xp in rplum's version
 # vector.cpp, lines 28-34, fver_vector differs between rplum and rbacon
 
 # read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum. Currently done using utils::getFromNamespace which is basically a way to allow :::
