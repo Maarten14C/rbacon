@@ -19,7 +19,7 @@ NULL
 # to enable direct use of ccurve, mix.curves, pMC.age & age.pMC
 library(IntCal)
 
-# do:
+# do: is the value of 'thick' saved anywhere in the files? Perhaps in the .bacon file? Not really. Produce a file core_nsec.txt with thick, d.min and d.max in it?
 
 # done: added tofu wrapper for Bacon function, added Vignettes, added option to print date labels to the age-depth model plot, if ask was FALSE, Bacon still asked about producing a Bacon_runs folder (if not present)
 

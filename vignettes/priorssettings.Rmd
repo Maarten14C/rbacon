@@ -1,8 +1,8 @@
 ---
-title: "Priors and other settings"
+title: Priors and other settings
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{"priorssettings"}
+  %\VignetteIndexEntry{priorssettings}
   %\VignetteEngine{knitr::rmarkdown}
 ---
 

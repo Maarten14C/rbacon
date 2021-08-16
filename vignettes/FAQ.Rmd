@@ -1,8 +1,8 @@
 ---
-title: "FAQ"
+title: FAQ
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{"FAQ"}
+  %\VignetteIndexEntry{FAQ}
   %\VignetteEngine{knitr::rmarkdown}
 ---
 

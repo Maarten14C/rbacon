@@ -3,15 +3,15 @@ Type: Package
 Title: Age-Depth Modelling using Bayesian Statistics
 Version: 2.5.7
 Authors@R: c(
-    person("Maarten", "Blaauw", email = "maarten.blaauw@qub.ac.uk", role = c("aut", "cre")),
-    person("J. Andres", "Christen", email = "jac@cimat.mx", role = c("aut", "ctb", "cph")),
-    person("Marco A.", "Aquino Lopez", email = "aquino@cimat.mx", role="aut"),
-	person("Judith", "Esquivel Vazquez", email = "", role = "ctb"),
+person("Maarten", "Blaauw", email = "maarten.blaauw@qub.ac.uk", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-5680-1515")),
+  person("J. Andres", "Christen", email = "jac@cimat.mx", role = c("aut", "ctb", "cph"), comment = c(ORDIC = "0000-0002-5795-4345")),
+  person("Marco A.", "Aquino Lopez", email = "aquino@cimat.mx", role="aut"),
+  person("Judith", "Esquivel Vazquez", email = "", role = "ctb"),
   person("Oscar M.", "Gonzalez V.", email = "", role = "ctb"),
-	person("Ted", "Belding", role = "cph"),
-	person("James", "Theiler", role = "cph"),
-	person("Brian", "Gough", role = "cph"),
-	person("Charles", "Karney", role = "cph"))
+  person("Ted", "Belding", role = "cph"),
+  person("James", "Theiler", role = "cph"),
+  person("Brian", "Gough", role = "cph"),
+  person("Charles", "Karney", role = "cph"))
 Description: An approach to age-depth modelling that uses Bayesian statistics to reconstruct accumulation histories for deposits, through combining radiocarbon and other dates with prior information. See Blaauw & Christen (2011).
 Encoding: UTF-8
 Repository: CRAN
