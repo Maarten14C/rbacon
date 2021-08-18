@@ -3,7 +3,7 @@ Type: Package
 Title: Age-Depth Modelling using Bayesian Statistics
 Version: 2.5.7
 Authors@R: c(
-person("Maarten", "Blaauw", email = "maarten.blaauw@qub.ac.uk", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-5680-1515")),
+person("Maarten", "Blaauw", email = "maarten.blaauw@qub.ac.uk", role = c("aut", "cre")),
   person("J. Andres", "Christen", email = "jac@cimat.mx", role = c("aut", "ctb", "cph"), comment = c(ORDIC = "0000-0002-5795-4345")),
   person("Marco A.", "Aquino Lopez", email = "aquino@cimat.mx", role="aut"),
   person("Judith", "Esquivel Vazquez", email = "", role = "ctb"),
