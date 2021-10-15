@@ -37,6 +37,7 @@ Authors@R:
              role = "cph"))
 Description: An approach to age-depth modelling that uses Bayesian statistics to reconstruct accumulation histories for deposits, through combining radiocarbon and other dates with prior information. See Blaauw & Christen (2011).
 Encoding: UTF-8
+URL: https://github.com/Maarten14C/rbacon
 Repository: CRAN
 License: GPL (>= 2)
 NeedsCompilation: yes
