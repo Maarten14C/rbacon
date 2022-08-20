@@ -1,6 +1,8 @@
 # rbacon 2.6.0
 * accrates.depth.ghost() and accrate.age.ghost() now invisibly return the ranges, medians and means for each depth resp. age, e.g., tmp <- accrates.depth.ghost(); head(tmp)
 * corrected the help description for Bacon.d.Age() with thanks to Henningte
+* the length of the ages output of accrate.age() is now the same even if there are NAs in the output (with thanks to Henningte)
+
 
 # rbacon 2.5.8
 * some minor updates to the vignettes
