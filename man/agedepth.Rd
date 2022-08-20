@@ -128,7 +128,7 @@ agedepth(
 
 \item{d.max}{Maximum depth of age-depth model (use this to extrapolate to depths below the bottom dated depth).}
 
-\item{d.by}{Depth intervals at which ages are calculated. Default 1. Alternative depth intervals can be provided using, e.g., d.\code{by=0.5}.}
+\item{d.by}{Depth intervals at which ages are calculated. Default 1. Alternative depth intervals can be provided using, e.g., d.\code{d.by=0.5}.}
 
 \item{depths}{By default, Bacon will calculate the ages for the depths \code{d.min} to \code{d.max} in steps of \code{d.by}. Alternative depths can be provided as, e.g., \code{depths=seq(0, 100, length=500)} or as a file, e.g., \code{depths=read.table("CoreDepths.txt"}. See also \code{depths.file}.}
 

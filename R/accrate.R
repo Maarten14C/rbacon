@@ -130,7 +130,7 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
 #'   agedepth(yr.res=50, d.res=50, d.by=10)
 #'   layout(1)
 #'   tmp <- accrate.depth.ghost()
-#'   tmp
+#'   head(tmp)
 #' }
 #' @export
 accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, cutoff=0.001, rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2,  rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE, bty="l", remove.laststep=TRUE) {
@@ -191,7 +191,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
     if(plot.median)
       lines(median.rng, d, type="s", col=median.col, lty=median.lty)
     if(remove.laststep)
-      abline(h=min(info$elbows), col="white", lwd=2)
+      abline(h=min(set$elbows), col="white", lwd=2)
   } else {
       plot(0, type="n", xlab=d.lab, ylab=acc.lab, xlim=d.lim, ylim=acc.lim, bty="n")
       for(i in 2:length(d)) {
@@ -208,7 +208,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
     if(plot.median)
       lines(d, median.rng, type="s", col=median.col, lty=median.lty)
     if(remove.laststep)
-      abline(v=max(info$elbows), col="white", lwd=1)
+      abline(v=max(set$elbows), col="white", lwd=1)
     }
 
   box(bty=bty)  
@@ -264,7 +264,8 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(age.res=20, d.res=20, d.by=10)
 #'   layout(1)
-#'   accrate.age.ghost(age.res=200, acc.res=100)
+#'   tmp <- accrate.age.ghost(age.res=200, acc.res=100)
+#'   head(tmp)
 #' }
 #' @export
 accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res=400, acc.res=200, cutoff=.001, dark=1, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, xaxs="i", yaxs="i", bty="l") {

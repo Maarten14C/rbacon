@@ -11,13 +11,13 @@
 #' @importFrom utils packageName read.csv read.table setTxtProgressBar txtProgressBar write.table 
 #' @importFrom Rcpp evalCpp
 #' @importFrom coda as.mcmc gelman.diag mcmc.list
-#' @import IntCal
+#' @import rintcal
 #' @useDynLib rbacon
 #' @name rbacon
 NULL
 
 # to enable direct use of ccurve, mix.curves, pMC.age & age.pMC
-library(IntCal)
+library(rintcal)
 
 # todo: check if _settings.txt is updated after a run, or after a subsequent run. Is this doing the same w Plum? accrate.age.ghost needs a kcal option, also needs xaxt as an option (check w BCAD), check if/how ssize is calculated now
 
@@ -112,7 +112,7 @@ library(IntCal)
 #' @param cc3 For southern hemisphere 14C dates (SHCal20).
 #' @param cc4 Use an alternative curve (3 columns: cal BP, 14C age, error, separated by white spaces and saved as a plain-text file). See \code{ccdir}.
 #' @param ccdir Directory where the calibration curves for C14 dates \code{cc} are located. By default \code{ccdir=""}.
-#' For example, use \code{ccdir="."} to choose current working directory, or \code{ccdir="Curves/"} to choose sub-folder \code{Curves/}. Note that all calibration curves should reside in the same directory. If you want to add a custom-built curve, put it in the directory where the default calibration curves are (probably \code{list.files(paste0(.libPaths(), "/IntCal/extdata"))}).
+#' For example, use \code{ccdir="."} to choose current working directory, or \code{ccdir="Curves/"} to choose sub-folder \code{Curves/}. Note that all calibration curves should reside in the same directory. If you want to add a custom-built curve, put it in the directory where the default calibration curves are (probably \code{list.files(paste0(.libPaths(), "/rintcal/extdata"))}).
 #' Alternatively produce a new folder, and add your curve as well as the default calibration curves there (cc1, cc2 and cc3; e.g., \code{write.table(ccurve(1), "./3Col_intcal20.14C", sep="\t")}.)
 #' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages. \code{0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}
 #' @param delta.R Mean of core-wide age offsets (e.g., regional marine offsets).
@@ -201,7 +201,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   
   # set the calibration curve
   if(ccdir == "")
-    ccdir <- system.file("extdata", package="IntCal")
+    ccdir <- system.file("extdata", package="rintcal")
   ccdir <- validateDirectoryName(ccdir)
 
   # default_settings.txt is located within system.file

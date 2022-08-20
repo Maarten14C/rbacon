@@ -29,7 +29,8 @@ accrate.depth.ghost(
   rotate.axes = FALSE,
   rev.d = FALSE,
   rev.acc = FALSE,
-  bty = "l"
+  bty = "l",
+  remove.laststep = TRUE
 )
 }
 \arguments{
@@ -82,9 +83,11 @@ accrate.depth.ghost(
 \item{rev.acc}{The direction of the accumulation rate axis can be reversed from the default (\code{rev.acc=TRUE}).}
 
 \item{bty}{Type of box to be drawn around the plot (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).}
+
+\item{remove.laststep}{Add a white line to remove spurious lines at the extreme of the graph. Defaults to TRUE.}
 }
 \value{
-A grey-scale plot of accumulation rate against core depth.
+A grey-scale plot of accumulation rate against core depth, and (invisibly) the list of depths and their accumulation rates (ranges, medians, means).
 }
 \description{
 Plot grey-scale representation of modelled accumulation rates over a core's depth. Each section of the core (see Bacon's option \code{"thick"}) will have modelled accumulation rates.
@@ -99,7 +102,8 @@ if calculated in cm/yr; therefore you might want to manually adapt the axis limi
   Bacon(run=FALSE, coredir=tempfile())
   agedepth(yr.res=50, d.res=50, d.by=10)
   layout(1)
-  accrate.depth.ghost()
+  tmp <- accrate.depth.ghost()
+  tmp
 }
 }
 \author{

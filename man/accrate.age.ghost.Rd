@@ -96,7 +96,7 @@ accrate.age.ghost(
 \item{bty}{Type of box to be drawn around the plot (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).}
 }
 \value{
-A greyscale plot of accumulation rate against calendar age.
+A greyscale plot of accumulation rate against calendar age, and (invisibly) the list of ages and their accumulation rates (ranges, medians, means).
 }
 \description{
 Plot a grey-scale representation of a core's estimated accumulation rates against time.

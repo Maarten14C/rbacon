@@ -204,11 +204,11 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
   # check if 'classic' dets file, which has a different column order from the current default
   if(ncol(dets) > 4)
     if(ncol(dets) == 5) { # then probably a 'new' dets file
-      if((name[5] %in% cc.names) && min(dets[,5]) >= 0 && max(dets[,5]) <= 4) {} else # extra check for correct values
+      if((name[5] %in% cc.names) && min(dets[,5])[1] >= 0 && max(dets[,5])[1] <= 4) {} else # extra check for correct values
         stop("unexpected name or values in fifth column (cc, should be between 0 and 4). Please check the manual for guidelines in producing a correct .csv file.\n", call.=FALSE)
     } else
       if(ncol(dets) == 6) { # probably an 'old' file: dR, dSTD, but could also be cc and delta.R (so no column for delta.STD)
-        if(name[5] %in% dR.names && name[6] %in% dSTD.names) {
+        if((name[5] %in% dR.names) && (name[6] %in% dSTD.names)) {
 			message("\nHELP!!! 6!!!")
           dets <- cbind(dets[,1:4], rep(cc, nrow(dets)), dets[,5:6]) # some shuffling
           message(" Assumed order of columns in dets file: lab ID, Age, error, depth, dR, dSTD. \nAdding calibration curve column (fifth column, before dR and dSTD) and saving as", csv.file)
@@ -217,14 +217,14 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
 	      stop("unexpected names for columns 5/6. If you want to include delta.R, also add a column for delta.STD. Check the manual for guidelines to producing a correct .csv file.\n", call.=FALSE)
       } else
         if(ncol(dets) == 7) { # probably a 'new' file: cc, dR, dSTD
-          if(name[5] %in% cc.names && min(dets[,5]) >= 0 && max(dets[,5]) <= 4 &&
+          if(name[5] %in% cc.names && min(dets[,5]) >= 0 && max(dets[,5])[1] <= 4 &&
             name[6] %in% dR.names && name[7] %in% dSTD.names)
               {} else
                  stop("unexpected column names, order or values in dets file. \nPlease check the manual for correct dets file formats.\n", call.=FALSE)
         } else
           if(ncol(dets) == 8) { # probably an 'old' file: dR, dSTD, ta, tb
-            if(name[5] %in% dR.names && name[6] %in% dSTD.names)
-            if(name[7] %in% ta.names && name[8] %in% tb.names)
+            if((name[5] %in% dR.names) && (name[6] %in% dSTD.names))
+            if((name[7] %in% ta.names) && (name[8] %in% tb.names))
             if(range(dets[,8] - dets[,7]) == c(1,1)) { # check that these set expected student-t values
               dets <- cbind(dets[,1:4], rep(cc, nrow(dets)), dets[,5:6]) # some shuffling
               message(" Assumed order of columns in dets file: lab ID, Age, error, depth, dR, dSTD. \nAdding calibration curve column (fifth column, before dR and dSTD) and saving as", csv.file)
@@ -233,20 +233,20 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
               stop("unexpected column names, order or values in dets file. \nPlease check the manual for how to produce a correct .csv file", call.=FALSE)
           } else
             if(ncol(dets) == 9) { # most complex case, many checks needed
-              if(name[9] %in% cc.names && # we're almost sure that this is a 'classic' dets file
-                min(dets[,9]) >= 0 && max(dets[,9]) <= 4 && # check that this sets calibration curves
-                  range(dets[,8] - dets[,7]) == c(1,1) && # check that these set expected student-t values
-                    name[5] %in% dR.names && name[6] %in% dSTD.names && # column names as expected?
-                      name[7] %in% ta.names && name[8] %in% tb.names) { # column names as expected?
+              if((name[9] %in% cc.names) && # we're almost sure that this is a 'classic' dets file
+                (min(dets[,9])[1] >= 0) && (max(dets[,9])[1] <= 4) && # check that this sets calibration curves
+                  (range(dets[,8] - dets[,7]) == c(1,1)) && # check that these set expected t values
+                    (name[5] %in% dR.names) && (name[6] %in% dSTD.names) && # column names as expected?
+                      (name[7] %in% ta.names) && (name[8] %in% tb.names)) { # column names as expected?
                         dets <- dets[,c(1:4,9,5:8)] # shuffle columns around
                         message(" Assumed order of columns in dets file: lab ID, Age, error, depth, dR, dSTD, t.a, t.b, cc. \nAdapting column order and saving as", csv.file)
                         changed <- 1
                       } else
-                        if(name[5] %in% cc.names && # oh, probably a 'new' file from more recent Bacon
-                          min(dets[,5]) >= 0 && max(dets[,5]) <= 4 && # check that this sets cal.curves
-                            range(dets[,9] - dets[,8]) == c(1,1) && # columns 8-9 set student-t correctly
-                              name[8] %in% ta.names && name[9] %in% tb.names && # and are correctly named
-                                name[6] %in% dR.names && name[7] %in% dSTD.names) # all lights are green
+                        if((name[5] %in% cc.names) && # probably a 'new' file from more recent Bacon
+                          (min(dets[,5])[1] >= 0) && (max(dets[,5])[1] <= 4) && # check that this sets cal.curves
+                            (range(dets[,9] - dets[,8]) == c(1,1)) && # columns 8-9 set t model parameters correctly
+                              (name[8] %in% ta.names) && (name[9] %in% tb.names) && # and are correctly named
+                                (name[6] %in% dR.names) && (name[7] %in% dSTD.names)) # all lights are green
                                   {} else
                                      stop("unexpected column names, order or values in dets file. \nPlease check the manual for how to produce a correct .csv file", call.=FALSE)
             } else
