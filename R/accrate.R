@@ -74,7 +74,8 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
      stop(" Warning, age outside the core's age range!\n")
 
   # can this be made faster, i.e. without the loop?
-  accs <- c()
+  # accs <- c()
+  accs <- rep(NA_real_, nrow(ages)) # suggested by henningte on github
   for(i in 2:ncol(ages)) {
     if(BCAD)
       these <- (ages[,i-1] > age) * (ages[,i] < age) else
@@ -120,17 +121,19 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
 #' @param rev.d The direction of the depth axis can be reversed from the default (\code{rev.d=TRUE}.
 #' @param rev.acc The direction of the accumulation rate axis can be reversed from the default (\code{rev.acc=TRUE}).
 #' @param bty Type of box to be drawn around the plot (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).
+#' @param remove.laststep Add a white line to remove spurious lines at the extreme of the graph. Defaults to TRUE.
 #' @author Maarten Blaauw, J. Andres Christen
-#' @return A grey-scale plot of accumulation rate against core depth.
+#' @return A grey-scale plot of accumulation rate against core depth, and (invisibly) the list of depths and their accumulation rates (ranges, medians, means).
 #' @examples
 #' \dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
 #'   agedepth(yr.res=50, d.res=50, d.by=10)
 #'   layout(1)
-#'   accrate.depth.ghost()
+#'   tmp <- accrate.depth.ghost()
+#'   tmp
 #' }
 #' @export
-accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, cutoff=0.001, rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2,  rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE, bty="l") {
+accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, cutoff=0.001, rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2,  rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE, bty="l", remove.laststep=TRUE) {
   max.acc <- 0; max.dens <- 0
   acc <- list(); min.rng <- numeric(length(d)); max.rng <- numeric(length(d)); mean.rng <- numeric(length(d)); median.rng <- numeric(length(d))
   for(i in 1:length(d))
@@ -147,6 +150,8 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
     mean.rng[i] <- mean(accs)
     median.rng[i] <- median(accs)
    }
+  stored <- cbind(d, min.rng, max.rng, median.rng, mean.rng)
+  colnames(stored) <- c("depth", "min.rng", "max.rng", "median", "mean")
 
   for(i in 1:length(d)) {
     acc[[i]]$y <- acc[[i]]$y/(dark*max.dens)
@@ -178,13 +183,15 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
       image(accs$x, d[c(i-1, i)], t(1-t(accs$y)), add=TRUE, col=col) # was acc[[i]]
     }
     if(plot.range) {
-      lines(min.rng, d+(set$thick/2), col=range.col, lty=range.lty)
-      lines(max.rng, d+(set$thick/2), col=range.col, lty=range.lty)
+      lines(min.rng, d, type="s", col=range.col, lty=range.lty)
+      lines(max.rng, d, type="s", col=range.col, lty=range.lty)
     }
     if(plot.mean)
-      lines(mean.rng, d+(set$thick/2), col=mean.col, lty=mean.lty)
+      lines(mean.rng, d, type="s", col=mean.col, lty=mean.lty)
     if(plot.median)
-      lines(median.rng, d+(set$thick/2), col=median.col, lty=median.lty)
+      lines(median.rng, d, type="s", col=median.col, lty=median.lty)
+    if(remove.laststep)
+      abline(h=min(info$elbows), col="white", lwd=2)
   } else {
       plot(0, type="n", xlab=d.lab, ylab=acc.lab, xlim=d.lim, ylim=acc.lim, bty="n")
       for(i in 2:length(d)) {
@@ -193,15 +200,19 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
         image(d[c(i-1, i)], accs$x, 1-t(accs$y), add=TRUE, col=col) # was acc[[i]]
         }
       if(plot.range) {
-        lines(d+(set$thick/2), min.rng, col=range.col, lty=range.lty)
-        lines(d+(set$thick/2), max.rng, col=range.col, lty=range.lty)
+        lines(d, min.rng, type="s", col=range.col, lty=range.lty, pch=NA)
+        lines(d, max.rng, type="s", col=range.col, lty=range.lty, pch=NA)
         }
     if(plot.mean)
-      lines(d+(set$thick/2), mean.rng, col=mean.col, lty=mean.lty)
+      lines(d, mean.rng, type="s", col=mean.col, lty=mean.lty)
     if(plot.median)
-      lines(d+(set$thick/2), median.rng, col=median.col, lty=median.lty)
+      lines(d, median.rng, type="s", col=median.col, lty=median.lty)
+    if(remove.laststep)
+      abline(v=max(info$elbows), col="white", lwd=1)
     }
+
   box(bty=bty)  
+  invisible(stored)
 }
 
 
@@ -247,7 +258,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' @param yaxs Extension of the y-axis. White space can be added to the vertical axis using \code{yaxs="r"}.
 #' @param bty Type of box to be drawn around the plot (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).
 #' @author Maarten Blaauw, J. Andres Christen
-#' @return A greyscale plot of accumulation rate against calendar age.
+#' @return A greyscale plot of accumulation rate against calendar age, and (invisibly) the list of ages and their accumulation rates (ranges, medians, means).
 #' @examples
 #' \dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
@@ -292,6 +303,8 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
     }
   }
   message("\n")
+  stored <- cbind(age.seq, acc.rng[,1], acc.rng[,2], acc.median, acc.mean)
+  colnames(stored) <- c("ages", "min.rng", "max.rng", "median", "mean")
 
   z <- z/(dark*max(z)) # normalise, set dark to black
   z[z>1] <- 1 # avoid values > 1
@@ -347,6 +360,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), age.res
     }
 
   box(bty=bty)
+  invisible(stored)
 }
 
 
