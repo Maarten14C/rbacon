@@ -624,7 +624,8 @@ int simulation(unsigned long long Tr1, char *filename, const char *op="wt", int 
                 Rprintf("twalk thinning: 1 out of every %d accepted iterations will be saved in file %s\n", abs(save_every), filename);
             }
             else{
-                Rprintf("twalk: All %d iterations to be saved in file %s\n", save_every, filename);
+                //Rprintf("twalk: All %d iterations to be saved in file %s\n", Tr1, filename);
+				Rprintf("twalk: All stored iterations to be saved in file %s\n", filename);
             }
         }
 

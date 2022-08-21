@@ -182,7 +182,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     dfile <- paste0(set$coredir, set$core, "/", set$core, "_depths.txt")
     if(!file.exists(dfile))
       stop("I cannot find the file ", paste0(set$coredir, set$core, "/", set$core, "_depths.txt"), call.=FALSE)
-    depths <- read.table(dfile, header=FALSE)[,1]
+    depths <- fastfread(dfile, header=FALSE)[,1]
     if(!is.numeric(depths[1]))
       stop("File should contain numbers only, no headers", call.=FALSE)
   }
@@ -351,7 +351,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     if(names(dev.cur()) != "null device")
       dev.copy2pdf(file=paste(set$prefix, ".pdf", sep=""))
 
-  write.table(set$ranges, paste(set$prefix, "_ages.txt", sep=""), quote=FALSE, row.names=FALSE, sep="\t")
+  fastwrite(set$ranges, paste0(set$prefix, "_ages.txt"), quote=FALSE, row.names=FALSE, sep="\t") # was write.table
   rng <- abs(round(set$ranges[,3]-set$ranges[,2], rounded))
   min.rng <- d[which(rng==min(rng, na.rm=TRUE))]
   max.rng <- d[which(rng==max(rng, na.rm=TRUE))]

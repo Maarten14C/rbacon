@@ -201,7 +201,7 @@ AgesOfEvents <- function(window, move, set=get('info'), plot.steps=FALSE, BCAD=s
   probfile <- paste(set$coredir, set$core, "/", set$core, "_events.txt", sep="")
   if(!file.exists(probfile))
     stop("file with probabilities for events per depth not found! Check the manual", call.=FALSE)
-  probs <- read.table(probfile)
+  probs <- fastread(probfile)
   if(!is.numeric(probs[1,1]))
     stop("first line of the _events.txt file should NOT contain titles; please remove them", call.=FALSE)
   if(min(probs[,1]) < min(set$elbows) || max(probs[,1]) > max(set$elbows)) {
@@ -209,7 +209,7 @@ AgesOfEvents <- function(window, move, set=get('info'), plot.steps=FALSE, BCAD=s
     file.rename(probfile, paste(probfile, "_backup", sep=""))
     probs <- probs[which(probs[,1] >= min(set$elbows)),]
     probs <- probs[which(probs[,1] <= max(set$elbows)),]
-    write.table(probs, probfile, col.names=FALSE, row.names=FALSE, quote=FALSE)
+    fastwrite(probs, probfile, col.names=FALSE, row.names=FALSE, quote=FALSE)
   }
 
   if(length(age.lim) == 0) {
@@ -222,7 +222,7 @@ AgesOfEvents <- function(window, move, set=get('info'), plot.steps=FALSE, BCAD=s
     }
 
   events(min.age, max.age, move, window, outfile, MCMCname, nrow(set$output), set$K, set$elbows[1], set$thick, probfile, nrow(probs))
-  probs <- read.table(outfile)
+  probs <- fastread(outfile)
   if(BCAD) {
     probs[,1] <- 1950 - probs[,1]
     o <- order(probs[,1])

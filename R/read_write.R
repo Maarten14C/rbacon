@@ -9,6 +9,16 @@ validateDirectoryName <- function(dir) {
 }
 
 
+# internal functions to speed up reading and writing files, using the data.table R package if present
+fastread <- function(fl, ...)
+  if("data.frame" %in% (.packages()))
+    as.data.frame(data.table::fread(fl), ...) else
+      read.table(fl, ...)
+
+fastwrite <- function(fl, ...)
+  if("data.frame" %in% (.packages()))
+    data.table::fwrite(as.data.frame(fl), ...) else
+      write.table(fl, ...)
 
 #' @name clam2bacon
 #' @title Translate clam .csv files to Bacon .csv files.
@@ -43,7 +53,7 @@ clam2bacon <- function(core, clamdir="clam_runs", bacondir="Bacon_runs", sep=","
   bacondir <- paste0(bacondir, "/", core)
   if(!dir.exists(bacondir))
     dir.create(bacondir)
-  write.table(baconfl, paste0(bacondir, "/", core, ".csv"), sep=sep, row.names=FALSE, quote=FALSE)
+  data.table::fwrite(as.data.frame(baconfl), paste0(bacondir, "/", core, ".csv"), sep=sep, row.names=FALSE, quote=FALSE)
 }
 
 
@@ -95,7 +105,7 @@ bacon2clam <- function(core, bacondir="Bacon_runs", clamdir="clam_runs", sep=","
   clamdir <- paste0(clamdir, "/", core)
   if(!dir.exists(clamdir))
     dir.create(clamdir)
-  write.table(clamfl, paste0(clamdir, "/", core, ".csv"), sep=sep, row.names=FALSE, quote=FALSE)
+  fastwrite(clamfl, paste0(clamdir, "/", core, ".csv"), sep=sep, row.names=FALSE, quote=FALSE)
 }
 
 
@@ -181,7 +191,7 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
   changed <- 0
 
   if(file.exists(csv.file)) {
-    dets <- read.table(csv.file, header=TRUE, sep=sep)
+    dets <- fastread(csv.file, header=TRUE, sep=sep)
     if(file.exists(dat.file)) # deal with old .dat files
       if(file.mtime(csv.file) < file.mtime(dat.file))
         message("Warning, the .dat file is newer than the .csv file! I will read the .csv file. From now on please modify ", csv.file, ", not ", dat.file) else
@@ -192,7 +202,7 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
         message("Removing .txt extension from .csv file")
       } else {
         message("No .csv file found, reading", dat.file, " and converting it to .csv")
-        dets <- read.table(dat.file, header=TRUE)
+        dets <- fastread(dat.file, header=TRUE)
         changed <- 1
         }
     }
@@ -217,8 +227,8 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
 	      stop("unexpected names for columns 5/6. If you want to include delta.R, also add a column for delta.STD. Check the manual for guidelines to producing a correct .csv file.\n", call.=FALSE)
       } else
         if(ncol(dets) == 7) { # probably a 'new' file: cc, dR, dSTD
-          if(name[5] %in% cc.names && min(dets[,5]) >= 0 && max(dets[,5])[1] <= 4 &&
-            name[6] %in% dR.names && name[7] %in% dSTD.names)
+          if((name[5] %in% cc.names) && (min(dets[,5])[1] >= 0) && (max(dets[,5])[1] <= 4) &&
+            (name[6] %in% dR.names) && (name[7] %in% dSTD.names))
               {} else
                  stop("unexpected column names, order or values in dets file. \nPlease check the manual for correct dets file formats.\n", call.=FALSE)
         } else
@@ -268,7 +278,7 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
 
   # if current dets differ from original .csv file, rewrite it
   if(changed > 0)
-    write.table(dets, csv.file, sep=paste(sep, "\t", sep=""), dec=dec, row.names=FALSE, col.names=suggested.names[1:ncol(dets)], quote=FALSE)
+    data.table::fwrite(as.data.frame(dets), csv.file, sep=paste(sep, "\t", sep=""), dec=dec, row.names=FALSE, col.names=suggested.names[1:ncol(dets)], quote=FALSE)
   dets
 }
 
@@ -503,7 +513,11 @@ write.Bacon.file <- function(set=get('info')) {
 
 # function to read output files into memory
 Bacon.AnaOut <- function(fnam, set=get('info')) {
-  out <- read.table(fnam)
+  out <- fastread(fnam) # was read.table
+  if(set$ssize < nrow(out)) { # new MB Aug 2022
+    ss <- sample(1:nrow(out), set$ssize, replace=FALSE) # draw random iterations
+    out <- out[ss,] # new MB Aug 2022
+  }
   n <- ncol(out)-1
   set$n <- n
   set$Tr <- nrow(out)
@@ -516,7 +530,11 @@ Bacon.AnaOut <- function(fnam, set=get('info')) {
 
 # function to read plum output files into memory, updated May 2021
 Plum.AnaOut <- function(fnam, set=get('info')) {
-  out <- read.table(fnam)
+  out <- fastread(fnam) # was read.table
+  if(set$ssize < nrow(out)) { # new MB Aug 2022
+    ss <- sample(1:nrow(out), set$ssize, replace=FALSE) # draw random iterations
+    out <- out[ss,] # new MB Aug 2022
+  }
   n <- ncol(out)-1
   set$nPs <- n
   set$TrPs <- nrow(out)

@@ -1,8 +1,9 @@
 # rbacon 2.6.0
 * accrates.depth.ghost() and accrate.age.ghost() now invisibly return the ranges, medians and means for each depth resp. age, e.g., tmp <- accrates.depth.ghost(); head(tmp)
+* files are read and written faster (if the data.table R package is installed and loaded)
 * corrected the help description for Bacon.d.Age() with thanks to Henningte
 * the length of the ages output of accrate.age() is now the same even if there are NAs in the output (with thanks to Henningte)
-
+* corrected (I hope) a bug in read.dets relating variable lengths causing errors in R 4.2 (with thanks to nickmckay for reporting)
 
 # rbacon 2.5.8
 * some minor updates to the vignettes
@@ -11,7 +12,7 @@
 # rbacon 2.5.7
 * added an option to agedepth to plot date labels (plot.labels)
 * added vignettes
-* If ask=FALSE, Bacon now does not ask before writing a new folder (if required)
+* if ask=FALSE, Bacon now does not ask before writing a new folder (if required)
 
 # rbacon 2.5.6
 * removed closeAllConnections() as requested by Kurt Hornik (CRAN)

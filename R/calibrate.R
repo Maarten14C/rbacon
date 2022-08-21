@@ -216,25 +216,30 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
 # calibrate C14 dates and calculate distributions for any calendar dates
 bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.01, postbomb=set$postbomb, normal=set$normal, t.a=set$t.a, t.b=set$t.b, delta.R=set$delta.R, delta.STD=set$delta.STD, ccdir="") {
   # read in the curves
-  if(set$cc1=="IntCal20" || set$cc1=="\"IntCal20\"")
-    cc1 <- read.table(paste0(ccdir, "3Col_intcal20.14C")) else
-      cc1 <- read.csv(paste0(ccdir, set$cc1, ".14C"), header=FALSE, skip=11)[,1:3]
-  if(set$cc2=="Marine20" || set$cc2=="\"Marine20\"")
-    cc2 <- read.table(paste0(ccdir, "3Col_marine20.14C")) else
-      cc2 <- read.csv(paste0(ccdir, set$cc2, ".14C"), header=FALSE, skip=11)[,1:3]
-  if(set$cc3=="SHCal20" || set$cc3=="\"SHCal20\"")
-    cc3 <- read.table(paste0(ccdir, "3Col_shcal20.14C")) else
-      cc3 <- read.csv(paste0(ccdir, set$cc3, ".14C"), header=FALSE, skip=11)[,1:3]
-  if(set$cc4=="ConstCal" || set$cc4=="\"ConstCal\"") cc4 <- NA else
-    cc4 <- read.table(paste0(ccdir, set$cc4))[,1:3]
+  #if(set$cc1=="IntCal20" || set$cc1=="\"IntCal20\"")
+  #  cc1 <- fastread(paste0(ccdir, "3Col_intcal20.14C")) else
+  #    cc1 <- fastread(paste0(ccdir, set$cc1, ".14C"), header=FALSE, skip=11)[,1:3]
+  #  if(set$cc2=="Marine20" || set$cc2=="\"Marine20\"")
+  #    cc2 <- fastread(paste0(ccdir, "3Col_marine20.14C")) else
+  #      cc2 <- fastread(paste0(ccdir, set$cc2, ".14C"), header=FALSE, skip=11)[,1:3]
+  #  if(set$cc3=="SHCal20" || set$cc3=="\"SHCal20\"")
+  #    cc3 <- fastread(paste0(ccdir, "3Col_shcal20.14C")) else
+  #      cc3 <- fastread(paste0(ccdir, set$cc3, ".14C"), header=FALSE, skip=11)[,1:3]
+  #  if(set$cc4=="ConstCal" || set$cc4=="\"ConstCal\"") cc4 <- NA else
+  #    cc4 <- fastread(paste0(ccdir, set$cc4))[,1:3]
+  cc1 <- rintcal::ccurve(set$cc1)
+  cc2 <- rintcal::ccurve(set$cc2)
+  cc3 <- rintcal::ccurve(set$cc3)
+  cc4 <- rintcal::ccurve(set$cc4)
 
   if(postbomb != 0) {
-    if(postbomb==1) bomb <- read.table(paste0(ccdir,"postbomb_NH1.14C"))[,1:3] else
-      if(postbomb==2) bomb <- read.table(paste0(ccdir,"postbomb_NH2.14C"))[,1:3] else
-        if(postbomb==3) bomb <- read.table(paste0(ccdir,"postbomb_NH3.14C"))[,1:3] else
-          if(postbomb==4) bomb <- read.table(paste0(ccdir,"postbomb_SH1-2.14C"))[,1:3] else
-            if(postbomb==5) bomb <- read.table(paste0(ccdir,"postbomb_SH3.14C"))[,1:3] else
-              stop("cannot find postbomb curve #", postbomb, " (use values of 1 to 5 only)", call.=FALSE)
+#     if(postbomb==1) bomb <- fastread(paste0(ccdir,"postbomb_NH1.14C"))[,1:3] else
+#       if(postbomb==2) bomb <- fastread(paste0(ccdir,"postbomb_NH2.14C"))[,1:3] else
+#         if(postbomb==3) bomb <- fastread(paste0(ccdir,"postbomb_NH3.14C"))[,1:3] else
+#           if(postbomb==4) bomb <- fastread(paste0(ccdir,"postbomb_SH1-2.14C"))[,1:3] else
+#             if(postbomb==5) bomb <- fastread(paste0(ccdir,"postbomb_SH3.14C"))[,1:3] else
+#               stop("cannot find postbomb curve #", postbomb, " (use values of 1 to 5 only)", call.=FALSE)
+    bomb <- ccurve(postbomb, postbomb=TRUE)
       # bomb.x <- seq(max(bomb[,1]), min(bomb[,1]), by=-.1) # interpolate
       bomb <- bomb[order(bomb[,1], decreasing=FALSE),]
       bomb.x <- seq(min(bomb[,1]), max(bomb[,1]), by=.1) # interpolate
