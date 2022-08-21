@@ -327,7 +327,7 @@ hiatus.slopes <- function(set=get('info'), hiatus.option=1) {
 #' }
 #' @export
 Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c(), hist.lab="Frequency", calc.range=TRUE, hist.lim=c(), draw=TRUE, prob=set$prob, hist.col=grey(0.5), hist.border=grey(.2), range.col="blue", med.col="green", mean.col="red", verbose=TRUE) {
-  outfile <- paste(set$prefix, ".out", sep="")
+  outfile <- paste0(set$prefix, ".out")
   if(length(set$output) == 0 || length(set$Tr) == 0) {
     set <- Bacon.AnaOut(outfile, set)
     assign_to_global("set", set)
@@ -391,7 +391,7 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
 
 # to calculate age ranges
 Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
-  outfile <- paste(set$prefix, ".out", sep="")
+  outfile <- paste0(set$prefix, ".out")
   if(length(set$output) == 0 || length(set$Tr) == 0) {
     set <- Bacon.AnaOut(outfile, set)
     assign_to_global("set", set)
@@ -433,7 +433,7 @@ Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
 #' }
 #' @export
 agemodel.it <- function(it, set=get('info'), BCAD=set$BCAD) {
-  outfile <- paste(set$prefix, ".out", sep="")
+  outfile <- paste0(set$prefix, ".out")
   if(length(set$output) == 0 || length(set$Tr) == 0) {
     set <- Bacon.AnaOut(outfile, set)
     assign_to_global("set", set)

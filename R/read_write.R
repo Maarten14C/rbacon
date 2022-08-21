@@ -4,7 +4,7 @@ validateDirectoryName <- function(dir) {
   dir <- suppressWarnings(normalizePath(dir))
   lastchar <- substr(dir, nchar(dir), nchar(dir))
   if(lastchar != "/" & lastchar != "\\" & lastchar != "" & lastchar != "." )
-    dir <- paste(dir, "/", sep="") # does this work in Windows?
+    dir <- paste0(dir, "/") # does this work in Windows?
   return(dir)
 }
 
@@ -53,7 +53,7 @@ clam2bacon <- function(core, clamdir="clam_runs", bacondir="Bacon_runs", sep=","
   bacondir <- paste0(bacondir, "/", core)
   if(!dir.exists(bacondir))
     dir.create(bacondir)
-  data.table::fwrite(as.data.frame(baconfl), paste0(bacondir, "/", core, ".csv"), sep=sep, row.names=FALSE, quote=FALSE)
+  fastwrite(baconfl, paste0(bacondir, "/", core, ".csv"), sep=sep, row.names=FALSE, quote=FALSE)
 }
 
 
@@ -278,7 +278,7 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
 
   # if current dets differ from original .csv file, rewrite it
   if(changed > 0)
-    data.table::fwrite(as.data.frame(dets), csv.file, sep=paste(sep, "\t", sep=""), dec=dec, row.names=FALSE, col.names=suggested.names[1:ncol(dets)], quote=FALSE)
+    data.table::fwrite(as.data.frame(dets), csv.file, sep=paste0(sep, "\t"), dec=dec, row.names=FALSE, col.names=suggested.names[1:ncol(dets)], quote=FALSE)
   dets
 }
 
@@ -319,7 +319,7 @@ Bacon.settings <- function(core, coredir, dets, thick, remember=TRUE, d.min, d.m
 
   # read in default values and those of previous run if available
   deffile <- readLines(defaults, n=-1)
-  prevfile <- paste(coredir, core, "/", core, "_settings.txt", sep="")
+  prevfile <- paste0(coredir, core, "/", core, "_settings.txt")
   prevf <- FALSE
   if(file.exists(prevfile)) {
     prevfile <- readLines(prevfile, n=-1)
@@ -354,7 +354,7 @@ Bacon.settings <- function(core, coredir, dets, thick, remember=TRUE, d.min, d.m
         mem.mean <- rep(mem.mean, length(mem.strength))
 
   ### produce/update settings file, and return the values
-  prevfile <- file(paste(coredir, core, "/", core, "_settings.txt", sep=""), "w")
+  prevfile <- file(paste0(coredir, core, "/", core, "_settings.txt"), "w")
   scat <- function(m, n="") cat(m, n, sep="", file=prevfile)
   cat(d.min, " #d.min\n", d.max, " #d.max\n", d.by, " #d.by\n",
     depths.file, " #depths.file\n", slump, " #slump\n", sep="", file=prevfile)
@@ -428,7 +428,7 @@ write.Bacon.file <- function(set=get('info')) {
     else noquote(set$cc3), ", ", set$postbomb, ";",
   if(set$cc4=="ConstCal" || set$cc4=="\"ConstCal\"") set$cc4 <- c()
     else
-      paste("\nCal 4 : GenericCal, ", set$cc4, ";", sep=""), sep="", file=fl)
+      paste0("\nCal 4 : GenericCal, ", set$cc4, ";", sep=""), file=fl)
   cat("\n\n##   id.   age    std   depth  delta.R  delta.STD     t.a   t.b   cc", file=fl)
 
   if(ncol(dets) == 4) { # then we need to provide some constants once only

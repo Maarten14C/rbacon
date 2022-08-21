@@ -2,7 +2,7 @@
 title: Getting started with rbacon
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{gettingstarted}
+  %\VignetteIndexEntry{Getting started with rbacon}
   %\VignetteEngine{knitr::rmarkdown}
     \usepackage[utf8]{inputenc}
 ---
@@ -15,7 +15,7 @@ Bacon works through R (or Rstudio), and requires a recent version of R (at least
 install.packages('rbacon')
 ``` 
 
-To use rbacon, first the package has to be loaded (this will also load its companion package IntCal):
+To use rbacon, first the package has to be loaded (this will also load its companion package rintcal):
 
 ```{r}
 library(rbacon)

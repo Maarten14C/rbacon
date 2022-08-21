@@ -1,13 +1,10 @@
 ## ---- eval=FALSE--------------------------------------------------------------
-#  mydir <- tempdir()
-#  Bacon(coredir=mydir)
+#  Baconvergence("MSB2K", thick=5, runs=5, ssize=100, coredir=tempfile())
 
 ## ---- eval=FALSE--------------------------------------------------------------
-#  Bacon(suggest=FALSE)
-#  Bacon(accept.suggestions=TRUE)
+#  proxy.ghost(7)
 
 ## ---- eval=FALSE--------------------------------------------------------------
-#  allcores <- list.files("Bacon_runs")
-#  for(i in allcores)
-#    try(Bacon(i, accept.suggestions=TRUE))
+#  accrate.depth.ghost()
+#  accrate.age.ghost()
 

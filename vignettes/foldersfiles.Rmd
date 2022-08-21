@@ -2,7 +2,7 @@
 title: Locations of folders and files
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{foldersfiles}
+  %\VignetteIndexEntry{Locations of folders and files}
   %\VignetteEngine{knitr::rmarkdown}
 ---
 

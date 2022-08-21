@@ -122,7 +122,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
   # Plum-specific
   if(set$isplum) {
-    outPlum <- paste(set$prefix, "_plum.out", sep="")
+    outPlum <- paste0(set$prefix, "_plum.out")
     if(file.exists(outPlum))
       set <- Plum.AnaOut(outPlum, set)
     assign_to_global("info", set)
@@ -182,7 +182,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     dfile <- paste0(set$coredir, set$core, "/", set$core, "_depths.txt")
     if(!file.exists(dfile))
       stop("I cannot find the file ", paste0(set$coredir, set$core, "/", set$core, "_depths.txt"), call.=FALSE)
-    depths <- fastfread(dfile, header=FALSE)[,1]
+    depths <- fastread(dfile, header=FALSE)[,1]
     if(!is.numeric(depths[1]))
       stop("File should contain numbers only, no headers", call.=FALSE)
   }
@@ -235,7 +235,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     d.lim <- d.lim[2:1]
 
   if(length(d.lab) == 0)
-    d.lab <- paste("Depth (", depth.unit, ")", sep="")
+    d.lab <- paste0("Depth (", depth.unit, ")")
   if(length(age.lab) == 0)
     age.lab <- ifelse(BCAD, "BC/AD", ifelse(kcal, "kcal BP", paste("cal", age.unit, "BP")))
 
@@ -349,7 +349,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
   if(plot.pdf)
     if(names(dev.cur()) != "null device")
-      dev.copy2pdf(file=paste(set$prefix, ".pdf", sep=""))
+      dev.copy2pdf(file=paste0(set$prefix, ".pdf"))
 
   fastwrite(set$ranges, paste0(set$prefix, "_ages.txt"), quote=FALSE, row.names=FALSE, sep="\t") # was write.table
   rng <- abs(round(set$ranges[,3]-set$ranges[,2], rounded))

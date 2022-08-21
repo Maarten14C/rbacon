@@ -15,12 +15,12 @@
 #' @param normal By default, Bacon uses the student's t-distribution to treat the dates. Use \code{normal=TRUE} to use the normal/Gaussian distribution. This will generally give higher weight to the dates.
 #' @param delta.R Mean of core-wide age offsets (e.g., regional marine offsets).
 #' @param delta.STD Error of core-wide age offsets (e.g., regional marine offsets).
-#' @param t.a The dates are treated using the student's t distribution by default (\code{normal=FALSE}).
-#' The student's t-distribution has two parameters, t.a and t.b, set at 3 and 4 by default (see Christen and Perez, 2010).
+#' @param t.a The dates are treated using the t distribution by default (\code{normal=FALSE}).
+#' The t model has two parameters, t.a and t.b, set at 3 and 4 by default (see Christen and Perez, 2010).
 #' If you want to assign narrower error distributions (more closely resembling the normal distribution), set t.a and t.b at for example 33 and 34 respectively (e.g., for specific dates in your .csv file).
 #' For symmetry reasons, t.a must always be equal to t.b-1.
-#' @param t.b The dates are treated using the student's t distribution by default (\code{normal=FALSE}).
-#' The student's t-distribution has two parameters, t.a and t.b, set at 3 and 4 by default (see Christen and Perez, 2010).
+#' @param t.b The dates are treated using the t distribution by default (\code{normal=FALSE}).
+#' The t-distribution has two parameters, t.a and t.b, set at 3 and 4 by default (see Christen and Perez, 2010).
 #' If you want to assign narrower error distributions (more closely resembling the normal distribution), set t.a and t.b at for example 33 and 34 respectively (e.g., for specific dates in your .csv file).
 #' For symmetry reasons, t.a must always be equal to t.b-1.
 #' @param date.res Resolution of the date's distribution. Defaults to \code{date.res=100}.
@@ -147,7 +147,7 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
   if(rev.d)
     dlim <- dlim[2:1]
   if(length(d.lab) == 0)
-    d.lab <- paste("depth (", set$depth.unit, ")", sep="")
+    d.lab <- paste0("depth (", set$depth.unit, ")")
   if(new.plot)
     if(rotate.axes)
       plot(0, type="n", xlim=age.lim, ylim=dlim[2:1], xlab=age.lab, ylab=d.lab, main="") else
@@ -174,7 +174,11 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
       d <- set$calib$d[[i]]
       if(BCAD)
         cal[,1] <- 1950-cal[,1]
-      cal <- approx(cal[,1], cal[,2], seq(min(cal[,1]), max(cal[,1]), by=agesteps)) # all dists should have the same binsize
+      if((max(cal[,1]) - min(cal[,1])) > 4*agesteps)
+        cal <- approx(cal[,1], cal[,2], seq(min(cal[,1]), max(cal[,1]), by=agesteps)) else
+          cal <- approx(cal[,1], cal[,2], seq(min(cal[,1]), max(cal[,1]), length=100))
+      # the above is not ideal because it causes different heights for very precise distributions
+
       cal <- cbind(cal$x, cal$y/sum(cal$y))
       if(same.heights)
         cal[,2] <- cal[,2]/max(cal[,2])
@@ -214,41 +218,26 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
 
 
 # calibrate C14 dates and calculate distributions for any calendar dates
-bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.01, postbomb=set$postbomb, normal=set$normal, t.a=set$t.a, t.b=set$t.b, delta.R=set$delta.R, delta.STD=set$delta.STD, ccdir="") {
+bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.01, postbomb=set$postbomb, normal=set$normal, t.a=set$t.a, t.b=set$t.b, delta.R=set$deolta.R, delta.STD=set$delta.STD, ccdir="") {
   # read in the curves
-  #if(set$cc1=="IntCal20" || set$cc1=="\"IntCal20\"")
-  #  cc1 <- fastread(paste0(ccdir, "3Col_intcal20.14C")) else
-  #    cc1 <- fastread(paste0(ccdir, set$cc1, ".14C"), header=FALSE, skip=11)[,1:3]
-  #  if(set$cc2=="Marine20" || set$cc2=="\"Marine20\"")
-  #    cc2 <- fastread(paste0(ccdir, "3Col_marine20.14C")) else
-  #      cc2 <- fastread(paste0(ccdir, set$cc2, ".14C"), header=FALSE, skip=11)[,1:3]
-  #  if(set$cc3=="SHCal20" || set$cc3=="\"SHCal20\"")
-  #    cc3 <- fastread(paste0(ccdir, "3Col_shcal20.14C")) else
-  #      cc3 <- fastread(paste0(ccdir, set$cc3, ".14C"), header=FALSE, skip=11)[,1:3]
-  #  if(set$cc4=="ConstCal" || set$cc4=="\"ConstCal\"") cc4 <- NA else
-  #    cc4 <- fastread(paste0(ccdir, set$cc4))[,1:3]
+
   cc1 <- rintcal::ccurve(set$cc1)
   cc2 <- rintcal::ccurve(set$cc2)
   cc3 <- rintcal::ccurve(set$cc3)
-  cc4 <- rintcal::ccurve(set$cc4)
+  if(set$cc4=="ConstCal" || set$cc4=="\"ConstCal\"") cc4 <- NA else
+     cc4 <- fastread(paste0(ccdir, set$cc4))[,1:3]
 
   if(postbomb != 0) {
-#     if(postbomb==1) bomb <- fastread(paste0(ccdir,"postbomb_NH1.14C"))[,1:3] else
-#       if(postbomb==2) bomb <- fastread(paste0(ccdir,"postbomb_NH2.14C"))[,1:3] else
-#         if(postbomb==3) bomb <- fastread(paste0(ccdir,"postbomb_NH3.14C"))[,1:3] else
-#           if(postbomb==4) bomb <- fastread(paste0(ccdir,"postbomb_SH1-2.14C"))[,1:3] else
-#             if(postbomb==5) bomb <- fastread(paste0(ccdir,"postbomb_SH3.14C"))[,1:3] else
-#               stop("cannot find postbomb curve #", postbomb, " (use values of 1 to 5 only)", call.=FALSE)
     bomb <- ccurve(postbomb, postbomb=TRUE)
-      # bomb.x <- seq(max(bomb[,1]), min(bomb[,1]), by=-.1) # interpolate
-      bomb <- bomb[order(bomb[,1], decreasing=FALSE),]
-      bomb.x <- seq(min(bomb[,1]), max(bomb[,1]), by=.1) # interpolate
-      bomb.y <- approx(bomb[,1], bomb[,2], bomb.x)$y
-      bomb.z <- approx(bomb[,1], bomb[,3], bomb.x)$y
-      bomb <- cbind(bomb.x, bomb.y, bomb.z, deparse.level=0)
-      if(set$postbomb < 4)
-        cc1 <- rbind(bomb, cc1, deparse.level=0) else
-          cc3 <- rbind(bomb, cc3, deparse.level=0)
+    # bomb.x <- seq(max(bomb[,1]), min(bomb[,1]), by=-.1) # interpolate
+    bomb <- bomb[order(bomb[,1], decreasing=FALSE),]
+    bomb.x <- seq(min(bomb[,1]), max(bomb[,1]), by=.1) # interpolate
+    bomb.y <- approx(bomb[,1], bomb[,2], bomb.x)$y
+    bomb.z <- approx(bomb[,1], bomb[,3], bomb.x)$y
+    bomb <- cbind(bomb.x, bomb.y, bomb.z, deparse.level=0)
+    if(set$postbomb < 4)
+      cc1 <- rbind(bomb, cc1, deparse.level=0) else
+        cc3 <- rbind(bomb, cc3, deparse.level=0)
   }
 
   ## use Gaussian or t (Christen and Perez Radiocarbon 2009) calibration
@@ -258,7 +247,7 @@ bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.01, postbom
   d.cal <- function(cc, rcmean, w2, t.a, t.b) { # formula updated Oct 2020
     if(set$normal)
       cal <- cbind(cc[,1], dnorm(cc[,2], rcmean, sqrt(cc[,3]^2+w2))) else
-        cal <- cbind(cc[,1], (t.b + ((rcmean-cc[,2])^2) / (2*(cc[,3]^2 + w2))) ^ (-1*(t.a+0.5))) # student-t
+        cal <- cbind(cc[,1], (t.b + ((rcmean-cc[,2])^2) / (2*(cc[,3]^2 + w2))) ^ (-1*(t.a+0.5))) # t dist
     cal[,2] <- cal[,2] / sum(cal[,2]) # normalise
     
     above <- which(cal[,2]/max(cal[,2]) > cutoff)
@@ -267,52 +256,37 @@ bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.01, postbom
         return(cal)
   }
 
-  # now calibrate all dates
-  calib <- list(d=dat[,4], cc=dat[,4])
-  if(ncol(dat)==4) { # only one type of dates (e.g., calBP, or all IntCal20 C14 dates)
-    if(set$cc==0) {
-      calib$cc <- rep(0, nrow(dat))
-      xsteps <- min(dat[,3])/5 # minimum step size to cover the smallest error
-      xseq1 <- seq(min(dat[,2])-(4*max(dat[,3])), max(dat[,2])+(4*max(dat[,3])), length=100*date.res)
-      xseq2 <- seq(min(dat[,2])-(4*max(dat[,3])), max(dat[,2])+(4*max(dat[,3])), by=xsteps)
-      xlength <- max(length(xseq1), length(xseq2)) # choose the longest vector
-      x <- seq(min(dat[,2])-(4*max(dat[,3])), max(dat[,2])+(4*max(dat[,3])), length=xlength)
-      ccurve <- cbind(x, x, rep(0,length(x))) # dummy 1:1 curve
+  calib <- list(d=dat[,4], cc=set$cc)
+  if(ncol(dat) == 4) # only one type of dates (e.g., calBP, or all IntCal20 C14 dates)
+    dat[,5] <- rep(set$cc, nrow(dat))
+  calib$cc <- dat[,5]
+
+  for(i in 1:nrow(dat)) {
+    dets <- c(NA, as.numeric(dat[i,-1])) # the first column is not numeric
+    if(dets[5]==0) {
+      x <- seq(dets[2]-(4*dets[3]), dets[2]+(4*dets[3]), length=date.res)
+      calcurve <- cbind(x, x, rep(0,length(x))) # dummy 1:1 curve
     } else {
-        calib$cc <- rep(set$cc, nrow(dat))
-        if(set$cc==1) ccurve <- cc1 else
-          if(set$cc==2) ccurve <- cc2 else
-            if(set$cc==3) ccurve <- cc3 else
-              ccurve <- cc4
-      }
-    for(i in 1:nrow(dat))
-      calib$probs[[i]] <- d.cal(ccurve, dat[i,2]-delta.R, dat[i,3]^2+delta.STD^2, set$t.a, set$t.b)
-  } else {
-      calib$cc <- dat[,5]
-      for(i in 1:nrow(dat)) {
-        dets <- c(NA, as.numeric(dat[i,-1])) # the first column is not numeric
-        if(dets[5]==0) {
-          x <- seq(dets[2]-(4*dets[3]), dets[2]+(4*dets[3]), length=date.res)
-          ccurve <- cbind(x, x, rep(0,length(x))) # dummy 1:1 curve
-        } else {
-            if(dets[5]==1) ccurve <- cc1 else if(dets[5]==2) ccurve <- cc2 else
-              if(dets[5]==3) ccurve <- cc3 else ccurve <- cc4
-            }
-        delta.R <- set$delta.R; delta.STD <- set$delta.STD; t.a <- set$t.a; t.b <- set$t.b
-        if(length(dets) >= 7 && dets[5] > 0) { # the user provided age offsets; only for C14 dates
-          delta.R <- dets[6]
-          delta.STD <- dets[7]
+        if(dets[5]==1) calcurve <- cc1 else
+          if(dets[5]==2) calcurve <- cc2 else
+            if(dets[5]==3) calcurve <- cc3 else
+              calcurve <- cc4
         }
-        if(length(dets) >= 9) { # the user provided t.a and t.b values for each date
-          t.a <- dets[8]
-          t.b <- dets[9]
-          if(round(t.b-t.a) != 1)
-            stop("t.b - t.a should always be 1, check the manual", call.=FALSE)
-        }
-        calib$probs[[i]] <- d.cal(ccurve, dets[2]-delta.R, dets[3]^2+delta.STD^2, t.a, t.b)
-      }
+    delta.R <- set$delta.R; delta.STD <- set$delta.STD; t.a <- set$t.a; t.b <- set$t.b
+    if(length(dets) >= 7 && dets[5] > 0) { # the user provided age offsets; only for C14 dates
+      delta.R <- dets[6]
+      delta.STD <- dets[7]
     }
-  calib
+    if(length(dets) >= 9) { # the user provided t.a and t.b values for each date
+      t.a <- dets[8]
+      t.b <- dets[9]
+      if(round(t.b-t.a) != 1)
+        stop("t.b - t.a should always be 1, check the manual", call.=FALSE)
+    }
+    calib$probs[[i]] <- d.cal(calcurve, dets[2]-delta.R, dets[3]^2+delta.STD^2, t.a, t.b)
+  }
+
+  return(calib)
 }
 
 
@@ -446,7 +420,7 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
   }
 
   if(length(d.lab) == 0)
-    d.lab <- paste("depth (", set$depth.unit, ")", sep="")
+    d.lab <- paste0("depth (", set$depth.unit, ")")
   if(length(pb.lab) == 0)
     pb.lab <- ifelse(set$Bqkg,
       expression(""^210*"Pb (Bq/kg)"),

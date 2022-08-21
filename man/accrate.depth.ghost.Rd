@@ -29,6 +29,8 @@ accrate.depth.ghost(
   rotate.axes = FALSE,
   rev.d = FALSE,
   rev.acc = FALSE,
+  xaxs = "r",
+  yaxs = "r",
   bty = "l",
   remove.laststep = TRUE
 )
@@ -82,6 +84,10 @@ accrate.depth.ghost(
 
 \item{rev.acc}{The direction of the accumulation rate axis can be reversed from the default (\code{rev.acc=TRUE}).}
 
+\item{xaxs}{Extension of x-axis. By default, add some extra white-space at both extremes (\code{xaxs="r"}). See ?par for other options.}
+
+\item{yaxs}{Extension of y-axis. By default, add no extra white-space at both extremes (\code{yaxs="i"}). See ?par for other options.}
+
 \item{bty}{Type of box to be drawn around the plot (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).}
 
 \item{remove.laststep}{Add a white line to remove spurious lines at the extreme of the graph. Defaults to TRUE.}
@@ -103,7 +109,7 @@ if calculated in cm/yr; therefore you might want to manually adapt the axis limi
   agedepth(yr.res=50, d.res=50, d.by=10)
   layout(1)
   tmp <- accrate.depth.ghost()
-  tmp
+  head(tmp)
 }
 }
 \author{

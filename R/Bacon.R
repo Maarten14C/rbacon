@@ -11,7 +11,7 @@
 #' @importFrom utils packageName read.csv read.table setTxtProgressBar txtProgressBar write.table
 #' @importFrom Rcpp evalCpp
 #' @importFrom coda as.mcmc gelman.diag mcmc.list
-#' @importFrom data.table fread frwite
+#' @importFrom data.table fread fwrite
 #' @import rintcal
 #' @useDynLib rbacon
 #' @name rbacon
@@ -20,14 +20,9 @@ NULL
 # to enable direct use of ccurve, mix.curves, pMC.age & age.pMC
 library(rintcal)
 
-# todo: check if _settings.txt is updated after a run, or after a subsequent run. Is this doing the same w Plum? accrate.age.ghost needs a kcal option, also needs xaxt as an option (check w BCAD), double check how ssize is calculated now
+# todo: check if rplum updates _settings.txt after a run. DCH_Oct21 causes error in approx owing to NAs (in calibrate.R line 189 when very small errors?)
 
-# todo: check why there is an error with postbomb dates even if cc=0, DCH_Oct21 causes error in approx owing to NAs (in calibrate.R line 189 when very small errors?)
-
-# do: is the value of 'thick' saved anywhere in the files? Perhaps in the .bacon file? Not really. Produce a file core_nsec.txt with thick, d.min and d.max in it? Not add as row to _settings.txt?
-
-# done: accrate.depth.ghost and accrate.age.ghost now invisibly return the means, medians and ranges of the accumulation rates for each depth resp. age, and are plotted better in accrate.depth.ghost. Now using data.table's fread and fwrite functions for faster reading/writing of files.
-
+# done: accrate.depth.ghost and accrate.age.ghost now invisibly return the means, medians and ranges of the accumulation rates for each depth resp. age, and are plotted better in accrate.depth.ghost. Now using data.table's fread and fwrite functions for faster reading and writing of files. accrate.age.ghost now has a kcal option
 
 # for future versions: add function to estimate best thick value, Why is hiatus.max listed twice in _settings.txt? check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), produce proxy.ghost graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
@@ -188,9 +183,11 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   # Check coredir and if required, copy example file in core directory
   coredir <- assign_coredir(coredir, core, ask, isPlum=FALSE)
   if(core == "MSB2K" || core == "RLGH3") {
-    dir.create(paste(coredir, core, "/", sep=""), showWarnings = FALSE, recursive = TRUE)
-    fileCopy <- system.file(paste0("extdata/Cores/", core), package="rbacon") # change to package rbacon
-    file.copy(fileCopy, coredir, recursive = TRUE, overwrite=FALSE)
+    if(!dir.exists(file.path(coredir, core))) {
+      dir.create(file.path(coredir, core), showWarnings = FALSE, recursive = TRUE)
+      fileCopy <- system.file(paste0("extdata/Cores/", core), package="rbacon")
+      file.copy(fileCopy, coredir, recursive = TRUE, overwrite=FALSE)
+    }
   }
   
   # set the calibration curve
@@ -420,7 +417,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
 
   cook <- function() {
     bacon.its(ssize, burnin, info) # information on amounts of iterations
-    txt <- paste(info$prefix, ".bacon", sep="")
+    txt <- paste0(info$prefix, ".bacon")
     bacon(txt, outfile, ssize+burnin, ccdir)
     scissors(burnin, info)
     agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=TRUE, age.unit=age.unit, depth.unit=depth.unit, ...)
