@@ -151,17 +151,17 @@ allow for a large range of posterior memory values. Please note that the default
 
 \item{delta.STD}{Error of core-wide age offsets (e.g., regional marine offsets).}
 
-\item{t.a}{The dates are treated using the student's t distribution by default (\code{normal=FALSE}).
-The student's t-distribution has two parameters, t.a and t.b, set at 3 and 4 by default (see Christen and Perez, 2010).
+\item{t.a}{The dates are treated using the t distribution (Christen and Perez 2009) by default (\code{normal=FALSE}).
+This t-distribution has two parameters, t.a and t.b, set at 3 and 4 by default (see Christen and Perez, 2010).
 If you want to assign narrower error distributions (more closely resembling the normal distribution), set t.a and t.b at for example 33 and 34 respectively (e.g., for specific dates in your .csv file).
 For symmetry reasons, t.a must always be equal to t.b-1.}
 
-\item{t.b}{The dates are treated using the student's t distribution by default (\code{normal=FALSE}).
-The student's t-distribution has two parameters, t.a and t.b, set at 3 and 4 by default (see Christen and Perez, 2010).
+\item{t.b}{The dates are treated using t distribution by default (\code{normal=FALSE}).
+The t-distribution has two parameters, t.a and t.b, set at 3 and 4 by default (see Christen and Perez, 2009).
 If you want to assign narrower error distributions (more closely resembling the normal distribution), set t.a and t.b at for example 33 and 34 respectively (e.g., for specific dates in your .csv file).
 For symmetry reasons, t.a must always be equal to t.b-1.}
 
-\item{normal}{By default, Bacon uses the student's t-distribution to treat the dates. Use \code{normal=TRUE} to use the normal/Gaussian distribution. This will generally give higher weight to the dates.}
+\item{normal}{By default, Bacon uses the t-distribution to treat the dates. Use \code{normal=TRUE} to use the normal/Gaussian distribution. This will generally give higher weight to the dates.}
 
 \item{suggest}{If initial analysis of the data indicates abnormally slow or fast accumulation rates, Bacon will suggest to change the prior.}
 

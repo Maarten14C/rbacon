@@ -13,7 +13,7 @@
 #' @importFrom coda as.mcmc gelman.diag mcmc.list
 #' @importFrom data.table fread fwrite
 #' @import rintcal
-#' @useDynLib rbacon
+#' @useDynLib rbacon, .registration=TRUE
 #' @name rbacon
 NULL
 
@@ -22,9 +22,9 @@ library(rintcal)
 
 # todo: check if rplum updates _settings.txt after a run. DCH_Oct21 causes error in approx owing to NAs (in calibrate.R line 189 when very small errors?)
 
-# done: accrate.depth.ghost and accrate.age.ghost now invisibly return the means, medians and ranges of the accumulation rates for each depth resp. age, and are plotted better in accrate.depth.ghost. Now using data.table's fread and fwrite functions for faster reading and writing of files. accrate.age.ghost now has a kcal option
+# done: accrate.depth.ghost and accrate.age.ghost now invisibly return the means, medians and ranges of the accumulation rates for each depth resp. age, and are plotted better in accrate.depth.ghost. Now using data.table's fread and fwrite functions for faster reading and writing of files. accrate.age.ghost gets a kcal option
 
-# for future versions: add function to estimate best thick value, Why is hiatus.max listed twice in _settings.txt? check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), produce proxy.ghost graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
+# for future versions: add function to estimate best thick value, check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), perhaps start using rintcal's draw.dates instead (then enhance how it plots, and add rotate.axes), produce proxy.ghost graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
 
 # added line 133 to bacon.cpp, All.outputFiles(outputfile1); this line is present in rplum's bacon.cpp
 # added #include <vector> at line 14 of input.h. 
@@ -106,15 +106,15 @@ library(rintcal)
 #' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages. \code{0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}
 #' @param delta.R Mean of core-wide age offsets (e.g., regional marine offsets).
 #' @param delta.STD Error of core-wide age offsets (e.g., regional marine offsets).
-#' @param t.a The dates are treated using the student's t distribution by default (\code{normal=FALSE}).
-#' The student's t-distribution has two parameters, t.a and t.b, set at 3 and 4 by default (see Christen and Perez, 2010).
+#' @param t.a The dates are treated using the t distribution (Christen and Perez 2009) by default (\code{normal=FALSE}).
+#' This t-distribution has two parameters, t.a and t.b, set at 3 and 4 by default (see Christen and Perez, 2010).
 #' If you want to assign narrower error distributions (more closely resembling the normal distribution), set t.a and t.b at for example 33 and 34 respectively (e.g., for specific dates in your .csv file).
 #' For symmetry reasons, t.a must always be equal to t.b-1.
-#' @param t.b The dates are treated using the student's t distribution by default (\code{normal=FALSE}).
-#' The student's t-distribution has two parameters, t.a and t.b, set at 3 and 4 by default (see Christen and Perez, 2010).
+#' @param t.b The dates are treated using t distribution by default (\code{normal=FALSE}).
+#' The t-distribution has two parameters, t.a and t.b, set at 3 and 4 by default (see Christen and Perez, 2009).
 #' If you want to assign narrower error distributions (more closely resembling the normal distribution), set t.a and t.b at for example 33 and 34 respectively (e.g., for specific dates in your .csv file).
 #' For symmetry reasons, t.a must always be equal to t.b-1.
-#' @param normal By default, Bacon uses the student's t-distribution to treat the dates. Use \code{normal=TRUE} to use the normal/Gaussian distribution. This will generally give higher weight to the dates.
+#' @param normal By default, Bacon uses the t-distribution to treat the dates. Use \code{normal=TRUE} to use the normal/Gaussian distribution. This will generally give higher weight to the dates.
 #' @param suggest If initial analysis of the data indicates abnormally slow or fast accumulation rates, Bacon will suggest to change the prior.
 #' @param accept.suggestions Automatically accept the suggested values. Use with care. Default \code{accept.suggestions=FALSE}.
 #'  Also, if the length of the core would cause too few or too many sections with the default settings, Bacon will suggest an alternative section thickness \code{thick}.

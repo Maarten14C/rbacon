@@ -1,12 +1,12 @@
 # rbacon 2.6.0
-* accrates.depth.ghost() and accrate.age.ghost() now invisibly return the ranges, medians and means for each depth resp. age, e.g., tmp <- accrates.depth.ghost(); head(tmp)
-* ssize is now much more predictable
+* accrates.depth.ghost() and accrate.age.ghost() now invisibly return the ranges, medians and means for each depth resp. age for subsequent use, e.g., tmp <- accrates.depth.ghost(); head(tmp)
 * MCMC iterations are now stored in the .out files irrespective of whether they were accepted or rejected
-* files are read and written faster (if the data.table R package is installed and loaded)
+* ssize is now much more predictable (if there are more rows in the output file than set by ssize, rbacon keeps only n=ssize rows)
+* files are read and written faster (if the data.table R package is installed and loaded, which can be a problem on Macs)
 * corrected the help description for Bacon.d.Age() with thanks to Henningte
 * the length of the ages output of accrate.age() is now the same even if there are NAs in the output (with thanks to Henningte)
-* corrected (I hope) a bug in read.dets relating variable lengths causing errors in R 4.2 (with thanks to Nick McKay for reporting)
-* accrate.age.ghost now has a kcal option
+* corrected (hopefully) a bug in read.dets related to logical comparisons with variable lengths causing errors in R>=4.2 (with thanks to Nick McKay for reporting)
+* accrate.age.ghost gains a kcal option
 
 # rbacon 2.5.8
 * some minor updates to the vignettes

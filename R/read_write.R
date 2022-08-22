@@ -235,7 +235,7 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
           if(ncol(dets) == 8) { # probably an 'old' file: dR, dSTD, ta, tb
             if((name[5] %in% dR.names) && (name[6] %in% dSTD.names))
             if((name[7] %in% ta.names) && (name[8] %in% tb.names))
-            if(range(dets[,8] - dets[,7]) == c(1,1)) { # check that these set expected student-t values
+            if(range(dets[,8] - dets[,7]) == c(1,1)) { # check that these set expected t distribution values
               dets <- cbind(dets[,1:4], rep(cc, nrow(dets)), dets[,5:6]) # some shuffling
               message(" Assumed order of columns in dets file: lab ID, Age, error, depth, dR, dSTD. \nAdding calibration curve column (fifth column, before dR and dSTD) and saving as", csv.file)
               changed <- 1

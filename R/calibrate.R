@@ -12,7 +12,7 @@
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param above Threshold for plotting of probability values. Defaults to \code{above=1e-3}.
 #' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages. \code{0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}
-#' @param normal By default, Bacon uses the student's t-distribution to treat the dates. Use \code{normal=TRUE} to use the normal/Gaussian distribution. This will generally give higher weight to the dates.
+#' @param normal By default, Bacon uses the t-distribution (Christen and Perez 2009) to treat the dates. Use \code{normal=TRUE} to use the normal/Gaussian distribution. This will generally give higher weight to the dates.
 #' @param delta.R Mean of core-wide age offsets (e.g., regional marine offsets).
 #' @param delta.STD Error of core-wide age offsets (e.g., regional marine offsets).
 #' @param t.a The dates are treated using the t distribution by default (\code{normal=FALSE}).
