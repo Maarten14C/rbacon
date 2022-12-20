@@ -18,7 +18,7 @@ add.dates(
   t.a = set$t.a,
   t.b = set$t.b,
   date.res = 100,
-  height = 1,
+  height = 0.1,
   calheight = 1,
   agesteps = 1,
   cutoff = 0.005,
@@ -29,7 +29,7 @@ add.dates(
   up = TRUE,
   BCAD = FALSE,
   pch = 4,
-  ccdir = ""
+  cc.dir = c()
 )
 }
 \arguments{
@@ -87,7 +87,7 @@ For symmetry reasons, t.a must always be equal to t.b-1.}
 
 \item{pch}{The shape of any marker to be added to the date. Defaults to a cross, \code{pch=4}. To leave empty, use \code{pch=NA}.}
 
-\item{ccdir}{Directory where the calibration curves for C14 dates \code{cc} are located. By default \code{ccdir=""}.}
+\item{cc.dir}{Directory where the calibration curves for C14 dates \code{cc} are located. By default \code{ccdir=c()}.}
 }
 \value{
 A date's distribution, added to an age-depth plot.
@@ -96,7 +96,7 @@ A date's distribution, added to an age-depth plot.
 Add dated depths to plots, e.g. to show dates that weren't used in the age-depth model
 }
 \details{
-Sometimes it is useful to add additional dating information to age-depth plots, e.g., to show outliers or how dates calibrate with different estimated offsets.
+Sometimes it is useful to add additional dating information to age-depth plots, e.g., to show outliers or how dates calibrate with different estimated offsets. Calls rintcal's draw.dates function.
 }
 \examples{
 \donttest{

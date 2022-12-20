@@ -12,7 +12,7 @@
 #' @importFrom Rcpp evalCpp
 #' @importFrom coda as.mcmc gelman.diag mcmc.list
 #' @importFrom data.table fread fwrite
-#' @import rintcal
+#' @importFrom rintcal ccurve draw.dates
 #' @useDynLib rbacon, .registration=TRUE
 #' @name rbacon
 NULL
@@ -20,7 +20,7 @@ NULL
 # to enable direct use of ccurve, mix.curves, calibration functions, pMC.age & age.pMC
 library(rintcal)
 
-# todo: check if delta.R works (problem plotting in Plum), make .bacon files when Plum so that the tail dates have d.min, DCH_Oct21 causes error in approx owing to NAs (in calibrate.R line 189 when very small errors?)
+# todo:
 
 # done: repaired warning message about length of logical tests, accrate.depth.ghost and accrate.age.ghost now invisibly return the means, medians and ranges of the accumulation rates for each depth resp. age, and are plotted better in accrate.depth.ghost. Now using data.table's fread and fwrite functions for faster reading and writing of files. accrate.age.ghost gains a kcal option
 

@@ -7,7 +7,7 @@
 * the length of the ages output of accrate.age() is now the same even if there are NAs in the output (with thanks to Henningte)
 * corrected (hopefully) a bug in read.dets related to logical comparisons with variable lengths causing errors in R>=4.2 (with thanks to Nick McKay for reporting)
 * accrate.age.ghost gains a kcal option
-* repaired warning message about length of logical tests
+* repaired warning message about lengths of logical tests
 * now links to rintcal package (renamed from IntCal)
 * better Plum plots
 

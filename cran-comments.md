@@ -1,5 +1,5 @@
 ## Test environments
-* local Fedora install, R 4.1.3
+* local Fedora install, R 4.2.2
 * rhub and win-builder (devel, old_release and release)
 
 ## R CMD check results

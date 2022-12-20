@@ -47,7 +47,7 @@
 #' @export
 add.dates <- function(mn, sdev, depth, cc=1, set=get('info'), above=1e-6, postbomb=0, normal=TRUE, delta.R=set$delta.R, delta.STD=set$delta.STD, t.a=set$t.a, t.b=set$t.b, date.res=100, height=.1, calheight=1, agesteps=1, cutoff=0.005, col=rgb(1,0,0,.5), border=rgb(1,0,0,.5), rotate.axes=FALSE, mirror=TRUE, up=TRUE, BCAD=FALSE, pch=4, cc.dir=c()) {
 
-  dists <- rintcal::draw.dates(mn-delta.R, sqrt(sdev^2+delta.STD^2), depth, cc=cc, postbomb=postbomb, normal=normal, t.a=t.a, t.b=t.b, dist.res=date.res, ex=height, threshold=cutoff, col=col, border=border, draw.hpd=FALSE, rotate.axes=!rotate.axes, mirror=mirror, up=up, cc.dir=cc.dir, add=TRUE)
+  dists <- draw.dates(mn-delta.R, sqrt(sdev^2+delta.STD^2), depth, cc=cc, postbomb=postbomb, normal=normal, t.a=t.a, t.b=t.b, dist.res=date.res, ex=height, threshold=cutoff, col=col, border=border, draw.hpd=FALSE, rotate.axes=!rotate.axes, mirror=mirror, up=up, cc.dir=cc.dir, add=TRUE)
   
   if(length(pch) > 0) {
     best <- c()
@@ -221,9 +221,9 @@ calib.plot <- function(set=get('info'), dets=set$dets, BCAD=set$BCAD, cc=set$cc,
 bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.01, postbomb=set$postbomb, normal=set$normal, t.a=set$t.a, t.b=set$t.b, delta.R=set$deolta.R, delta.STD=set$delta.STD, ccdir="") {
   # read in the curves
 
-  cc1 <- rintcal::ccurve(set$cc1)
-  cc2 <- rintcal::ccurve(set$cc2)
-  cc3 <- rintcal::ccurve(set$cc3)
+  cc1 <- ccurve(set$cc1)
+  cc2 <- ccurve(set$cc2)
+  cc3 <- ccurve(set$cc3)
   if(set$cc4=="ConstCal" || set$cc4=="\"ConstCal\"") cc4 <- NA else
      cc4 <- fastread(paste0(ccdir, set$cc4))[,1:3]
 

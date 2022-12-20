@@ -89,7 +89,7 @@ Thinner (and thus more) sections will result in smoother age-models, but too man
 
 \item{add.bottom}{Add a model section at the bottom of the core, in order to ensure the bottommost date is taken into account. Default \code{add.bottom=TRUE}. This is a new option and can cause age-models to differ from previous version. Please re-run the model if in doubt.}
 
-\item{d.by}{Depth intervals at which ages are calculated. Defaults to \code{d.by=1}.}
+\item{d.by}{Depth intervals at which ages are calculated. Defaults to \code{d.by=1}. Please ensure that the value of d.by is smaller than that of 'thick', otherwise plots might turn out wrong.}
 
 \item{seed}{Seed used for C++ executions. If it is not assigned (\code{seed=NA}; default) then the seed is set by system.}
 

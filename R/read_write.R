@@ -12,12 +12,12 @@ validateDirectoryName <- function(dir) {
 # internal functions to speed up reading and writing files, using the data.table R package if present
 fastread <- function(fl, ...)
   if("data.frame" %in% (.packages()))
-    as.data.frame(data.table::fread(fl), ...) else
+    as.data.frame(fread(fl), ...) else
       read.table(fl, ...)
 
 fastwrite <- function(fl, ...)
   if("data.frame" %in% (.packages()))
-    data.table::fwrite(as.data.frame(fl), ...) else
+    fwrite(as.data.frame(fl), ...) else
       write.table(fl, ...)
 
 #' @name clam2bacon
@@ -312,7 +312,7 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
 
   # if current dets differ from original .csv file, rewrite it
   if(changed > 0)
-    data.table::fwrite(as.data.frame(dets), csv.file, sep=paste0(sep, "\t"), dec=dec, row.names=FALSE, col.names=suggested.names[1:ncol(dets)], quote=FALSE)
+    fwrite(as.data.frame(dets), csv.file, sep=paste0(sep, "\t"), dec=dec, row.names=FALSE, col.names=suggested.names[1:ncol(dets)], quote=FALSE)
   dets
 }
 
