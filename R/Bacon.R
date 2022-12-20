@@ -17,14 +17,16 @@
 #' @name rbacon
 NULL
 
-# to enable direct use of ccurve, mix.curves, pMC.age & age.pMC
+# to enable direct use of ccurve, mix.curves, calibration functions, pMC.age & age.pMC
 library(rintcal)
 
-# todo: check if rplum updates _settings.txt after a run. DCH_Oct21 causes error in approx owing to NAs (in calibrate.R line 189 when very small errors?)
+# todo: check if delta.R works (problem plotting in Plum), make .bacon files when Plum so that the tail dates have d.min, DCH_Oct21 causes error in approx owing to NAs (in calibrate.R line 189 when very small errors?)
 
-# done: accrate.depth.ghost and accrate.age.ghost now invisibly return the means, medians and ranges of the accumulation rates for each depth resp. age, and are plotted better in accrate.depth.ghost. Now using data.table's fread and fwrite functions for faster reading and writing of files. accrate.age.ghost gets a kcal option
+# done: repaired warning message about length of logical tests, accrate.depth.ghost and accrate.age.ghost now invisibly return the means, medians and ranges of the accumulation rates for each depth resp. age, and are plotted better in accrate.depth.ghost. Now using data.table's fread and fwrite functions for faster reading and writing of files. accrate.age.ghost gains a kcal option
 
-# for future versions: add function to estimate best thick value, check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), perhaps start using rintcal's draw.dates instead (then enhance how it plots, and add rotate.axes), produce proxy.ghost graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac)
+# replacing the plotting of the calibrated distributions by rintcal's functions doesn't seem to speed up anything, so keeping the original method in place for now.
+
+# for future versions: add function to estimate best thick value, check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), produce proxy.ghost graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac; use normalizePath or other R-based solutions)
 
 # added line 133 to bacon.cpp, All.outputFiles(outputfile1); this line is present in rplum's bacon.cpp
 # added #include <vector> at line 14 of input.h. 
@@ -69,7 +71,7 @@ library(rintcal)
 #' @param d.min Minimum depth of age-depth model (use this to extrapolate to depths higher than the top dated depth).
 #' @param d.max Maximum depth of age-depth model (use this to extrapolate to depths below the bottom dated depth).
 #' @param add.bottom Add a model section at the bottom of the core, in order to ensure the bottommost date is taken into account. Default \code{add.bottom=TRUE}. This is a new option and can cause age-models to differ from previous version. Please re-run the model if in doubt.
-#' @param d.by Depth intervals at which ages are calculated. Defaults to \code{d.by=1}.
+#' @param d.by Depth intervals at which ages are calculated. Defaults to \code{d.by=1}. Please ensure that the value of d.by is smaller than that of 'thick', otherwise plots might turn out wrong.
 #' @param seed Seed used for C++ executions. If it is not assigned (\code{seed=NA}; default) then the seed is set by system.
 #' @param depth.unit Units of the depths. Defaults to \code{depth.unit="cm"}.
 #' @param age.unit Units of the ages. Defaults to \code{age.unit="yr"}.
@@ -232,6 +234,9 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
       }
     }
 
+  if(thick < d.by)
+    warning("Please set d.by to a value smaller than that of thick", .call=TRUE)
+
   # check values for the prior's mean, Jan 2021
   if(mem.mean < 0 || mem.mean >1)
     stop("The prior for the mean of the memory should be between 0 and 1", call.=FALSE)
@@ -270,7 +275,9 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     if(info$postbomb == 0 && ((ncol(info$dets) == 4 && min(info$dets[,2]) < 0) ||
       ncol(info$dets)>4 && max(info$dets[,5]) > 0 && min(info$dets[info$dets[,5] > 0,2]) < 0))
         stop("you have negative C14 ages so should select a postbomb curve", call.=FALSE)
+  # info$calib <- bacon.calib(dets, info, date.res, ccdir=ccdir, cutoff=cutoff)
   info$calib <- bacon.calib(dets, info, date.res, ccdir=ccdir, cutoff=cutoff)
+
   
   ### find some relevant values
   info$rng <- c()

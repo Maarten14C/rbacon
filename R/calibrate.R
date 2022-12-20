@@ -4,7 +4,7 @@
 #' @name add.dates
 #' @title Add dates to age-depth plots
 #' @description Add dated depths to plots, e.g. to show dates that weren't used in the age-depth model
-#' @details Sometimes it is useful to add additional dating information to age-depth plots, e.g., to show outliers or how dates calibrate with different estimated offsets.
+#' @details Sometimes it is useful to add additional dating information to age-depth plots, e.g., to show outliers or how dates calibrate with different estimated offsets. Calls rintcal's draw.dates function.
 #' @param mn Reported mean of the date. Can be multiple dates. Negative numbers indicate postbomb dates (if cc > 0).
 #' @param sdev Reported error of the date. Can be multiple dates.
 #' @param depth Depth of the date.
@@ -35,7 +35,7 @@
 #' @param up Directions of distributions if they are plotted non-mirrored. Default \code{up=TRUE}.
 #' @param BCAD The calendar scale of graphs is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
 #' @param pch The shape of any marker to be added to the date. Defaults to a cross, \code{pch=4}. To leave empty, use \code{pch=NA}.
-#' @param ccdir Directory where the calibration curves for C14 dates \code{cc} are located. By default \code{ccdir=""}.
+#' @param cc.dir Directory where the calibration curves for C14 dates \code{cc} are located. By default \code{ccdir=c()}.
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A date's distribution, added to an age-depth plot.
 #' @examples
@@ -45,45 +45,18 @@
 #'   add.dates(5000, 100, 60)
 #' }
 #' @export
-add.dates <- function(mn, sdev, depth, cc=1, set=get('info'), above=1e-6, postbomb=0, normal=TRUE, delta.R=set$delta.R, delta.STD=set$delta.STD, t.a=set$t.a, t.b=set$t.b, date.res=100, height=1, calheight=1, agesteps=1, cutoff=0.005, col=rgb(1,0,0,.5), border=rgb(1,0,0,.5), rotate.axes=FALSE, mirror=TRUE, up=TRUE, BCAD=FALSE, pch=4, ccdir="") {
-  if(ccdir == "")
-    ccdir <- system.file("extdata", package="rintcal")
-  ccdir <- validateDirectoryName(ccdir)
+add.dates <- function(mn, sdev, depth, cc=1, set=get('info'), above=1e-6, postbomb=0, normal=TRUE, delta.R=set$delta.R, delta.STD=set$delta.STD, t.a=set$t.a, t.b=set$t.b, date.res=100, height=.1, calheight=1, agesteps=1, cutoff=0.005, col=rgb(1,0,0,.5), border=rgb(1,0,0,.5), rotate.axes=FALSE, mirror=TRUE, up=TRUE, BCAD=FALSE, pch=4, cc.dir=c()) {
 
-  if(mn < 0 && cc > 0)
-    if(postbomb == 0)
-      stop("Negative C-14 age, please provide a postbomb curve, e.g. postbomb=1")
+  dists <- rintcal::draw.dates(mn-delta.R, sqrt(sdev^2+delta.STD^2), depth, cc=cc, postbomb=postbomb, normal=normal, t.a=t.a, t.b=t.b, dist.res=date.res, ex=height, threshold=cutoff, col=col, border=border, draw.hpd=FALSE, rotate.axes=!rotate.axes, mirror=mirror, up=up, cc.dir=cc.dir, add=TRUE)
   
-  dat <- cbind(mn, mn, sdev, depth, cc, delta.R, delta.STD, t.a, t.b)
-  probs <- bacon.calib(dat, set, date.res, cutoff, postbomb, normal, t.a, t.b, delta.R, delta.STD, ccdir) 
-
-  for(i in 1:nrow(dat)) {
-    d <- probs$d[[i]]
-    yrs <- probs$probs[[i]][,1]
-    cal <- probs$probs[[i]][,2]
-
-    if(BCAD)
-      yrs <- 1950-yrs
-    cal <- approx(yrs, cal, seq(min(yrs), max(yrs), by=agesteps))
-    cal <- cbind(cal$x, cal$y/sum(cal$y))
-    cal[,2] <- 3 * height * cal[,2] * (set$d.max - set$d.min) # scale the height of the blobs with the depth axis
-    if(dat[i,5] == 0) # cal BP dates could have different relative height:
-      cal[,2] <- calheight * cal[,2]
-
-  if(!up)
-    up <- -1
-  if(mirror)
-    pol <- cbind(d + c(cal[,2], -rev(cal[,2])), c(cal[,1], rev(cal[,1]))) else
-      pol <- cbind(d - up*c(0, cal[,2],  0), c(min(cal[,1]), cal[,1], max(cal[,1])))
-  if(rotate.axes)
-    pol <- pol[,2:1]
-  polygon(pol, col=col, border=border)
-  if(length(pch) > 0)
+  if(length(pch) > 0) {
+    best <- c()
+    for(i in 1:length(mn)) 
+      best[i] <- dists[[1]][,i][which(dists[[2]][,i] == max(dists[[2]][,i]))][1] 
     if(rotate.axes)
-      points(mean(yrs), d, col=border, pch=pch) else
-        points(d, mean(yrs), col=border, pch=pch)
-    }
-  invisible(probs)
+      points(best, depth, pch=pch, col=col) else
+        points(depth, best, pch=pch, col=col)	
+  }  
 }
 
 
@@ -94,6 +67,7 @@ add.dates <- function(mn, sdev, depth, cc=1, set=get('info'), above=1e-6, postbo
 #' @details This function is generally called internally to produce the age-depth graph.
 #' It can be used to produce custom-built graphs.
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
+#' @param dets The set of determinations to be plotted.
 #' @param BCAD The calendar scale of graphs is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
 #' @param cc Calibration curve to be used (defaults to info$cc)
 #' @param rotate.axes The default of plotting age on the horizontal axis and event probability on the vertical one can be changed with \code{rotate.axes=TRUE}.
@@ -127,7 +101,30 @@ add.dates <- function(mn, sdev, depth, cc=1, set=get('info'), above=1e-6, postbo
 #'   calib.plot()
 #' @export
 ### produce plots of the calibrated distributions
-calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, rev.yr=rev.age, age.lim=c(), yr.lim=age.lim, date.res=100, d.lab=c(), age.lab=c(), yr.lab=age.lab, height=1, calheight=1, mirror=TRUE, up=TRUE, cutoff=.1, C14.col=rgb(0,0,1,.5), C14.border=rgb(0,0,1,.75), cal.col=rgb(0,.5,.5,.5), cal.border=rgb(0,.5,.5,.75), dates.col=c(), slump.col=grey(0.8), new.plot=TRUE, plot.dists=TRUE, same.heights=FALSE) {
+calib.plot <- function(set=get('info'), dets=set$dets, BCAD=set$BCAD, cc=set$cc, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, rev.yr=rev.age, age.lim=c(), yr.lim=age.lim, date.res=100, d.lab=c(), age.lab=c(), yr.lab=age.lab, height=1, calheight=1, mirror=TRUE, up=TRUE, cutoff=.1, C14.col=rgb(0,0,1,.5), C14.border=rgb(0,0,1,.75), cal.col=rgb(0,.5,.5,.5), cal.border=rgb(0,.5,.5,.75), dates.col=c(), slump.col=grey(0.8), new.plot=TRUE, plot.dists=TRUE, same.heights=FALSE) {
+	
+  # agedepth calls as follows:
+  #calib.plot(set, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes, height=height, calheight=calheight, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff, C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col, new.plot=FALSE, same.heights=same.heights)
+  
+  # we have to set ka (kcal?) as an option as well
+
+  #dets <- set$dets # should this be set$detsBacon (if it exists)?
+  d.R <- 0; d.STD <- 0
+  t.a <- set$t.a; t.b <- set$t.b
+  cc <- rep(cc, nrow(dets))
+  if(ncol(dets) > 4) {
+    cc <- dets[,5]
+    if(ncol(dets) >= 7) {
+      d.R <- dets[,6]
+      d.STD <- dets[,7] 
+    }
+    if(ncol(dets) > 7) {
+      t.a <- dets[,8]
+      t.b <- dets[,9]
+    }
+  }
+
+  #draw.dates(dets[,2]-d.R, sqrt(dets[,3]^2+d.STD^2), dets[,4], cc=cc, BCAD=BCAD, rotate.axes=!rotate.axes, d.rev=rev.d, dist.res=date.res, d.lab=d.lab, age.rev=age.rev, age.lim=age.lim, height=ex, mirror=mirror, up=up, threshold=cutoff, col=C14.col, border=C14.border, cal.col=cal.col, cal.border=cal.border, t.a=t.a, t.b=t.b)
   if(length(age.lim) == 0)
     lims <- c()
   for(i in 1:length(set$calib$probs))
@@ -200,15 +197,16 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
 
       if(rotate.axes)
         pol <- cbind(pol[,2], pol[,1])
-      if(ncol(set$dets)==4 && cc > 0 || (ncol(set$dets) > 4 && set$dets[i,5] > 0)) {
-        col <- C14.col
-        border <- C14.border
-      } else {
+     # if(ncol(set$dets)==4 && cc > 0 || (ncol(set$dets) > 4 && set$dets[i,5] > 0)) {
+      if(cc[i] == 0) {
           col <- cal.col
           border <- cal.border
-        }
+        } else {
+            col <- C14.col
+            border <- C14.border
+          }
 
-      if(length(dates.col) > 0) {
+     if(length(dates.col) > 0) {
         col <- dates.col[i]
         border <- dates.col[i]
       }
@@ -217,7 +215,9 @@ calib.plot <- function(set=get('info'), BCAD=set$BCAD, cc=set$cc, rotate.axes=FA
 }
 
 
-# calibrate C14 dates and calculate distributions for any calendar dates
+# bacon.calib is used by the Bacon function: info$calib <- bacon.calib(dets, info, date.res, ccdir=ccdir, cutoff=cutoff)
+# it calibrates C14 dates and calculate distributions for any calendar dates
+# it then returns d, cc, and probs
 bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.01, postbomb=set$postbomb, normal=set$normal, t.a=set$t.a, t.b=set$t.b, delta.R=set$deolta.R, delta.STD=set$delta.STD, ccdir="") {
   # read in the curves
 
@@ -287,279 +287,4 @@ bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.01, postbom
   }
 
   return(calib)
-}
-
-
-
-#' @name draw.pbmeasured
-#' @title Plot the 210Pb data
-#' @description Produce a plot of the 210Pb data and their depths
-#' @details This function is generally called internally to produce the age-depth graph.
-#' It can be used to produce custom-built graphs.
-#' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
-#' @param rotate.axes The default of plotting age on the horizontal axis and event probability on the vertical one can be changed with \code{rotate.axes=TRUE}.
-#' @param rev.d The direction of the depth axis can be reversed from the default (\code{rev.d=TRUE}).
-#' @param rev.age The direction of the calendar age axis can be reversed from the default (\code{rev.age=TRUE})
-#' @param BCAD The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
-#' @param pb.lim Minimum and maximum of the 210Pb axis ranges, calculated automatically by default (\code{pb.lim=c()}).
-#' @param age.lim Minimum and maximum of the age ranges to be used to plot 210Pb values. Calculated automatically by default (\code{age.lim=c()}).
-#' @param d.lim Minimum and maximum depths to plot; calculated automatically by default (\code{d.lim=c()}).
-#' @param d.lab The labels for the depth axis. Default \code{d.lab="Depth (cm)"}.
-#' @param pb.lab The label for the 210Pb axis (default \code{pb.lab="210Pb (Bq/kg)"} or \code{"210Pb (dpm/g)"}).
-#' @param pbmeasured.col The label for the measured 210Pb data. \code{pbmeasured.col="blue"}.
-#' @param pbmeasured.lty Line type of the measured 210Pb data. Defaults to continuous lines.
-#' @param pb.log Use a log scale for the 210Pb-axis (default \code{pb.log=FALSE}).
-#' @param supp.col Colour of the supported 210Pb data. Defaults to red: \code{supp.col="red"}.
-#' @param newplot make new plot (default TRUE)
-#' @param on.agescale Plot the Pb-210 on the cal BP scale. Defaults to FALSE.
-#' @author Maarten Blaauw, J. Andres Christen, Marco Aquino-Lopez
-#' @return A plot of the measured 210Pb values
-#' @export
-draw.pbmeasured <- function(set=get('info'), rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, BCAD=set$BCAD, pb.lim=c(), age.lim=c(), d.lim=c(), d.lab=c(), pb.lab=c(), pbmeasured.col="blue", pbmeasured.lty=1, pb.log=FALSE, supp.col="purple", newplot=TRUE, on.agescale=FALSE) {
-  depths <- set$detsOrig[,2]
-  dns <- set$detsOrig[,3]
-  Pb <- set$detsOrig[,4]
-  err <- set$detsOrig[,5]
-  thickness <- set$detsOrig[,6]
-  n <- nrow(set$detsOrig)
-
-  if(length(pb.lim) == 0)
-    pb.lim <- extendrange(c(0, Pb+2*err), f=c(0,0.05))
-
-  # translate pb values to cal BP/AD values for plotting on the age axis
-  pb2bp <- function(pb, pb.min=pb.lim[1], pb.max=pb.lim[2], agemin=min(age.lim), agemax=max(age.lim), AD=BCAD) {
-    if(on.agescale) {
-        if(AD) {
-          ex <- (agemin - agemax) / (pb.max - pb.min)
-          return(agemax + ex*pb)
-        } else {
-            ex <- (agemax - agemin) / (pb.max - pb.min)
-            return(agemin + ex*pb)
-        }
-      } else
-        return(pb)
-  }
-
-  if(newplot) {
-    if(length(d.lab) == 0)
-      d.lab <- paste0("depth (", set$depth.unit, ")")
-    if(length(pb.lab) == 0)
-      pb.lab <- ifelse(set$Bqkg, "210Pb (Bq/kg)", "210Pb (dpm/g)")
-
-    if(length(d.lim) == 0)
-      d.lim <- range(depths, set$supportedData[,3])
-    if(rev.d)
-      d.lim <- d.lim[2:1]
-    if(rotate.axes)
-      plot(0, type="n", ylim=d.lim, ylab=d.lab, xlim=pb2bp(pb.lim), xlab=pb.lab) else
-        plot(0, type="n", xlim=d.lim, xlab=d.lab, ylim=pb2bp(pb.lim), ylab=pb.lab)
-  }
-
-  if(rotate.axes)
-    rect(pb2bp(Pb-err), depths-thickness, pb2bp(Pb+err), depths, border=pbmeasured.col, lty=pbmeasured.lty) else
-      rect(depths-thickness, pb2bp(Pb-err), depths, pb2bp(Pb+err), lty=pbmeasured.lty, border=pbmeasured.col)
-
-  if(length(set$supportedData) > 0) {
-    supp <- set$supportedData[,1]
-    supperr <- set$supportedData[,2]
-    suppd <- set$supportedData[,3]
-    suppthick <- set$supportedData[,4]
-
-    if(rotate.axes)
-      rect(pb2bp(supp-supperr), suppd-suppthick, pb2bp(supp+supperr), suppd,
-        border=supp.col, lty=pbmeasured.lty) else
-        rect(suppd-suppthick, pb2bp(supp-supperr), suppd, pb2bp(supp+supperr),
-          border=supp.col, lty=pbmeasured.lty)
-  }
-}
-
-
-
-### for running Plum, but is looked for by generic agedepth() function, so is included in the rbacon code
-#' @name draw.pbmodelled
-#' @title Plot the 210Pb data
-#' @description Produce a plot of the 210Pb data and their depths
-#' @details This function is generally called internally to produce the age-depth graph.
-#' It can be used to produce custom-built graphs.
-#' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
-#' @param BCAD The calendar scale of graphs is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
-#' @param rotate.axes The default of plotting age on the horizontal axis and event probability on the vertical one can be changed with \code{rotate.axes=TRUE}.
-#' @param rev.d The direction of the depth axis can be reversed from the default (\code{rev.d=TRUE}).
-#' @param rev.age The direction of the calendar age axis can be reversed from the default (\code{rev.age=TRUE})
-#' @param pb.lim Minimum and maximum of the 210Pb axis ranges, calculated automatically by default (\code{pb.lim=c()}).
-#' @param d.lim Minimum and maximum depths to plot; calculated automatically by default (\code{d.lim=c()}).
-#' @param d.lab The labels for the depth axis. Default \code{d.lab="Depth (cm)"}.
-#' @param pb.lab The label for the 210Pb axis (default \code{pb.lab="210Pb (Bq/kg)"} or \code{"210Pb (dpm/g)"}).
-#' @param supp.col Colour of the supported 210Pb data. Defaults to red: \code{supp.col="red"}.
-#' @param pbmodelled.col Colour of the modelled 210Pb values. Defaults to scales of blue: \code{pbmodelled.col=function(x) rgb(0,0,1,x)}.
-#' @param pbmeasured.col Colour of the measured 210Pb values. Defaults to blue.
-#' @param plot.measured Plot the measured 210Pb values (default \code{plot.measured=TRUE}).
-#' @param age.lim values of the age axis. Used to calculate where to plot the pb values on the secondary axis
-#' @param mgp Axis text margins (where should titles, labels and tick marks be plotted). Defaults to \code{mgp=c(1.7, .7, .0)}.
-#' @param pb.lty Line type of measured Pb-210 data.
-#' @author Maarten Blaauw, J. Andres Christen, Marco Aquino-Lopez
-#' @return A plot of the modelled (and optionally the measured) 210Pb values
-#' @export
-draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, pb.lim=c(), d.lim=c(), d.lab=c(), pb.lab=c(), pbmodelled.col=function(x) rgb(0,0,1,x), pbmeasured.col="blue", supp.col="purple", plot.measured=TRUE, age.lim=c(), mgp=mgp, pb.lty=1) {
-  pb <- set$dets[set$dets[,9] == 5,]
-  depths <- pb[,4] # set$detsOrig[,2]
-  dns <- pb[,6] # set$detsOrig[,3]
-  Pb <- pb[,2] # set$detsOrig[,4]
-  err <- pb[,3] # set$detsOrig[,5]
-  thickness <- pb[,5] # set$detsOrig[,6]
-  n <- nrow(pb)
-
-  if(ncol(pb) > 6) {
-    supp <- pb[,7] # set$detsOrig[,7]
-    supperr <- pb[,8] # set$detsOrig[,8]
-  } else {
-    supp <- set$supportedData[,1]
-    supperr <- set$supportedData[,2]
-    suppd <- set$supportedData[,3]
-    suppthick <- set$supportedData[,4]
-  }
-
-  if(length(d.lab) == 0)
-    d.lab <- paste0("depth (", set$depth.unit, ")")
-  if(length(pb.lab) == 0)
-    pb.lab <- ifelse(set$Bqkg,
-      expression(""^210*"Pb (Bq/kg)"),
-        expression(""^210*"Pb (dpm/g)"))
-
-  if(length(d.lim) == 0)
-    d.lim <- range(depths)
-  if(rev.d)
-    d.lim <- d.lim[2:1]
-
-  if(length(set$phi) > 0) {
-    Ai <- list(x=NULL, y=NULL)
-    hght <- 0; pbmin <- c(); pbmax <- 0
-    A.rng <- array(0, dim=c(n,2))
-    for(i in 1:length(depths)) {
-      A <- A.modelled(depths[i]-thickness[i], depths[i], dns[i], set)
-      tmp <- density(A)
-      Ai$x[[i]] <- tmp$x
-      Ai$y[[i]] <- tmp$y
-      hght <- max(hght, Ai$y[[i]])
-      pbmin <- min(pbmin, Ai$x[[i]])
-      pbmax <- max(pbmax, Ai$x[[i]])
-      A.rng[i,] <- quantile(A, c((1-set$prob)/2, 1-(1-set$prob)/2))
-    }
-
-    if(length(pb.lim) == 0)
-      pb.lim <- extendrange(c(0, Pb-2*err, Pb+2*err, pbmax), f=c(0, 0.05))
-
-    pb2bp <- function(pb, pb.min=pb.lim[1], pb.max=pb.lim[2], agemin=min(age.lim), agemax=max(age.lim), AD=BCAD) {
-      if(AD) {
-        ex <- (agemin - agemax) / (pb.max - pb.min)
-        return(agemax + ex*pb)
-      } else {
-          ex <- (agemax - agemin) / (pb.max - pb.min)
-          return(agemin + ex*pb)
-      }
-    }
-
-    # save the values for later
-    set$Ai <- Ai
-    set$A.rng <- A.rng
-    assign_to_global("info", set, .GlobalEnv) # doesn't work
-
-    this <- ifelse(rotate.axes, 3, 4)
-    pretty.pb <- pretty(c(pbmin, pbmax)) # not OK?
-    pretty.pb <- pretty(pb.lim)
-    onbp <- pb2bp(pretty.pb)
-    if(BCAD)
-      axis(this, rev(onbp), rev(pretty.pb), col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col) else
-        axis(this, onbp, pretty.pb, col=pbmeasured.col, col.axis=pbmeasured.col, col.lab=pbmeasured.col)
-
-    mtext(pb.lab, this, 2.5, col=pbmeasured.col, cex=.8)
-
-    for(i in 1:length(depths)) {
-      if(BCAD) {
-        ages <- pb2bp(rev(Ai$x[[i]]))
-        z <- t(rev(Ai$y[[i]]))/hght
-      } else {
-          ages <- pb2bp(Ai$x[[i]])
-          z <- t(Ai$y[[i]])/hght
-        }
-
-      if(rotate.axes)
-        image(ages, c(depths[i]-thickness[i], depths[i]), z, col=pbmodelled.col(seq(0, 1-max(z),  length=50)), add=TRUE) else
-          image(c(depths[i]-thickness[i], depths[i]), ages, z, col=pbmodelled.col(seq(0, 1-max(z), length=50)), add=TRUE)
-    }
-  }
-
-#   # indicate in redscale which Pb-210 data have most likely reached background
-#   if(draw.background) {
-#     bg <- background(set)
-#     set$background <- bg
-#     assign_to_global("info", set, .GlobalEnv)
-#     if(rotate.axes)
-#       abline(h=set$dets[,4]-(set$dets[,5]/2), col=rgb(bg,0,0,bg), lty=3, lwd=bg) else
-#         abline(v=set$dets[,4]-(set$dets[,5]/2), col=rgb(bg,0,0,bg), lty=3, lwd=bg)
-#   }
-
-    if(plot.measured)
-      draw.pbmeasured(newplot=FALSE, rotate.axes=rotate.axes, BCAD=BCAD, on.agescale=TRUE, pb.lim=pb.lim, age.lim=age.lim, supp.col=supp.col)
-}
-
-
-### for running Plum, but is looked for by generic agedepth() function (through draw.pbmodelled()), so is included in the rbacon code
-#' @name A.modelled
-#' @title Calculate modelled 210Pb
-#' @description Calculate modelled 210Pb values of a sample slice, based on the parameters of the age-model (i.e., time passed since deposition of the bottom and top of the slice), supported and influx
-#' @param d.top top depth of the slice
-#' @param d.bottom bottom depth of the slice
-#' @param dens Density of the slice (in g/cm3)
-#' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
-#' @param phi The modelled values of the 210Pb influx
-#' @param sup The modelled values of the supported 210Pb
-#' @author Maarten Blaauw
-#' @return a list of modelled values of A
-#' @export
-A.modelled <- function(d.top, d.bottom, dens, set=get('info'), phi=set$phi, sup=set$ps) {
-  if(d.top >= d.bottom)
-    stop("\n d.top should be above d.bottom", call.=FALSE)
-  dd <- 1
-  if(ncol(cbind(sup)) > 1) { # then multiple, varying estimates of supported, find the one belonging to the specified depth interval
-    dd <- set$supportedData[,3] # bottom depths
-    dd <- max(1, which(dd <= d.bottom))
-    sup <- sup[,dd]
-  }
-
-  t.top <- Bacon.Age.d(d.top, BCAD=F) - set$theta0
-  t.bottom <- Bacon.Age.d(d.bottom, BCAD=F) - set$theta0
-  #  multiply <- ifelse(set$Bqkg, 10, 500)
-  multiply <- 1 # since Bqkg or dpmg is already set earlier (for set$dets and set$detsPlum)
-  return(sup + ((phi / (.03114*multiply*dens) ) * (exp( -.03114*t.top) - exp(-.03114*t.bottom)) ) )
-} 
-
-
-
-### for running Plum, but is looked for by generic agedepth() function (through draw.pbmodelled()), so is included in the rbacon code
-#' @name background
-#' @title calculate probabilities that Pb-210 data have reached background levels
-#' @description Checks which of the Pb-210 data most likely have reached background levels and thus are below the detection limit Al (probabilities between 0 and 1)
-#' @author Maarten Blaauw
-#' @return a list of probabilities for each Pb-210 data point
-#' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
-#' @param Al The detection limit. Default \code{Al=0.1}.
-#' @export
-background <- function(set=get('info'), Al=set$Al) {
-  if(set$isplum) { # works with Pb-210 data only
-    pb <- 0
-    its <- nrow(set$output)
-#    dets <- set$detsOrig[,c(2,6,3)] # we need maxdepth, mindepth, density
-    dets <- set$dets[which(set$dets[,9] == 5),4:6] # should leave out any non-Pb data
-    ps <- cbind(set$ps)
-    for(i in 1:nrow(dets)) {
-      As <- A.modelled(dets[i,1]-dets[i,2], dets[i,1], dets[i,3])
-      if(set$ra.case == 2)
-        ps <- set$ps[,i] else
-          ps <- set$ps
-      bg <- which((As - ps) <= Al) # which modelled data are at or below the detection limit?
-      pb[i] <- length(bg) / its
-    }
-    return(pb)
-  }
 }

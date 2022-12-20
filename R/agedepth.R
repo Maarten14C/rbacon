@@ -55,7 +55,7 @@
 #' @param cal.col The colour of the non-14C dates. Default is semi-transparent blue-green: \code{cal.col=rgb(0,.5,.5,.35)}.
 #' @param cal.border The colour of the border of non-14C dates in the age-depth plot: default semi-transparent dark blue-green: \code{cal.border=rgb(0,.5,.5,.5)}. Not used by default.
 #' @param dates.col As an alternative to colouring dates based on whether they are 14C or not, sets of dates can be coloured as, e.g., \code{dates.col=colours()[2:100]}.
-#' @param pb.background Probability at which total Pb values are considered to have reached background values, or in other words, that their modelled values are at or below supported + detection limit (Al)). Setting this at .5 means that any depth with a Pb measurement, where at least half of the iterations model Pb values reaching background values, is flagged as having reached background. The age-model is not extended to any Pb measurements that have reached background.
+#' @param pb.background Probability at which total Pb values are considered to have reached background values, or in other words, that their modelled values are at or below supported + detection limit (Al)). Setting this at 0.5 means that any depth with a Pb measurement, where at least half of the iterations model Pb values reaching background values, is flagged as having reached background. The age-model is not extended to any Pb measurements that have reached background.
 #' @param pbmodelled.col Colour of the modelled 210Pb values. Defaults to shades of blue: \code{pbmodelled.col=function(x) rgb(0,0,1,x)}.
 #' @param pbmeasured.col Colour of the measured 210Pb values (default \code{pbmeasured.col="blue"}). Draws rectangles of the upper and lower depths as well as the Pb values with 95 percent error ranges. 
 #' @param pb.lim Axis limits for the Pb-210 data. Calculated automatically by default (\code{pblim=c()}).
@@ -150,7 +150,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     ifelse(set$isplum, pn <- c(1:5, rep(6,5)), pn <- c(1:3, rep(4,3)))
     if(!is.na(set$hiatus.depths[1]))
       if(is.na(set$boundary[1]))
-        pn <- c(1:4, rep(5,4))
+        ifelse(set$isplum, pn <- c(1:6, rep(7,6)), pn <- c(1:4, rep(5,4)))
     layout(matrix(pn, nrow=2, byrow=TRUE), heights=c(.3,.7))
     PlotLogPost(set, 0, set$Tr, xaxs=xaxs, yaxs=yaxs, panel.size=toppanel.fontsize) # convergence information
     newpar <- par(mar=mar.middle) # reduce white space
@@ -285,11 +285,11 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
   if(set$isplum) {
     if(set$hasBaconData)
-      calib.plot(set, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes, height=height, calheight=calheight, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff, C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col, new.plot=FALSE, same.heights=same.heights)
+      calib.plot(set, dets=set$detsBacon, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes, height=height, calheight=calheight, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff, C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col, new.plot=FALSE, same.heights=same.heights)
     if(plot.pb)
       draw.pbmodelled(set, BCAD=BCAD, rotate.axes=rotate.axes, age.lim=age.lim, d.lim=c(d.min, d.max), pbmodelled.col=pbmodelled.col, pbmeasured.col=pbmeasured.col, pb.lim=pb.lim, supp.col=supp.col, mgp=mgp, pb.lty=pb.lty)
   } else
-    calib.plot(set, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes, height=height, calheight=calheight, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff, C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col, new.plot=FALSE, same.heights=same.heights)
+    calib.plot(set, dets=set$dets, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes, height=height, calheight=calheight, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff, C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col, new.plot=FALSE, same.heights=same.heights)
 
   if(plot.labels) {
     if(length(labels) == 0)
