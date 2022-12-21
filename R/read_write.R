@@ -550,13 +550,13 @@ fastwrite <- function(out, fnam, ...)
 
 
 # function to read output files into memory
-Bacon.AnaOut <- function(fnam, set=get('info'), resample.MCMC=TRUE) {
+Bacon.AnaOut <- function(fnam, set=get('info'), MCMC.resample=TRUE) {
   out <- fastread(fnam) # was read.table
-  if(resample.MCMC)
-    if(set$ssize < nrow(out)) { # new MB Aug 2022
+  if(MCMC.resample)
+    if(set$ssize < nrow(out)) { # MB Aug 2022
       ss <- (nrow(out) - set$ssize + 1):nrow(out) # select the last ssize its only
-      out <- out[ss,] # new MB Aug 2022
-      fastwrite(out, fnam, col.names=FALSE, row.names=FALSE) # new MB Dec 2022
+      out <- out[ss,] # MB Aug 2022
+      fastwrite(out, fnam, col.names=FALSE, row.names=FALSE) # MB Dec 2022
     }
   n <- ncol(out)-1
   set$n <- n
@@ -569,13 +569,13 @@ Bacon.AnaOut <- function(fnam, set=get('info'), resample.MCMC=TRUE) {
 
 
 # function to read plum output files into memory, updated May 2021
-Plum.AnaOut <- function(fnam, set=get('info'), resample.MCMC=TRUE) {
+Plum.AnaOut <- function(fnam, set=get('info'), MCMC.resample=TRUE) {
   out <- fastread(fnam) # was read.table
-  if(resample.MCMC)
-    if(set$ssize < nrow(out)) { # new MB Aug 2022
+  if(MCMC.resample)
+    if(set$ssize < nrow(out)) { # MB Aug 2022
       ss <- (nrow(out) - set$ssize + 1):nrow(out) # select the last ssize its only
-      out <- out[ss,] # new MB Aug 2022
-      fastwrite(out, fnam, col.names=FALSE, row.names=FALSE) # new MB Dec 2022
+      out <- out[ss,] # MB Aug 2022
+      fastwrite(out, fnam, col.names=FALSE, row.names=FALSE) # MB Dec 2022
     }
   n <- ncol(out)-1
   set$nPs <- n

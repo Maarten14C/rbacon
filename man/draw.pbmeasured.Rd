@@ -16,7 +16,7 @@ draw.pbmeasured(
   d.lab = c(),
   pb.lab = c(),
   pbmeasured.col = "blue",
-  pbmeasured.lty = 1,
+  pbmeasured.lty = 2,
   pb.log = FALSE,
   supp.col = "purple",
   newplot = TRUE,
