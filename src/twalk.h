@@ -630,14 +630,18 @@ int simulation(unsigned long long Tr1, char *filename, const char *op="wt", int 
         }
 
 
-
-
 		int j1=1, j=0, rt;
 		long ax;
 		int acc_it=0;
 
 
         for(unsigned long long it=1; it<=Tr1; it++) {
+
+			// MB Dec 2022, to try enabling user interrupt, inspired by:
+			// https://teuder.github.io/rcpp4everyone_en/270_miscellaneous.html
+			// every 10k its, check if user has pressed ctrl+c
+			if(it %10000 == 0)
+				{Rcpp::checkUserInterrupt();}
 
 				rt = one_move();
 
