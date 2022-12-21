@@ -3,7 +3,10 @@ agedepth(rotate.axes=TRUE)
 agedepth(BCAD=TRUE)
 agedepth(rotate.axes=TRUE, BCAD=TRUE)
 agedepth()
+
+layout(1)
 accrate.age.ghost()
+accrate.age.ghost(BCAD=TRUE)
 accrate.depth.ghost()
 
 Bacon(ask=FALSE, slump=c(25,27))

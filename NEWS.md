@@ -1,7 +1,7 @@
-# rbacon 2.6.0
+# rbacon 3.0.0
 * accrates.depth.ghost() and accrate.age.ghost() now invisibly return the ranges, medians and means for each depth resp. age for subsequent use, e.g., tmp <- accrates.depth.ghost(); head(tmp)
 * MCMC iterations are now stored in the .out files irrespective of whether they were accepted or rejected
-* ssize is now much more predictable (if there are more rows in the output file than set by ssize, rbacon keeps only n=ssize rows)
+* ssize is now much more predictable (if there are more rows in the output file than set by ssize, rbacon keeps only the last n=ssize rows)
 * files are read and written faster (assuming that the data.table R package is installed and loaded, which can be a problem on Macs)
 * corrected the help description for Bacon.d.Age() with thanks to Henningte
 * the length of the ages output of accrate.age() is now the same even if there are NAs in the output (with thanks to Henningte)

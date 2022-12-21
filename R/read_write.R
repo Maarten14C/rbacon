@@ -9,17 +9,6 @@ validateDirectoryName <- function(dir) {
 }
 
 
-# internal functions to speed up reading and writing files, using the data.table R package if present
-fastread <- function(fl, ...)
-  if("data.frame" %in% (.packages()))
-    as.data.frame(fread(fl), ...) else
-      read.table(fl, ...)
-
-fastwrite <- function(fl, ...)
-  if("data.frame" %in% (.packages()))
-    fwrite(as.data.frame(fl), ...) else
-      write.table(fl, ...)
-
 #' @name clam2bacon
 #' @title Translate clam .csv files to Bacon .csv files.
 #' @description Reads a clam .csv file containing the dates, and transforms it into a Bacon .csv file.
@@ -545,13 +534,30 @@ write.Bacon.file <- function(set=get('info')) {
 
 
 
+# internal functions to speed up reading and writing files, using the data.table R package if present
+fastread <- function(fnam, ...)
+  if("data.table" %in% (.packages()))
+    as.data.frame(fread(fnam, ...)) else
+      read.table(fnam, ...)
+
+
+
+fastwrite <- function(out, fnam, ...)
+  if("data.table" %in% (.packages()))
+    fwrite(as.data.frame(out), fnam, ...) else
+      write.table(out, fnam, ...)
+
+
+
 # function to read output files into memory
-Bacon.AnaOut <- function(fnam, set=get('info')) {
+Bacon.AnaOut <- function(fnam, set=get('info'), resample.MCMC=TRUE) {
   out <- fastread(fnam) # was read.table
-  if(set$ssize < nrow(out)) { # new MB Aug 2022
-    ss <- sample(1:nrow(out), set$ssize, replace=FALSE) # draw random iterations
-    out <- out[ss,] # new MB Aug 2022
-  }
+  if(resample.MCMC)
+    if(set$ssize < nrow(out)) { # new MB Aug 2022
+      ss <- (nrow(out) - set$ssize + 1):nrow(out) # select the last ssize its only
+      out <- out[ss,] # new MB Aug 2022
+      fastwrite(out, fnam, col.names=FALSE, row.names=FALSE) # new MB Dec 2022
+    }
   n <- ncol(out)-1
   set$n <- n
   set$Tr <- nrow(out)
@@ -563,12 +569,14 @@ Bacon.AnaOut <- function(fnam, set=get('info')) {
 
 
 # function to read plum output files into memory, updated May 2021
-Plum.AnaOut <- function(fnam, set=get('info')) {
+Plum.AnaOut <- function(fnam, set=get('info'), resample.MCMC=TRUE) {
   out <- fastread(fnam) # was read.table
-  if(set$ssize < nrow(out)) { # new MB Aug 2022
-    ss <- sample(1:nrow(out), set$ssize, replace=FALSE) # draw random iterations
-    out <- out[ss,] # new MB Aug 2022
-  }
+  if(resample.MCMC)
+    if(set$ssize < nrow(out)) { # new MB Aug 2022
+      ss <- (nrow(out) - set$ssize + 1):nrow(out) # select the last ssize its only
+      out <- out[ss,] # new MB Aug 2022
+      fastwrite(out, fnam, col.names=FALSE, row.names=FALSE) # new MB Dec 2022
+    }
   n <- ncol(out)-1
   set$nPs <- n
   set$TrPs <- nrow(out)

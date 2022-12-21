@@ -274,7 +274,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FALSE, age.res=400, acc.res=200, cutoff=.001, dark=1, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, xaxs="i", yaxs="i", bty="l") {
   if(length(age.lim) == 0) 
      age.lim <- extendrange(set$ranges[,5]) # just the mean ages, not the extremes
-  if(set$BCAD)
+  if(set$BCAD) # was set$BCAD
     age.lim <- 1950 - age.lim # work with cal BP internally
   age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
     
@@ -331,8 +331,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
   cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0, 1, length=rgb.res))
 
   if(rotate.axes) {
-    yaxt <- ifelse(BCAD, "n", "s")
-    yaxt <- ifelse(kcal, "n", "s")
+    yaxt <- ifelse(kcal || BCAD, "n", "s")
     plot(0, type="n", ylim=age.lim, ylab=age.lab, xlim=acc.lim, xlab=acc.lab, yaxs=xaxs, xaxs=yaxs, yaxt=yaxt, bty="n")
     if(BCAD)
       axis(2, pretty(age.lim), labels=1950-pretty(age.lim)) else
@@ -348,8 +347,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
     if(plot.median) 
       lines(acc.median, age.seq, col=median.col, lty=median.lty)
   } else {
-      xaxt <- ifelse(BCAD, "n", "s")
-      xaxt <- ifelse(kcal, "n", "s")
+      xaxt <- ifelse(kcal || BCAD, "n", "s")
       plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=acc.lim, xaxt=xaxt, ylab=acc.lab, xaxs=xaxs, yaxs=yaxs, bty="n")
       if(BCAD)
         axis(1, pretty(age.lim), labels=1950-pretty(age.lim)) else

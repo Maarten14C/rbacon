@@ -61,6 +61,7 @@ agedepth(
   supp.col = "purple",
   plot.tail = TRUE,
   remove.tail = TRUE,
+  MCMC.resample = TRUE,
   hiatus.col = grey(0.5),
   hiatus.lty = "12",
   rgb.scale = c(0, 0, 0),
@@ -218,6 +219,8 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 \item{plot.tail}{The depth axis can extend to all Pb measurements (\code{plot.tail=TRUE}), or leave out the ones where background has been reached.}
 
 \item{remove.tail}{Whether or not to remove the tail measurements when plotting. Sometimes automated removal might go wrong, so then this option can be used to avoid removing the tail measurements. Quite similar to plot.tail.}
+
+\item{MCMC.resample}{After the MCMC run, if there are more MCMC iterations than requested, only the last 'ssize' iterations will be retained. Defaults to TRUE.}
 
 \item{hiatus.col}{The colour of the depths of any hiatuses. Default \code{hiatus.col=grey(0.5)}.}
 

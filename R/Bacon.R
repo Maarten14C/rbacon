@@ -22,7 +22,7 @@ library(rintcal)
 
 # todo:
 
-# done: repaired warning message about length of logical tests, accrate.depth.ghost and accrate.age.ghost now invisibly return the means, medians and ranges of the accumulation rates for each depth resp. age, and are plotted better in accrate.depth.ghost. Now using data.table's fread and fwrite functions for faster reading and writing of files. accrate.age.ghost gains a kcal option
+# done:
 
 # replacing the plotting of the calibrated distributions by rintcal's functions doesn't seem to speed up anything, so keeping the original method in place for now.
 

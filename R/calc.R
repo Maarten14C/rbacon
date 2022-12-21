@@ -329,7 +329,7 @@ hiatus.slopes <- function(set=get('info'), hiatus.option=1) {
 Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c(), hist.lab="Frequency", calc.range=TRUE, hist.lim=c(), draw=TRUE, prob=set$prob, hist.col=grey(0.5), hist.border=grey(.2), range.col="blue", med.col="green", mean.col="red", verbose=TRUE) {
   outfile <- paste0(set$prefix, ".out")
   if(length(set$output) == 0 || length(set$Tr) == 0) {
-    set <- Bacon.AnaOut(outfile, set)
+    set <- Bacon.AnaOut(outfile, set, MCMC.resample=FALSE)
     assign_to_global("set", set)
   }
   hist3 <- function(d, BCAD) {
@@ -393,7 +393,7 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
 Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
   outfile <- paste0(set$prefix, ".out")
   if(length(set$output) == 0 || length(set$Tr) == 0) {
-    set <- Bacon.AnaOut(outfile, set)
+    set <- Bacon.AnaOut(outfile, set, MCMC.resample=FALSE)
     assign_to_global("set", set)
   }
 
@@ -435,7 +435,7 @@ Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
 agemodel.it <- function(it, set=get('info'), BCAD=set$BCAD) {
   outfile <- paste0(set$prefix, ".out")
   if(length(set$output) == 0 || length(set$Tr) == 0) {
-    set <- Bacon.AnaOut(outfile, set)
+    set <- Bacon.AnaOut(outfile, set, MCMC.resample=FALSE)
     assign_to_global("set", set)
   }
   # does this function work in cores with slumps? also doesn't take into account hiatuses.
