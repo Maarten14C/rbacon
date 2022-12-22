@@ -124,7 +124,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(set$isplum) {
     outPlum <- paste0(set$prefix, "_plum.out")
     if(file.exists(outPlum))
-      set <- Plum.AnaOut(outPlum, set)
+      set <- Plum.AnaOut(outPlum, set, MCMC.resample)
     assign_to_global("info", set)
 
     # sometimes runs don't go well, with the age-model totally lost. This is indicated by a very peaked posterior for memory, very close to 1
