@@ -20,7 +20,7 @@ NULL
 # to enable direct use of ccurve, mix.curves, calibration functions, pMC.age & age.pMC
 library(rintcal)
 
-# todo:
+# todo: repair accrate.age NA problem (and add option na.rm; check if same problem at accrate.depth)
 
 # done:
 

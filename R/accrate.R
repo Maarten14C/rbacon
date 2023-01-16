@@ -81,7 +81,8 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
       these <- (ages[,i-1] > age) * (ages[,i] < age) else
         these <- (ages[,i-1] < age) * (ages[,i] > age)
     if(sum(these) > 0) # age lies within these age-model iterations
-      accs <- c(accs, set$output[which(these>0),i]) # was i+1
+      #accs <- c(accs, set$output[which(these>0),i]) # was i+1
+      accs[which(these>0)] <- set$output[which(these>0),i] # Jan 2023
   }
   if(cmyr)
     accs <- 1/accs
