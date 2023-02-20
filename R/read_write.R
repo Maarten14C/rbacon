@@ -179,6 +179,9 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
   suggested.names <- c("labID", "age", "error", "depth", "cc", "dR", "dSTD", "ta", "tb")
   changed <- 0
 
+  if(nchar(sep) != 1L) # fwrite wants sep to be of 1 character length only
+    message("Warning, sep should be 1 character only, please adapt")
+
   if(file.exists(csv.file)) {
     dets <- fastread(csv.file, header=TRUE, sep=sep)
     if(file.exists(dat.file)) # deal with old .dat files
@@ -301,7 +304,7 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
 
   # if current dets differ from original .csv file, rewrite it
   if(changed > 0)
-    fwrite(as.data.frame(dets), csv.file, sep=paste0(sep, "\t"), dec=dec, row.names=FALSE, col.names=suggested.names[1:ncol(dets)], quote=FALSE)
+    fwrite(as.data.frame(dets), csv.file, sep=sep, dec=dec, row.names=FALSE, col.names=suggested.names[1:ncol(dets)], quote=FALSE) # sep was paste0(sep, "\t") but fwrite needs sep to be exactly 1 char
   dets
 }
 

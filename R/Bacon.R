@@ -22,7 +22,7 @@ library(rintcal)
 
 # todo: repair accrate.age NA problem (and add option na.rm; check if same problem at accrate.depth)
 
-# done:
+# done: replaced sep=paste0(sep, "\t") in read_write.R line 304 with sep=sep
 
 # replacing the plotting of the calibrated distributions by rintcal's functions doesn't seem to speed up anything, so keeping the original method in place for now.
 
