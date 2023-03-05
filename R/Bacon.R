@@ -22,7 +22,7 @@ library(rintcal)
 
 # todo: repair accrate.age NA problem (and add option na.rm; check if same problem at accrate.depth)
 
-# done: replaced sep=paste0(sep, "\t") in read_write.R line 304 with sep=sep
+# done: replaced sep=paste0(sep, "\t") in read_write.R line 304 with sep=sep, added an option to agedepth called plotatthesedepths, to enable plotting alternative depths (e.g., after using the compress function; use with great care. Example: agedepth(depths=1:100, plotatthesedepths=1.5*(1:100), d.max=200)
 
 # replacing the plotting of the calibrated distributions by rintcal's functions doesn't seem to speed up anything, so keeping the original method in place for now.
 

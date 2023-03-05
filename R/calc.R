@@ -486,3 +486,21 @@ fromslump <- function(d, slump) {
   }
   return(dorig)
 }
+
+
+
+# to deal with e.g. very long cores with some sections which are much more densely dated than other sections. Then we can artificially compress the lower-res dated sections, to enable a reduced number of parameters. 
+compress <- function(d, elbow=25, by=20) {
+  below <- which(d > elbow)
+  if(length(below) > 0)
+    d[below] <- elbow + (d[below]-elbow)/by
+  return(d)
+}
+
+# companion to the compress function. 
+expand <- function(d, elbow=25, by=20) {
+  below <- which(d > elbow)
+  if(length(below) > 0)
+    d[below] <- elbow + (d[below]-elbow)*by
+  return(d)
+}

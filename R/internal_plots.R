@@ -3,8 +3,9 @@
 #################### user-invisible plot functions ####################
 
 # to plot greyscale/ghost graphs of the age-depth model
-agedepth.ghost <- function(set=get('info'), d.min=set$d.min, d.max=set$d.max, BCAD=set$BCAD, rotate.axes=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), rgb.scale=c(0,0,0), cutoff=0.001, age.lim) {
-  dseq <- seq(d.min, d.max, length=d.res)
+agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, plotatthesedepths=c(), BCAD=set$BCAD, rotate.axes=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), rgb.scale=c(0,0,0), cutoff=0.001, age.lim) {
+  if(length(dseq) == 0)
+    dseq <- seq(d.min, d.max, length=d.res)
   if(set$isplum) # plum has a strange feature with a grey shape appearing
     dseq <- dseq[-1] # at dmin. Thus removing the first depth
   if(length(set$slump) > 0) {
@@ -39,6 +40,8 @@ agedepth.ghost <- function(set=get('info'), d.min=set$d.min, d.max=set$d.max, BC
   scales[scales > dark] <- dark
   scales <- scales/max(scales) # May 2021
   dseq <- sort(dseq)
+  if(length(plotatthesedepths) > 0)
+    dseq <- plotatthesedepths # careful now!
   cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))
   
   scales[scales<cutoff] <- NA # so that pixels with probs very close to 0 are not plotted as white but empty
