@@ -489,18 +489,56 @@ fromslump <- function(d, slump) {
 
 
 
-# to deal with e.g. very long cores with some sections which are much more densely dated than other sections. Then we can artificially compress the lower-res dated sections, to enable a reduced number of parameters. 
-compress <- function(d, elbow=25, by=20) {
-  below <- which(d > elbow)
+#' @name squeeze
+#' @title Squeeze some depths of a core
+#' @description Squeeze or compress depths below a boundary by a certain amount. Accompanies the stretch function; see the stretch function for code on running the accordion
+#' @param d The depth(s) to be squeezed
+#' @param boundary The depth below which depths should be squeezed
+#' @param by The factor by which the depths should be squeezed
+#' @author Maarten Blaauw
+#' @return The squeezed depth(s)
+#' @examples
+#'   squeeze(40,25,20)
+#' @export
+squeeze <- function(d, boundary=25, by=20) {
+  below <- which(d > boundary)
   if(length(below) > 0)
-    d[below] <- elbow + (d[below]-elbow)/by
+    d[below] <- boundary + (d[below]-boundary)/by
   return(d)
 }
 
-# companion to the compress function. 
-expand <- function(d, elbow=25, by=20) {
-  below <- which(d > elbow)
+
+
+#' @name stretch
+#' @title Stretch some depths of a core
+#' @description Stretch squeezed depths e.g., calculate the original depths of depths that were squeezed. Accompanies the squeeze function.
+#' @param d The depth(s) to be stretched
+#' @param boundary The depth below which depths should be stretched
+#' @param by The factor by which the depths should be stretched
+#' @author Maarten Blaauw
+#' @return The stretched depth(s)
+#' @examples
+#'   stretch(25.75,25,20)
+#' \dontrun{
+#'   # To play the accordion, first squeeze an existing core.
+#'   # Let's squeeze the depths below 10 cm core depth 20 times:
+#'   Bacon("accordion", 1)
+#'   dets <- info$dets
+#'   dets[,4] <- squeeze(dets[,4], 10, 20)
+#'
+#'   # make a new directory for the squeezed core, and place the dets file there:
+#'   dir.create("Bacon_runs/accordion_squeezed")
+#'   write.table(dets, "Bacon_runs/accordion_squeezed/accordion_squeezed.csv", row.names=FALSE, sep=",")
+#'
+#'   # now run that squeezed core, adding a boundary (10cm) and adapting the acc.mean prior (20x):
+#'   Bacon("accordion_squeezed", 1, boundary=10, acc.mean=c(5, 20*5))
+#'   # finally, plot while stretching the depths onto the original scale:
+#'   agedepth(accordion=c(10,20))
+#' }
+#' @export
+stretch <- function(d, boundary=25, by=20) {
+  below <- which(d > boundary)
   if(length(below) > 0)
-    d[below] <- elbow + (d[below]-elbow)*by
+    d[below] <- boundary + (d[below]-boundary)*by
   return(d)
 }

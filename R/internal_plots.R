@@ -3,7 +3,7 @@
 #################### user-invisible plot functions ####################
 
 # to plot greyscale/ghost graphs of the age-depth model
-agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, plotatthesedepths=c(), BCAD=set$BCAD, rotate.axes=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), rgb.scale=c(0,0,0), cutoff=0.001, age.lim) {
+agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, accordion=c(), BCAD=set$BCAD, rotate.axes=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), rgb.scale=c(0,0,0), cutoff=0.001, age.lim) {
   if(length(dseq) == 0)
     dseq <- seq(d.min, d.max, length=d.res)
   if(set$isplum) # plum has a strange feature with a grey shape appearing
@@ -17,6 +17,9 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
     }
   dseq <- dseq[-d.inside]
   }
+
+ if(length(accordion) == 2)
+    dseq <- squeeze(dseq, accordion[1], accordion[2])
 
   Bacon.hist(dseq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE)
   hists <- get('hists')
@@ -40,8 +43,8 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
   scales[scales > dark] <- dark
   scales <- scales/max(scales) # May 2021
   dseq <- sort(dseq)
-  if(length(plotatthesedepths) > 0)
-    dseq <- plotatthesedepths # careful now!
+  if(length(accordion) == 2)
+    dseq <- stretch(dseq, accordion[1], accordion[2]) # careful now!
   cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))
   
   scales[scales<cutoff] <- NA # so that pixels with probs very close to 0 are not plotted as white but empty

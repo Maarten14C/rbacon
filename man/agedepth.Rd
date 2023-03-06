@@ -20,6 +20,8 @@ agedepth(
   d.by = c(),
   depths = set$depths,
   depths.file = FALSE,
+  accordion = c(),
+  plotatthesedepths = c(),
   age.min = c(),
   yr.min = age.min,
   age.max = c(),
@@ -137,6 +139,10 @@ agedepth(
 If \code{depths.file=TRUE}, Bacon will read a file containing the depths for which you require ages.
 This file, containing the depths in a single column without a header, should be stored within \code{coredir},
 and its name should start with the core's name and end with '_depths.txt'. Then specify \code{depths.file=TRUE} (default \code{FALSE}). See also \code{depths}.}
+
+\item{accordion}{An experimental option to compress and expand depths below a boundary. Needs 2 parameters: boundary depth and compression ratio, e.g., \code{accordion=c(25,20)}. Defaults to inactive, \code{accordion=c()}.}
+
+\item{plotatthesedepths}{An option to plot ages at different depths (e.g., if a core has been compressed during a run). Use with extreme caution!}
 
 \item{age.min}{Minimum age of the age-depth plot.}
 

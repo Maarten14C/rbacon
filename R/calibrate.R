@@ -68,6 +68,7 @@ add.dates <- function(mn, sdev, depth, cc=1, set=get('info'), above=1e-6, postbo
 #' It can be used to produce custom-built graphs.
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param dets The set of determinations to be plotted.
+#' @param accordion If depths have to be squeezed/stretched, the parameters can be set here. Defaults to being empty, but requires 2 parameters if active, e.g., \code{accordion=c(10,20)}.
 #' @param BCAD The calendar scale of graphs is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
 #' @param cc Calibration curve to be used (defaults to info$cc)
 #' @param rotate.axes The default of plotting age on the horizontal axis and event probability on the vertical one can be changed with \code{rotate.axes=TRUE}.
@@ -101,7 +102,7 @@ add.dates <- function(mn, sdev, depth, cc=1, set=get('info'), above=1e-6, postbo
 #'   calib.plot()
 #' @export
 ### produce plots of the calibrated distributions
-calib.plot <- function(set=get('info'), dets=set$dets, thesedateddepths=c(), BCAD=set$BCAD, cc=set$cc, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, rev.yr=rev.age, age.lim=c(), yr.lim=age.lim, date.res=100, d.lab=c(), age.lab=c(), yr.lab=age.lab, height=1, calheight=1, mirror=TRUE, up=TRUE, cutoff=.1, C14.col=rgb(0,0,1,.5), C14.border=rgb(0,0,1,.75), cal.col=rgb(0,.5,.5,.5), cal.border=rgb(0,.5,.5,.75), dates.col=c(), slump.col=grey(0.8), new.plot=TRUE, plot.dists=TRUE, same.heights=FALSE) {
+calib.plot <- function(set=get('info'), dets=set$dets, accordion=c(), BCAD=set$BCAD, cc=set$cc, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, rev.yr=rev.age, age.lim=c(), yr.lim=age.lim, date.res=100, d.lab=c(), age.lab=c(), yr.lab=age.lab, height=1, calheight=1, mirror=TRUE, up=TRUE, cutoff=.1, C14.col=rgb(0,0,1,.5), C14.border=rgb(0,0,1,.75), cal.col=rgb(0,.5,.5,.5), cal.border=rgb(0,.5,.5,.75), dates.col=c(), slump.col=grey(0.8), new.plot=TRUE, plot.dists=TRUE, same.heights=FALSE) {
 	
   # agedepth calls as follows:
   #calib.plot(set, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes, height=height, calheight=calheight, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff, C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col, new.plot=FALSE, same.heights=same.heights)
@@ -168,9 +169,9 @@ calib.plot <- function(set=get('info'), dets=set$dets, thesedateddepths=c(), BCA
       dupl <- which(diff(cal[,1]) == 0)
       if(length(dupl) > 0) # avoid warning of collapsing to unique values
         cal <- cal[-dupl,]
-      if(length(thesedateddepths) == 0)
-        d <- set$calib$d[[i]] else
-          d <- thesedateddepths[i]
+      d <- set$calib$d[[i]]
+      if(length(accordion) == 2)
+        d <- stretch(d, accordion[1], accordion[2])
       if(BCAD)
         cal[,1] <- 1950-cal[,1]
       if((max(cal[,1]) - min(cal[,1])) > 4*agesteps)

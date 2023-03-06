@@ -7,6 +7,7 @@
 calib.plot(
   set = get("info"),
   dets = set$dets,
+  thesedateddepths = c(),
   BCAD = set$BCAD,
   cc = set$cc,
   rotate.axes = FALSE,
