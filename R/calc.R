@@ -494,16 +494,16 @@ fromslump <- function(d, slump) {
 #' @description Squeeze or compress depths below a boundary by a certain amount. Accompanies the stretch function; see the stretch function for code on running the accordion
 #' @param d The depth(s) to be squeezed
 #' @param boundary The depth below which depths should be squeezed
-#' @param by The factor by which the depths should be squeezed
+#' @param times The factor by which the depths should be squeezed
 #' @author Maarten Blaauw
 #' @return The squeezed depth(s)
 #' @examples
 #'   squeeze(40,25,20)
 #' @export
-squeeze <- function(d, boundary=25, by=20) {
+squeeze <- function(d, boundary, times) {
   below <- which(d > boundary)
   if(length(below) > 0)
-    d[below] <- boundary + (d[below]-boundary)/by
+    d[below] <- boundary + (d[below]-boundary)/times
   return(d)
 }
 
@@ -514,7 +514,7 @@ squeeze <- function(d, boundary=25, by=20) {
 #' @description Stretch squeezed depths e.g., calculate the original depths of depths that were squeezed. Accompanies the squeeze function.
 #' @param d The depth(s) to be stretched
 #' @param boundary The depth below which depths should be stretched
-#' @param by The factor by which the depths should be stretched
+#' @param times The factor by which the depths should be stretched
 #' @author Maarten Blaauw
 #' @return The stretched depth(s)
 #' @examples
@@ -536,9 +536,9 @@ squeeze <- function(d, boundary=25, by=20) {
 #'   agedepth(accordion=c(10,20))
 #' }
 #' @export
-stretch <- function(d, boundary=25, by=20) {
+stretch <- function(d, boundary, times) {
   below <- which(d > boundary)
   if(length(below) > 0)
-    d[below] <- boundary + (d[below]-boundary)*by
+    d[below] <- boundary + (d[below]-boundary)*times
   return(d)
 }

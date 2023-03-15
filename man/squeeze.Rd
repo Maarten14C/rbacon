@@ -4,25 +4,23 @@
 \alias{squeeze}
 \title{Squeeze some depths of a core}
 \usage{
-squeeze(d, boundary = 25, by = 20)
+squeeze(d, boundary, times)
 }
 \arguments{
 \item{d}{The depth(s) to be squeezed}
 
 \item{boundary}{The depth below which depths should be squeezed}
 
-\item{by}{The factor by which the depths should be squeezed}
+\item{times}{The factor by which the depths should be squeezed}
 }
 \value{
 The squeezed depth(s)
 }
 \description{
-Squeeze or compress depths below a boundary by a certain amount. Accompanies the stretch function.
+Squeeze or compress depths below a boundary by a certain amount. Accompanies the stretch function; see the stretch function for code on running the accordion
 }
 \examples{
-\dontrun{
   squeeze(40,25,20)
-}
 }
 \author{
 Maarten Blaauw

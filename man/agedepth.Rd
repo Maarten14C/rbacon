@@ -96,6 +96,16 @@ agedepth(
   prior.ticks = "n",
   prior.fontsize = 0.9,
   toppanel.fontsize = 0.9,
+  acc.xlim = c(),
+  acc.ylim = c(),
+  mem.xlim = c(),
+  mem.ylim = c(),
+  hiatus.xlim = c(),
+  hiatus.ylim = c(),
+  phi.xlim = c(),
+  phi.ylim = c(),
+  supp.xlim = c(),
+  supp.ylim = c(),
   xaxt = "s",
   yaxt = "s",
   plot.pb = TRUE,
@@ -140,7 +150,7 @@ If \code{depths.file=TRUE}, Bacon will read a file containing the depths for whi
 This file, containing the depths in a single column without a header, should be stored within \code{coredir},
 and its name should start with the core's name and end with '_depths.txt'. Then specify \code{depths.file=TRUE} (default \code{FALSE}). See also \code{depths}.}
 
-\item{accordion}{An experimental option to compress and expand depths below a boundary. Needs 2 parameters: boundary depth and compression ratio, e.g., \code{accordion=c(25,20)}. Defaults to inactive, \code{accordion=c()}.}
+\item{accordion}{An experimental option to squeeze and stretch depths below a boundary. Needs 2 parameters: boundary depth and compression ratio, e.g., \code{accordion=c(25,20)}. Defaults to inactive, \code{accordion=c()}.}
 
 \item{plotatthesedepths}{An option to plot ages at different depths (e.g., if a core has been compressed during a run). Use with extreme caution!}
 
@@ -291,6 +301,26 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 \item{prior.fontsize}{Font size of the prior, relative to R's standard size. Defaults to \code{prior.fontsize=0.9}.}
 
 \item{toppanel.fontsize}{Font size of the top panels, relative to R's standard size. Defaults to \code{prior.fontsize=0.9}.}
+
+\item{acc.xlim}{Horizontal axis limits of the accumulation rate panel. Calculated automatically by default.}
+
+\item{acc.ylim}{Vertical axis limits of the accumulation rate panel. Calculated automatically by default.}
+
+\item{mem.xlim}{Horizontal axis limits of the memory panel. Calculated automatically by default.}
+
+\item{mem.ylim}{Vertical axis limits of the memory panel. Calculated automatically by default.}
+
+\item{hiatus.xlim}{Horizontal axis limits of the hiatus size panel. Calculated automatically by default.}
+
+\item{hiatus.ylim}{Vertical axis limits of the hiatus size panel. Calculated automatically by default.}
+
+\item{phi.xlim}{Horizontal axis limits of the phi panel. Calculated automatically by default.}
+
+\item{phi.ylim}{Vertical axis limits of the phi panel. Calculated automatically by default.}
+
+\item{supp.xlim}{Horizontal axis limits of the supported-Pb panel. Calculated automatically by default.}
+
+\item{supp.ylim}{Vertical axis limits of the supported-Pb panel. Calculated automatically by default.}
 
 \item{xaxt}{Whether or not to plot the x-axis. Can be used to adapt axes after a plot. See ?par for other options.}
 

@@ -1,6 +1,11 @@
+# rbacon 3.1.0
+* added an 'accordion' option to squeeze cores with highly irregularly dated sections (e.g., with a few cm of high-res Pb-210 data combined with much longer but lower-resolution C-14 data). Cores can be 'squeezed' and 'stretched' - please check the documentation of the new 'stretch' function
+* The upper panels of the accumulation rate, memory, hiatus size, phi and supported (where relevant) gain options to adapt their x/y axis limits
+
+
 # rbacon 3.0.0
 * accrates.depth.ghost() and accrate.age.ghost() now invisibly return the ranges, medians and means for each depth resp. age for subsequent use, e.g., tmp <- accrates.depth.ghost(); head(tmp)
-* MCMC iterations are now stored in the .out files irrespective of whether they were accepted or rejected
+* MCMC iterations are now stored in the .out files, irrespective of whether they were accepted or rejected
 * ssize is now much more predictable (if there are more rows in the output file than set by ssize, rbacon keeps only the last n=ssize rows)
 * files are read and written faster (assuming that the data.table R package is installed and loaded, which can be a problem on Macs)
 * corrected the help description for Bacon.d.Age() with thanks to Henningte

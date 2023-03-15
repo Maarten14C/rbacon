@@ -164,7 +164,7 @@ PlotPhiPrior <- function(s, mn, set=get('info'), depth.unit=depth.unit, age.unit
 
 
 # plot the posterior (and prior) of the accumulation rate
-PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main="", depth.unit=set$depth.unit, age.unit=set$age.unit, ylab="Frequency", xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9) {
+PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main="", depth.unit=set$depth.unit, age.unit=set$age.unit, ylab="Frequency", xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, acc.xlim=c(), acc.ylim=c()) {
   hi <- 2:(set$K-1)
   if(!is.na(set$hiatus.depths)[1])
     for(i in set$hiatus.depths)
@@ -178,23 +178,31 @@ PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main=
   if(is.infinite(max(maxprior)))
     max.y <- max(post[,2]) else
       max.y <- max(maxprior, post[,2])
-  lim.x <- range(0, post[,1], 2*mn)
+  if(length(acc.xlim) == 0)
+    acc.xlim <- range(0, post[,1], 2*mn)
+  if(length(acc.ylim) == 0)
+    acc.ylim <- c(0, 1.05*max.y)
   acc.lab <- paste0("Acc. rate (", age.unit, "/", depth.unit, ")")
-  plot(0, type="n", xlim=lim.x, xlab=acc.lab, ylim=c(0, 1.05*max.y), ylab="", xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
+  plot(0, type="n", xlim=acc.xlim, xlab=acc.lab, ylim=acc.ylim, ylab="", xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
   polygon(post, col=grey(.8), border=grey(.4))
-  PlotAccPrior(s, mn, add=TRUE, xlim=lim.x, xlab="", ylab=ylab, main=main, csize=prior.size)
+  PlotAccPrior(s, mn, add=TRUE, xlim=acc.xlim, xlab="", ylab=ylab, main=main, csize=prior.size)
 }
 
 
 
 # plot the posterior (and prior) of the memory
-PlotMemPost <- function(set=get('info'), corenam, K, main="", s=set$mem.strength, mn=set$mem.mean, xlab=paste("Memory"), ylab="Density", ds=1, thick, xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9) {
+PlotMemPost <- function(set=get('info'), corenam, K, main="", s=set$mem.strength, mn=set$mem.mean, xlab=paste("Memory"), ylab="Density", ds=1, thick, xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, mem.xlim=c(), mem.ylim=c()) {
   post <- density(set$output[,2+set$K]^(1/set$thick), from=0, to=1) # was output[,set$n] but not ok for rplum
   post <- cbind(c(min(post$x), post$x, max(post$x)), c(0, post$y, 0))
   maxprior <- max(dbeta((0:100)/100, s*mn, s*(1-mn)))
-  if(is.infinite(max(maxprior))) max.y <- max(post[,2]) else
-    max.y <- max(maxprior, max(post[,2]))
-  plot(0, type="n", xlab=xlab, xlim=range(post[,1]), ylim=c(0, 1.05*max.y), ylab="", main="", xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
+  if(length(mem.xlim) == 0)
+    mem.xlim <- range(post[,1])
+  if(is.infinite(max(maxprior)))
+    max.y <- max(post[,2]) else
+      max.y <- max(maxprior, max(post[,2]))
+  if(length(mem.ylim) == 0)
+    mem.ylim <- c(0, 1.05*max.y)
+  plot(0, type="n", xlab=xlab, xlim=mem.xlim, ylim=mem.ylim, ylab="", main="", xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
   polygon(post, col=grey(.8), border=grey(.4))
   PlotMemPrior(s, mn, thick, add=TRUE, xlab="", ylab=ylab, main=main, csize=prior.size)
 }
@@ -202,21 +210,23 @@ PlotMemPost <- function(set=get('info'), corenam, K, main="", s=set$mem.strength
 
 
 # plot the posterior (and prior) of the hiatus
-PlotHiatusPost <- function(set=get('info'), mx=set$hiatus.max, main="", xlim=c(), xlab=paste0("Hiatus size (", set$age.unit, ")"), ylab="Frequency", after=set$after, xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9) {
+PlotHiatusPost <- function(set=get('info'), mx=set$hiatus.max, main="", xlab=paste0("Hiatus size (", set$age.unit, ")"), ylab="Frequency", after=set$after, xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, hiatus.xlim=c(), hiatus.ylim=c()) {
   gaps <- c()
   for(i in set$hiatus.depths) {
     below <- Bacon.Age.d(i+after, set)
     above <- Bacon.Age.d(i-after, set)
     gaps <- c(gaps, below - above)
   }
-  if(length(xlim) == 0)
-    xlim <- c(0, 1.1*(max(mx, gaps)))
+  if(length(hiatus.xlim) == 0)
+    hiatus.xlim <- c(0, 1.1*(max(mx, gaps)))
   max.y <- 1.1/mx
   if(length(gaps) > 1) {
     gaps <- density(gaps, from=0)
     max.y <- max(max.y, gaps$y)
   }
-  plot(0, type="n", main="", xlab=xlab, xlim=xlim, ylab=ylab, ylim=c(0, max.y), xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
+  if(length(hiatus.ylim) == 0)
+    hiatus.ylim <- c(0, max.y)
+  plot(0, type="n", main="", xlab=xlab, xlim=hiatus.xlim, ylab=ylab, ylim=hiatus.ylim, xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
   if(length(gaps) > 1)
     polygon(cbind(c(min(gaps$x), gaps$x, max(gaps$x)), c(0,gaps$y,0)),
     col=grey(.8), border=grey(.4))

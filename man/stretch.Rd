@@ -4,14 +4,14 @@
 \alias{stretch}
 \title{Stretch some depths of a core}
 \usage{
-stretch(d, boundary = 25, by = 20)
+stretch(d, boundary, times)
 }
 \arguments{
 \item{d}{The depth(s) to be stretched}
 
 \item{boundary}{The depth below which depths should be stretched}
 
-\item{by}{The factor by which the depths should be stretched}
+\item{times}{The factor by which the depths should be stretched}
 }
 \value{
 The stretched depth(s)
@@ -20,8 +20,22 @@ The stretched depth(s)
 Stretch squeezed depths e.g., calculate the original depths of depths that were squeezed. Accompanies the squeeze function.
 }
 \examples{
-\dontrun{
   stretch(25.75,25,20)
+\dontrun{
+  # To play the accordion, first squeeze an existing core.
+  # Let's squeeze the depths below 10 cm core depth 20 times:
+  Bacon("accordion", 1)
+  dets <- info$dets
+  dets[,4] <- squeeze(dets[,4], 10, 20)
+
+  # make a new directory for the squeezed core, and place the dets file there:
+  dir.create("Bacon_runs/accordion_squeezed")
+  write.table(dets, "Bacon_runs/accordion_squeezed/accordion_squeezed.csv", row.names=FALSE, sep=",")
+
+  # now run that squeezed core, adding a boundary (10cm) and adapting the acc.mean prior (20x):
+  Bacon("accordion_squeezed", 1, boundary=10, acc.mean=c(5, 20*5))
+  # finally, plot while stretching the depths onto the original scale:
+  agedepth(accordion=c(10,20))
 }
 }
 \author{
