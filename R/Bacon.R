@@ -435,13 +435,14 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     scissors(burnin, info)
     agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=TRUE, age.unit=age.unit, depth.unit=depth.unit, ...)
     if(plot.pdf)
-      if(interactive())
-        if(length(dev.list()) > 0)
-          dev.copy2pdf(file=paste0(info$prefix, ".pdf")) else {
-            pdf(file=paste0(info$prefix, ".pdf"))
-            agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=FALSE, age.unit=age.unit, depth.unit=depth.unit, ...)
-            dev.off()
-          }
+    #  if(interactive())
+    #    if(length(dev.list()) > 0)
+    if(dev.interactive()) # 
+      dev.copy2pdf(file=paste0(info$prefix, ".pdf")) else {
+        pdf(file=paste0(info$prefix, ".pdf"))
+        agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=FALSE, age.unit=age.unit, depth.unit=depth.unit, ...)
+        dev.off()
+      }
   }
 
 ### run bacon if initial graphs seem OK; run automatically, not at all, or only plot the age-depth model
