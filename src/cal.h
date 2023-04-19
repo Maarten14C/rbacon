@@ -195,7 +195,7 @@ public:
 					if (fcmp(theta, CC( mid, 0)) == 1) //theta > CC( mid, 0)
 						min = mid + 1;
 					else
-						max = mid - 1;
+						max = mid; // was mid -1;
 					mid = (min + max)/2;
 				}
 				k = mid;
@@ -316,7 +316,7 @@ public:
 //int fcmp (double x, double y, double epsilon = 0.00000000001);
 	double cal(double theta)
 	{
-		if (fcmp(theta, -0.0) == -1) // value < 0 cal BP, postbomb
+		if (fcmp(theta, 0.0) == -1) // value < 0 cal BP, postbomb
 		{
 			if (Bomb == 0) {
 				//fprintf( stderr, "WARNING: Calibration attempted beyond IntCal20 cal. curve limits, theta= %f\n",theta);

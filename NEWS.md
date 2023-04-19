@@ -1,3 +1,6 @@
+# rbacon 3.2.0
+* updated rintcal so that the files containing the NH and SH postbomb curves work as expected
+
 # rbacon 3.1.0
 * added an 'accordion' option to squeeze cores with highly irregularly dated sections (e.g., with a few cm of high-res Pb-210 data combined with much longer but lower-resolution C-14 data). Cores can be 'squeezed' and 'stretched' - please check the documentation of the new 'stretch' function
 * The upper panels of the accumulation rate, memory, hiatus size, phi and supported (where relevant) gain options to adapt their x/y axis limits

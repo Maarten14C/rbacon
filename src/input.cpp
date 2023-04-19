@@ -233,10 +233,47 @@ Input::Input(char *datafile, int emaxnumofcurves, int maxm, std::string ccdir) {
 					rpars[2], rpars[3], rpars[4], rpars[5], rpars[10], rpars[11], 1,      seed, more_pars);
 					//MinYr     MaxYr       th0      thp0         c0       cm  useT
 			}
-
-
-			//Then open the twalk object
-			BaconTwalk = new twalk( *bacon, bacon->Getx0(), bacon->Getxp0(), bacon->get_dim());
+            
+            strcpy( init_v_fnam, datafile);
+            strcat( init_v_fnam, ".init");//File name for initial values
+            strcpy( last_v_fnam, datafile);
+            strcat( last_v_fnam, ".last");//File name for last values
+            bacon_dim = bacon->get_dim();
+            if ((IV = fopen( init_v_fnam, "r")) == NULL){
+                Rprintf("Could not open %s with initial values for the twalk, using simulated values.\n", init_v_fnam);
+                X0 = bacon->Getx0();
+                Xp0 = bacon->Getxp0(); }
+            else { //Read initail values into X0 and Xp0
+                Rprintf("Initial values for the twalk taken from %s.\n", init_v_fnam);
+                X0 = bacon->Getx0();
+                Xp0 = bacon->Getxp0();
+                for (int k=0; k<bacon_dim; k++) {
+                    if (fscanf( IV, " %lf", X0+k) == 0){
+                        Rprintf("File %s with initial values, incomplete.\n", init_v_fnam);
+                        Rcpp::stop("File %s with initial values, incomplete.\n", init_v_fnam);
+                    }
+                    //Rprintf("%g ", X0[k]);
+                }
+                //Rprintf("\n");
+                for (int k=0; k<bacon_dim; k++) {
+                    if (fscanf( IV, " %lf", Xp0+k) == 0){
+                        Rprintf("File %s with initial values, incomplete.\n", init_v_fnam);
+                        Rcpp::stop("File %s with initial values, incomplete.\n", init_v_fnam);
+                    }
+                    //Rprintf("%g ", Xp0[k]);
+                }
+                //Rprintf("\n");
+                fclose(IV);
+            }
+            //Now open .last for writing, append
+            if ((LV = fopen( last_v_fnam, "a+")) == NULL){
+                Rprintf("Could not open %s for writing.\n", last_v_fnam);
+                Rcpp::stop("Could not open %s for reading\n", last_v_fnam); 
+            }
+            //Here, leave the pointer at the end of the file
+            //fseek( LV, 0, SEEK_END);
+            //Then open the twalk object
+			BaconTwalk = new twalk( *bacon, X0, Xp0, bacon->get_dim());
 
 			break;  //this should be the last key in the program
 		}

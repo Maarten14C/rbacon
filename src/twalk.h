@@ -9,7 +9,7 @@
  *                                Apr 2011
 
  *
-
+ 
  ********************************************************************************************/
 
 
@@ -625,8 +625,7 @@ int simulation(unsigned long long Tr1, char *filename, const char *op="wt", int 
             }
             else{
                 //Rprintf("twalk: All %d iterations to be saved in file %s\n", Tr1, filename);
-				//Rprintf("twalk: All stored iterations to be saved in file %s\n", filename);
-				Rprintf("twalk: Every %d iterations to be saved in file %s\n", save_every, filename); // Jan 2023
+				Rprintf("twalk: All stored iterations to be saved in file %s\n", filename);
             }
         }
 
