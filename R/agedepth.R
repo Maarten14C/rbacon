@@ -119,10 +119,6 @@
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A plot of the age-depth model, and estimated ages incl. confidence ranges for each depth.
 #' @examples
-#' \dontshow{
-#'   Bacon(run=FALSE, ask=FALSE, coredir=tempfile())
-#'   agedepth(yr.res=50, d.res=50, d.by=10)
-#'  }
 #' \donttest{
 #'   Bacon(ask=FALSE, coredir=tempfile())
 #'   agedepth()

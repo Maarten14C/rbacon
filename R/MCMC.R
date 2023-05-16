@@ -30,12 +30,7 @@ bacon.its <- function(ssize, burnin, set=get('info'), ACCEP_EV=20, EVERY_MULT=25
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return NA
 #' @examples
-#' \dontshow{
-#'   Bacon(run=FALSE, coredir=tempfile())
-#'   scissors(100)
-#'   agedepth(d.res=50, age.res=50, d.by=10)
-#' }
-#' \dontrun{
+#' \donttest{
 #'   Bacon(ask=FALSE, coredir=tempfile())
 #'   scissors(100)
 #'   agedepth()
@@ -87,12 +82,7 @@ scissors <- function(burnin, set=get('info')) {
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return NA
 #' @examples
-#' \dontshow{
-#'   Bacon(run=FALSE, coredir=tempfile())
-#'   thinner(.1)
-#'   agedepth(d.res=50, age.res=50, d.by=10)
-#' }
-#' \dontrun{
+#' \donttest{
 #'   Bacon(ask=FALSE, coredir=tempfile())
 #'   thinner(.2)
 #'   agedepth()
