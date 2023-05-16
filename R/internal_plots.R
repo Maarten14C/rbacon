@@ -236,30 +236,39 @@ PlotHiatusPost <- function(set=get('info'), mx=set$hiatus.max, main="", xlab=pas
 
 
 # plot the Supported data (for plum)
-PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE,  yaxt="n", prior.size=.9, panel.size=.9) {
+PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, supp.xlim=c(), supp.ylim=c(), yaxt="n", prior.size=.9, panel.size=.9) {
   lab <- ifelse(set$Bqkg, "Bq/kg", "dpm/g")
 
+  if(length(supp.xlim) == 0)
+    supp.xlim <- c(min( set$detsPlum[,4]), max(set$detsPlum[,4]))
+
   if(set$nPs > 1) {
-    rng <- array(NA, dim=c(set$nPs, 22)) #22 is the number of segments to draw. Always?
+    rng <- array(NA, dim=c(set$nPs, 22)) # 22 is the number of segments to draw. Always???
     for(i in 1:set$nPs) {
       rng[i,1:21] <- quantile( set$ps[,i] , seq(0,2,0.1)/2)
       rng[i,22] <- mean( set$ps[,i] )
     }
 
-    plot(0, type="n", ylim=c(min( rng[,1]), max(rng[,21])), xlim=c(min( set$detsPlum[,4]), max(set$detsPlum[,4])), main="", xlab="Depth (cm)", ylab=lab, yaxt=yaxt, cex.axis=panel.size)
+    if(length(supp.ylim) == 0)
+      supp.ylim <- c(min( rng[,1]), max(rng[,21]))
+
+    plot(0, type="n", ylim=supp.ylim, xlim=supp.xlim, main="", xlab="Depth (cm)", ylab=lab, yaxt=yaxt, cex.axis=panel.size)
     n = 21
     colorby = 1.0 / (n/2)
     for(i in 1:(n/2)) {
       segments(set$detsPlum[,4], rng[,i], set$detsPlum[,4], rng[,(i+1)], grey(1.0-colorby*i), lwd=3)
       segments(set$detsPlum[,4], rng[,n-i], set$detsPlum[,4], rng[,n-(i-1)], grey(1.0-colorby*i), lwd=3)
     }
-
     lines(set$detsPlum[,4], rng[,22], col="red", lty=12) # mean
 
   } else {
     post <- density(set$ps)
     suppdata <- set$supportedData[,1:2]
     rng <- range(post$x, suppdata[,1]-suppdata[,2], suppdata[,1]+suppdata[,2])
+
+    if(length(supp.ylim) == 0)
+      supp.ylim <- c(0, max(post$y))
+
     plot(post, type="n", xlab=lab, xlim=rng, main="", ylab="", yaxt=yaxt, cex.axis=panel.size)
     polygon(post, col=grey(.8), border=grey(.4))
     lines(seq(min(set$ps),max(set$ps),.05), dgamma(seq(min(set$ps), max(set$ps), .05), shape=set$s.shape, scale=set$s.mean/set$s.shape), col=3, lwd=2)
@@ -279,12 +288,18 @@ PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE,  yaxt
 
 
 # plot the Supply data (for plum)
-PlotPhiPost <- function(set=get('info'), xlab=paste0("Bq/",expression(m^2)," yr"), ylab="", xaxs="i", yaxs="i", legend=TRUE, yaxt="n", csize=.8, prior.size=.9, panel.size=.9) {
+PlotPhiPost <- function(set=get('info'), xlab=paste0("Bq/",expression(m^2)," yr"), ylab="", xaxs="i", yaxs="i", legend=TRUE, yaxt="n", csize=.8, prior.size=.9, panel.size=.9, phi.xlim=c(), phi.ylim=c()) {
   post <- density(set$phi)
-  plot(post, type="n", xlab=xlab, ylab=ylab, main="", yaxt=yaxt, cex.axis=panel.size)
+  if(length(phi.xlim) == 0)
+    phi.xlim <- range(post$x)
+  if(length(phi.ylim) == 0)
+    phi.ylim <- range(post$y)
+
+  plot(post, type="n", xlim=phi.xlim, ylim=phi.ylim, xlab=xlab, ylab=ylab, main="", yaxt=yaxt, cex.axis=panel.size)
   polygon(post, col=grey(.8), border=grey(.4))
 
-lines(seq(min(set$phi),max(set$phi),length=50),dgamma(seq(min(set$phi),max(set$phi),length=50),shape=set$phi.shape,scale=set$phi.mean/set$phi.shape), col=3, lwd=2)
+  x <- seq(phi.xlim[1], phi.xlim[2], length=50)
+  lines(x, dgamma(x,shape=set$phi.shape,scale=set$phi.mean/set$phi.shape), col=3, lwd=2)
 
   txt <- paste( "influx", "\nAl: ", toString(round(set$Al,2)), "\nphi.shape: ", toString(round(set$phi.shape,2)), "\nphi.mean: ", toString(round(set$phi.mean,2)) )
 

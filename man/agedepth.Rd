@@ -96,6 +96,8 @@ agedepth(
   prior.ticks = "n",
   prior.fontsize = 0.9,
   toppanel.fontsize = 0.9,
+  mainpanel.tickfontsize = 1,
+  mainpanel.labelfontsize = 1,
   acc.xlim = c(),
   acc.ylim = c(),
   mem.xlim = c(),
@@ -301,6 +303,10 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 \item{prior.fontsize}{Font size of the prior, relative to R's standard size. Defaults to \code{prior.fontsize=0.9}.}
 
 \item{toppanel.fontsize}{Font size of the top panels, relative to R's standard size. Defaults to \code{prior.fontsize=0.9}.}
+
+\item{mainpanel.tickfontsize}{Font size of values at the tick marks in the main panel, relative to R's standard size. Defaults to \code{mainpanel.tickfontsize=1}.}
+
+\item{mainpanel.labelfontsize}{Font size of axis labels in the main panel, relative to R's standard size. Defaults to \code{mainpanel.labelsize=1}.}
 
 \item{acc.xlim}{Horizontal axis limits of the accumulation rate panel. Calculated automatically by default.}
 

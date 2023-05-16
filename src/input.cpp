@@ -77,7 +77,7 @@ Input::Input(char *datafile, int emaxnumofcurves, int maxm, std::string ccdir) {
 
   Rprintf("Reading %s\n", datafile);
 	char line[BUFFSZ];
-	char key[10];
+	char key[20];
 	int i=0, nm, j;
 
 
@@ -181,6 +181,30 @@ Input::Input(char *datafile, int emaxnumofcurves, int maxm, std::string ccdir) {
 			continue;
 		}
 
+        if (strcmp( key, "DetCensor") == 0){
+			sscanf( pars[0], " %s", line);
+                        //Censored rc measurement, result Unknown ABOVE y
+                        //with expected std 
+					   //DetCensor(char *enm, double ey, double estd, double x, double edeltaR, double edeltaSTD, double ea, double eb, Cal *ecc)
+			tmpdet = new DetCensor(  line   ,  rpars[1],    rpars[2], rpars[3],       rpars[4],         rpars[5],  rpars[6],  rpars[7], curves[(int) rpars[8]]);
+
+			dets->AddDet(tmpdet);
+
+			continue;
+		}
+
+        if (strcmp( key, "DetCensorE") == 0){
+			sscanf( pars[0], " %s", line);
+                        //Censored rc measurement, result Unknown BELOW y
+                        //with expected std 
+					   //DetCensor(char *enm, double ey, double estd, double x, double edeltaR, double edeltaSTD, double ea, double eb, Cal *ecc)
+			tmpdet = new DetCensorE(  line   ,  rpars[1],    rpars[2], rpars[3],       rpars[4],         rpars[5],  rpars[6],  rpars[7], curves[(int) rpars[8]]);
+
+			dets->AddDet(tmpdet);
+
+			continue;
+		}
+		
 
 		if (strcmp( key, "Hiatus") == 0)
 		{
@@ -240,7 +264,7 @@ Input::Input(char *datafile, int emaxnumofcurves, int maxm, std::string ccdir) {
             strcat( last_v_fnam, ".last");//File name for last values
             bacon_dim = bacon->get_dim();
             if ((IV = fopen( init_v_fnam, "r")) == NULL){
-                Rprintf("Could not open %s with initial values for the twalk, using simulated values.\n", init_v_fnam);
+                Rprintf("Since no file %s was provided with initial values for the twalk, I will be using simulated values.\n", init_v_fnam);
                 X0 = bacon->Getx0();
                 Xp0 = bacon->Getxp0(); }
             else { //Read initail values into X0 and Xp0

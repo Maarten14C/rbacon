@@ -29,11 +29,11 @@ Stretch squeezed depths e.g., calculate the original depths of depths that were 
   dets[,4] <- squeeze(dets[,4], 10, 20)
 
   # make a new directory for the squeezed core, and place the dets file there:
-  dir.create("Bacon_runs/accordion_squeezed")
-  write.table(dets, "Bacon_runs/accordion_squeezed/accordion_squeezed.csv", row.names=FALSE, sep=",")
+  dir.create("Bacon_runs/squeezed")
+  write.table(dets, "Bacon_runs/squeezed/squeezed.csv", row.names=FALSE, sep=",")
 
   # now run that squeezed core, adding a boundary (10cm) and adapting the acc.mean prior (20x):
-  Bacon("accordion_squeezed", 1, boundary=10, acc.mean=c(5, 20*5))
+  Bacon("squeezed", 1, boundary=10, acc.mean=c(5, 20*5))
   # finally, plot while stretching the depths onto the original scale:
   agedepth(accordion=c(10,20))
 }

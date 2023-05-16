@@ -336,8 +336,12 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
     hsts <- list(); maxhist <- 0; minhist <- 1
     pb <- txtProgressBar(min=0, max=max(1,length(d)-1), style = 3)
     for(i in 1:length(d)) {
-      if(length(d) > 1)
-        setTxtProgressBar(pb, i)
+      if(length(d) > 1) {
+        if(length(d) < 500) # progress bar slows things down much if i is large
+          setTxtProgressBar(pb, i) else
+            if(i %% 10 == 0)
+              setTxtProgressBar(pb, i)
+      }
       ages <- Bacon.Age.d(d[i], set, BCAD=BCAD)
       if(length(ages[!is.na(ages)]) > 0) { # added !is.na(ages) 21 April 21
         hst <- density(ages)
@@ -389,6 +393,7 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
 }
 
 
+
 # to calculate age ranges
 Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
   outfile <- paste0(set$prefix, ".out")
@@ -409,13 +414,21 @@ Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
       rng[i,4] <- mean(ages)
     }
 
-  if(length(d) > 1)
-    setTxtProgressBar(pb, i)
+    if(length(d) > 1) {
+      if(length(d) < 500) # progress bar slows things down when i is large
+        setTxtProgressBar(pb, i) else
+          if(i %% 10 == 0)
+            setTxtProgressBar(pb, i)
+    }
+#  if(length(d) > 1)
+#    setTxtProgressBar(pb, i)
   }
   #if(length(d) > 1)
   #  close(pb)
   return(rng)
 }
+
+
 
 #' @name agemodel.it
 #' @title Extract one age-model iteration
@@ -446,6 +459,7 @@ agemodel.it <- function(it, set=get('info'), BCAD=set$BCAD) {
     age[i] <- Bacon.Age.d(set$elbows[i], set, BCAD=BCAD)[it]
   cbind(set$elbows, age)
 }
+
 
 
 # calculate slumpfree depths
@@ -527,11 +541,11 @@ squeeze <- function(d, boundary, times) {
 #'   dets[,4] <- squeeze(dets[,4], 10, 20)
 #'
 #'   # make a new directory for the squeezed core, and place the dets file there:
-#'   dir.create("Bacon_runs/accordion_squeezed")
-#'   write.table(dets, "Bacon_runs/accordion_squeezed/accordion_squeezed.csv", row.names=FALSE, sep=",")
+#'   dir.create("Bacon_runs/squeezed")
+#'   write.table(dets, "Bacon_runs/squeezed/squeezed.csv", row.names=FALSE, sep=",")
 #'
 #'   # now run that squeezed core, adding a boundary (10cm) and adapting the acc.mean prior (20x):
-#'   Bacon("accordion_squeezed", 1, boundary=10, acc.mean=c(5, 20*5))
+#'   Bacon("squeezed", 1, boundary=10, acc.mean=c(5, 20*5))
 #'   # finally, plot while stretching the depths onto the original scale:
 #'   agedepth(accordion=c(10,20))
 #' }

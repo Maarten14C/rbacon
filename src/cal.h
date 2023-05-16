@@ -195,7 +195,7 @@ public:
 					if (fcmp(theta, CC( mid, 0)) == 1) //theta > CC( mid, 0)
 						min = mid + 1;
 					else
-						max = mid; // was mid -1;
+						max = mid - 1;
 					mid = (min + max)/2;
 				}
 				k = mid;
@@ -316,7 +316,7 @@ public:
 //int fcmp (double x, double y, double epsilon = 0.00000000001);
 	double cal(double theta)
 	{
-		if (fcmp(theta, 0.0) == -1) // value < 0 cal BP, postbomb
+		if (fcmp(theta, -0.0) == -1) // value < 0 cal BP, postbomb
 		{
 			if (Bomb == 0) {
 				//fprintf( stderr, "WARNING: Calibration attempted beyond IntCal20 cal. curve limits, theta= %f\n",theta);
@@ -353,17 +353,22 @@ public:
 									sig = CC(k,2) + (theta-CC(k,0))*(CC(k+1,2)-CC(k,2))/10.0;
 								}
 								else // from 25,000 until 55,000 cal BP, line 9500, values every 20 years
-									if (fcmp(theta, 55000.0) != 1)
+									if (fcmp(theta, 45000.0) != 1)
 										{
 											k = 8000 + (int) floor((theta-25000.0)/20.0);
 											mu = CC(k,1) + (theta-CC(k,0))*(CC(k+1,1)-CC(k,1))/20.0;
 											sig = CC(k,2) + (theta-CC(k,0))*(CC(k+1,2)-CC(k,2))/20.0;
 										}
-										else // value > 55,000 cal BP, extrapolate
+										else // value > 45,000 cal BP, linear "estimated" cc
 											{
-												k = IntCal20ROWS - 2;
-												mu = CC(k,1) + (theta-CC(k,0))*(CC(k+1,1)-CC(k,1))/100.0;
-												sig = CC(k,2);
+                                                //The  cc is a straight line from the value at
+                                                //45000 to:
+                                                double last_th  = 100000.0;
+                                                double last_mu  = 95840.0;
+                                                double last_sig = 10000.0;
+												k = 9000; //Row at 45000 cal BP
+                                                mu = CC(k,1) + (theta-CC(k,0))*(last_mu-CC(k,1))/(last_th-CC(k,0));
+                                                sig = CC(k,2) + (theta-CC(k,0))*(last_sig-CC(k,2))/(last_th-CC(k,0));
 											}
 		}
 		return mu;
@@ -1220,26 +1225,26 @@ public:
 
 		cc = ecc;
 
-    if (strcmp( cc->Name(), "Plum") == 0) { //It is a 210Pb datum
-      is_210Pb = 1;
-      delta = deltaR;
-      rho = deltaSTD;
-      std = std*rho;
-      med = y*rho;
-      vr = sqr(std);
-      corrstd = std;
-    } else {
-      is_210Pb = 0;
-      rho = 0.0;
-      delta = 0.0;
-      med = y - deltaR;
-      vr = sqr(std) + sqr(deltaSTD);
-      corrstd = sqrt(vr);
-    }
+        if (strcmp( cc->Name(), "Plum") == 0) { //It is a 210Pb datum
+            is_210Pb = 1;
+            delta = deltaR;
+            rho = deltaSTD;
+            std = std*rho;
+            med = y*rho;
+            vr = sqr(std);
+            corrstd = std;
+        } else {
+            is_210Pb = 0;
+            rho = 0.0;
+            delta = 0.0;
+            med = y - deltaR;
+            vr = sqr(std) + sqr(deltaSTD);
+            corrstd = sqrt(vr);
+        }
 
 	}
 
-	void ShortOut() {
+	virtual void ShortOut() {
         Rprintf("%s: %6.1f+-%-6.1f d=%-g ResCorr=%6.1f+-%-6.1f a=%-g b=%-g cc=%s\n",
 				nm, y, std, x, deltaR, deltaSTD, a, b, cc->Name());
 	}
@@ -1266,8 +1271,59 @@ public:
 	const Cal *GetCC() { return cc; }
 
 	//exp(-U) will be the likelihood for this determination.
-	double U(double theta) { return cc->U( med, vr, theta); }
-	double Ut(double theta) { return cc->Ut( med, vr, theta, a, b); }
+	virtual double U(double theta) { return cc->U( med, vr, theta); }
+	virtual double Ut(double theta) { return cc->Ut( med, vr, theta, a, b); }
+};
+
+class DetCensor : public Det {
+    
+public:
+	DetCensor(char *enm, double ey, double estd, double xx, double edeltaR, double edeltaSTD, double ea, double eb, Cal *ecc) : Det( enm, ey, estd, xx, edeltaR, edeltaSTD, ea, eb, ecc) { }
+
+	void ShortOut() {
+        Rprintf("%s (censored later): %6.1f+-%-6.1f d=%-g ResCorr=%6.1f+-%-6.1f a=%-g b=%-g cc=%s\n",
+				nm, y, std, x, deltaR, deltaSTD, a, b, cc->Name());
+	}
+
+	double U(double theta) {
+        cc->cal(theta);
+
+        double sigma = sqrt(vr + sqr(cc->GetSig()));
+        
+        return -log(1.0-NorF((y - cc->GetMu())/sigma));
+    }
+	double Ut(double theta) { 
+        /* Not yet implemented, the stydent-t cdf:
+        return -log(1.0-StTF((y - cc->GetMu())/cc->GetSig())); }
+        we will use a Gaussian as above */
+        return U(theta);
+    }
+};
+
+
+class DetCensorE : public Det {
+    
+public:
+	DetCensorE(char *enm, double ey, double estd, double xx, double edeltaR, double edeltaSTD, double ea, double eb, Cal *ecc) : Det( enm, ey, estd, xx, edeltaR, edeltaSTD, ea, eb, ecc) { }
+
+	void ShortOut() {
+        Rprintf("%s (censored earlier): %6.1f+-%-6.1f d=%-g ResCorr=%6.1f+-%-6.1f a=%-g b=%-g cc=%s\n",
+				nm, y, std, x, deltaR, deltaSTD, a, b, cc->Name());
+	}
+
+	double U(double theta) {
+        cc->cal(theta);
+
+        double sigma = sqrt(vr + sqr(cc->GetSig()));
+        
+        return -log(NorF((y - cc->GetMu())/sigma));
+    }
+	double Ut(double theta) { 
+        /* Not yet implemented, the stydent-t cdf:
+        return -log(1.0-StTF((y - cc->GetMu())/cc->GetSig())); }
+        we will use a Gaussian as above */
+        return U(theta);
+    }
 };
 
 

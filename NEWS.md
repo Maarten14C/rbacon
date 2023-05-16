@@ -1,10 +1,14 @@
-# rbacon 3.2.0
-* updated rintcal so that the files containing the NH and SH postbomb curves work as expected
-
 # rbacon 3.1.0
-* added an 'accordion' option to squeeze cores with highly irregularly dated sections (e.g., with a few cm of high-res Pb-210 data combined with much longer but lower-resolution C-14 data). Cores can be 'squeezed' and 'stretched' - please check the documentation of the new 'stretch' function
+* updated rintcal so that the files containing the NH and SH postbomb curves work as expected
+* added an 'accordion' option to squeeze cores with highly irregularly dated sections (e.g., with a few cm of high-res Pb-210 data combined with much longer but lower-resolution C-14 data). Cores can be 'squeezed' and 'stretched' - please check the documentation of the new 'stretch' function. Use with great care
+* added an option to agedepth called plotatthesedepths, to enable plotting alternative depths (e.g., after using the compress function), for example agedepth(depths=1:100, plotatthesedepths=1.5*(1:100), d.max=200)
 * The upper panels of the accumulation rate, memory, hiatus size, phi and supported (where relevant) gain options to adapt their x/y axis limits
-
+* renamed the options MinAge and MaxAge to the hopefully less confusing youngest.age and oldest.age
+* added an option SaveAges=TRUE to write a file *_elbowages.txt with the ages for all elbows
+* added function set.initvals() to allow running with preset initial MCMC points
+* replaced sep=paste0(sep, "\t") in read_write.R line 304 with sep=sep
+* new options older.than and younger.than, to use older-than or younger-than dates (e.g. for radiocarbon dates at the dating limit)
+* accrate.age and accrate.depth now keep any NA values by default (they can be removed using the option na.rm=TRUE)
 
 # rbacon 3.0.0
 * accrates.depth.ghost() and accrate.age.ghost() now invisibly return the ranges, medians and means for each depth resp. age for subsequent use, e.g., tmp <- accrates.depth.ghost(); head(tmp)
@@ -18,7 +22,7 @@
 * repaired warning message about lengths of logical tests
 * now links to rintcal package (renamed from IntCal)
 * better Plum plots
-* runs can now be interrupted by pressing ctrl+c (experimental)
+* runs can now be interrupted by pressing ctrl+c
 
 # rbacon 2.5.8
 * some minor updates to the vignettes
