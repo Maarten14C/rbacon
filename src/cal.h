@@ -352,21 +352,21 @@ public:
 									mu = CC(k,1) + (theta-CC(k,0))*(CC(k+1,1)-CC(k,1))/10.0;
 									sig = CC(k,2) + (theta-CC(k,0))*(CC(k+1,2)-CC(k,2))/10.0;
 								}
-								else // from 25,000 until 55,000 cal BP, line 9500, values every 20 years
-									if (fcmp(theta, 45000.0) != 1)
+								else // from 25,000 until 50,000 cal BP, line 9250, values every 20 years
+									if (fcmp(theta, 50000.0) != 1)
 										{
 											k = 8000 + (int) floor((theta-25000.0)/20.0);
 											mu = CC(k,1) + (theta-CC(k,0))*(CC(k+1,1)-CC(k,1))/20.0;
 											sig = CC(k,2) + (theta-CC(k,0))*(CC(k+1,2)-CC(k,2))/20.0;
 										}
-										else // value > 45,000 cal BP, linear "estimated" cc
+										else // value > 50,000 cal BP, linear "estimated" cc
 											{
                                                 //The  cc is a straight line from the value at
-                                                //45000 to:
+                                                //50000 to:
                                                 double last_th  = 100000.0;
                                                 double last_mu  = 95840.0;
                                                 double last_sig = 10000.0;
-												k = 9000; //Row at 45000 cal BP
+												k = 9250; //Row at 50000 cal BP
                                                 mu = CC(k,1) + (theta-CC(k,0))*(last_mu-CC(k,1))/(last_th-CC(k,0));
                                                 sig = CC(k,2) + (theta-CC(k,0))*(last_sig-CC(k,2))/(last_th-CC(k,0));
 											}
@@ -622,19 +622,31 @@ public:
 									mu = CC(k,1) + (theta-CC(k,0))*(CC(k+1,1)-CC(k,1))/10.0;
 									sig = CC(k,2) + (theta-CC(k,0))*(CC(k+1,2)-CC(k,2))/10.0;
 								}
-								else // from 25,000 until 55,000 cal BP, line 9500, values every 20 years
-									if (fcmp(theta, 55000.0) != 1)
+								else // from 25,000 until 50,000 cal BP, line 9250, values every 20 years
+									if (fcmp(theta, 50000.0) != 1)
 										{
 											k = 8000 + (int) floor((theta-25000.0)/20.0);
 											mu = CC(k,1) + (theta-CC(k,0))*(CC(k+1,1)-CC(k,1))/20.0;
 											sig = CC(k,2) + (theta-CC(k,0))*(CC(k+1,2)-CC(k,2))/20.0;
 										}
-										else // value > 55,000 cal BP, extrapolate
+									//	else // value > 55,000 cal BP, extrapolate
+									//		{
+									//			k = SHCal20ROWS - 2;
+									//			mu = CC(k,1) + (theta-CC(k,0))*(CC(k+1,1)-CC(k,1))/100.0;
+									//			sig = CC(k,2);
+									//		}
+										else // value > 50,000 cal BP, linear "estimated" cc
 											{
-												k = SHCal20ROWS - 2;
-												mu = CC(k,1) + (theta-CC(k,0))*(CC(k+1,1)-CC(k,1))/100.0;
-												sig = CC(k,2);
+                                                //The  cc is a straight line from the value at
+                                                //50000 to:
+                                                double last_th  = 100000.0;
+                                                double last_mu  = 95840.0;
+                                                double last_sig = 10000.0;
+												k = 9250; //Row at 50000 cal BP
+                                                mu = CC(k,1) + (theta-CC(k,0))*(last_mu-CC(k,1))/(last_th-CC(k,0));
+                                                sig = CC(k,2) + (theta-CC(k,0))*(last_sig-CC(k,2))/(last_th-CC(k,0));
 											}
+
 		}
 		return mu;
 	}

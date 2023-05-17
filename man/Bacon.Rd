@@ -266,14 +266,14 @@ For calendar dates, i.e. dates that are already on the calendar scale and thus s
 Since version 3.1.0, Bacon can also handle younger-than and older-than ages, with the model aiming to either go 'above'
 or 'below' such dates as requested. If the resulting combination of parameters becomes problematic (e.g., no initial
 combination of parameters can be found that obeys the priors or is in chronological order), then the output will often be wrong.
-If so, using the function \code{set.initvals} could help.
+If so, using the function \link{set.initvals} could help.
 
 By default, the initial MCMC values of the Bacon age-depth model (upper ages and accumulation rate for each model section)
 are estimated randomly. Since version 3.1.0, these starting values can also be provided in a file with extension _bacon.init,
 placed within the core's folder. This file will need to have two rows, each for one of the two initial sets of parameters required
 (the t-walk requires two starting estimates for all MCMC parameters).
 If such a file is found (and correctly formatted), Bacon will use the values within this file
-as starting points for the MCMC run. See the new function \code{set.initvals} for more information.
+as starting points for the MCMC run. See function \link{set.initvals} for more information.
 
 From version 2.5.1 on (i.e., since February 2021), the default memory prior has changed to \code{mem.mean=0.5}
 and \code{mem.strength=10}. Previously used c++ code contained a bug which caused the prior information for the memory not to be

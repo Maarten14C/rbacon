@@ -202,15 +202,15 @@ library(rintcal)
 #'
 #' @export
 Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=10, mem.mean=0.5, boundary=NA, hiatus.depths=NA, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", ccdir="", postbomb=0, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), remove=FALSE, BCAD=FALSE, ssize=4000, th0=c(), burnin=min(500, ssize), youngest.age=c(), oldest.age=c(), MinAge=c(), MaxAge=c(), cutoff=.01, plot.pdf=TRUE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, older.than=c(), younger.than=c(), save.ages=FALSE, verbose=TRUE, ...) {
-  # Check coredir and if required, copy example file in core directory
+  # Check coredir and if required, copy example files into core directory
   coredir <- assign_coredir(coredir, core, ask, isPlum=FALSE)
   if(core == "MSB2K" || core == "RLGH3") {
     if(!dir.exists(file.path(coredir, core))) {
       dir.create(file.path(coredir, core), showWarnings = FALSE, recursive = TRUE)
       fileCopy <- system.file(paste0("extdata/Cores/", core), package="rbacon")
       file.copy(fileCopy, coredir, recursive = TRUE, overwrite=FALSE)
+      }
     }
-  }
   
   # set the calibration curve
   if(ccdir == "")
