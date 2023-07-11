@@ -4,7 +4,7 @@
 * added an option to agedepth called plotatthesedepths, to enable plotting alternative depths (e.g., after using the compress function), for example agedepth(depths=1:100, plotatthesedepths=1.5*(1:100), d.max=200)
 * The upper panels of the accumulation rate, memory, hiatus size, phi and supported (where relevant) gain options to adapt their x/y axis limits
 * renamed the options MinAge and MaxAge to the hopefully less confusing youngest.age and oldest.age
-* added an option SaveAges=TRUE to write a file *_elbowages.txt with the ages for all elbows
+* added an option save.ages=TRUE to write a file *_elbowages.txt with the ages for all elbows
 * added function set.initvals() to allow running with preset initial MCMC points
 * replaced sep=paste0(sep, "\t") in read_write.R line 304 with sep=sep
 * new options older.than and younger.than, to use older-than or younger-than dates (e.g. for radiocarbon dates at the dating limit)
@@ -87,7 +87,7 @@
 * Depth units are now handled better by the agedepth function
 * New option accept.suggestions, which automatically accepts suggestions regarding acc.rate and thick. Use with caution (this option was kindly suggested by Quinn Asena)
 * By default, a section is now added below the bottom-most dated depth, in order to ensure that the this depth is always taken into account. Defaults to add.bottom=TRUE. 
-* The calibrated distributions should now be of the same size again, so that more precise dates peaks more than less precise ones (suggested by Tiffany Napier). 
+* The calibrated distributions should now be of the same size again, so that more precise dates peak more than less precise ones (suggested by Tiffany Napier).
 
 # rbacon 2.4.3
 * replaced 'cat' with 'message' or 'warning' where possible
