@@ -1,3 +1,7 @@
+# rbacon 3.1.1
+* repaired a bug related to an upgrade in the rintcal package, which caused problems with plotting young radiocarbon dates
+* cleaned up cal.h to remove obsolete references to IntCal13
+
 # rbacon 3.1.0
 * updated rintcal so that the files containing the NH and SH postbomb curves work as expected
 * added an 'accordion' option to squeeze cores with highly irregularly dated sections (e.g., with a few cm of high-res Pb-210 data combined with much longer but lower-resolution C-14 data). Cores can be 'squeezed' and 'stretched' - please check the documentation of the new 'stretch' function. Use with great care
