@@ -1,3 +1,6 @@
+# rbacon 3.1.2
+* the overlap function now works better if d.min and/or d.max are set
+
 # rbacon 3.1.1
 * repaired a bug related to an upgrade in the rintcal package, which caused problems with plotting young radiocarbon dates
 * cleaned up cal.h to remove obsolete references to IntCal13

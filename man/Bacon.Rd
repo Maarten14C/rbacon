@@ -33,7 +33,7 @@ Bacon(
   cc2 = "Marine20",
   cc3 = "SHCal20",
   cc4 = "ConstCal",
-  ccdir = "",
+  cc.dir = c(),
   postbomb = 0,
   delta.R = 0,
   delta.STD = 0,
@@ -144,9 +144,9 @@ allow for a large range of posterior memory values. Please note that the default
 
 \item{cc3}{For southern hemisphere 14C dates (SHCal20).}
 
-\item{cc4}{Use an alternative curve (3 columns: cal BP, 14C age, error, separated by white spaces and saved as a plain-text file). See \code{ccdir}.}
+\item{cc4}{Use an alternative curve (3 columns: cal BP, 14C age, error, separated by white spaces and saved as a plain-text file). See \code{cc.dir}.}
 
-\item{ccdir}{Directory where the calibration curves for C14 dates \code{cc} are located. By default uses the location of the rintcal package which provides the calibration curves. If you want to use custom-made calibration curves, first set up a new folder using the function new.ccdir() in the rintcal package, e.g., \code{new.ccdir="MyCurves"}, the place the custom curve in that folder.}
+\item{cc.dir}{Directory where the calibration curves for C14 dates \code{cc} are located. By default uses the location of the rintcal package which provides the calibration curves. If you want to use custom-made calibration curves, first set up a new folder using the function new.ccdir() in the rintcal package, e.g., \code{new.ccdir="MyCurves"}, then place the custom curve in that folder using \code{mix.ccurves(, cc.dir="MyCurves", save=TRUE)}.}
 
 \item{postbomb}{Use a postbomb curve for negative (i.e. postbomb) 14C ages. \code{0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}}
 
