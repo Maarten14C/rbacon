@@ -20,6 +20,8 @@ NULL
 # to enable direct use of ccurve, mix.curves, calibration functions, pMC.age & age.pMC
 library(rintcal)
 
+# bacon.calib: does it need to use cc.dir when calling ccurve?
+
 # Check if we can/should return to using a gamma distribution instead of a uniform one for the hiatus
 
 # do: check that overlap function continues to function (sometimes reports 0% overlap when the dates fit well), check rplum bugs w youngest.age (is the bug in rbacon or in rplum?) and w larger-than-previous error sizes
