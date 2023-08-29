@@ -440,7 +440,8 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr
       min.age <- min(age.lim)
       max.age <- max(age.lim)
     }
-
+  if(set$BCAD) # was set$BCAD
+    age.lim <- 1950 - age.lim # work with cal BP internally
   age.seq <- seq(min(min.age, max.age), max(min.age, max.age), length=age.res)
   fluxes <- array(NA, dim=c(nrow(set$output), length(age.seq)))
   for(i in 1:nrow(set$output)) {
@@ -499,6 +500,11 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr
           image(age.seq[c(i-1,i)], flux.hist$x, t(matrix(flux.hist$y)), add=TRUE, col=col)
     }
   }
+  #store values for output
+  message("\n")
+  stored <- cbind(age.seq, min.rng, max.rng, median.rng, mean.rng)
+  colnames(stored) <- c("ages", "min.rng", "max.rng", "median", "mean")
+  
 
   if(plot.range)
     if(rotate.axes) {
@@ -516,4 +522,7 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr
     if(rotate.axes)
       lines(median.rng, age.seq, col=median.col, lty=median.lty) else
        lines(age.seq, median.rng, col=median.col, lty=median.lty)
+  
+  box(bty=bty)
+  invisible(stored)
 }
