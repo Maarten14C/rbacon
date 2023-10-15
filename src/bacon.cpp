@@ -162,7 +162,18 @@ int bacon( std::string inputfile1, std::string outputfile1, int ssize, std::stri
   */
 
  Rprintf("bacon: burn in (initial iterations which will be removed): %d\n", All.Dim() * EVERY_MULT * BURN_IN_MULT);
- Rprintf(FAREWELL);
+
+if (Un01() < 0.5) {
+	Rprintf(FAREWELL);} else
+		if(Un01() < 0.5) {
+			Rprintf("Ats us nai!\n");} else
+				if(Un01() < 0.2) {
+					Rprintf("... sizzle spatter sizzle...\n");} else
+						if(Un01() < 0.2) {
+							Rprintf("... adding maple...\n");} else
+								if(Un01() < 0.5) {
+						 			Rprintf("Looking good, turning off the fire\n\n");} else
+										{Rprintf("Remember, never pour grease down the drain!\n");};
 
 //  printf("bacon: suggested burn in= %d\n", All.Dim() * EVERY_MULT * BURN_IN_MULT);
  // printf(FAREWELL);

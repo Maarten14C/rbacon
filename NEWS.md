@@ -1,5 +1,8 @@
 # rbacon 3.1.2
 * the overlap function now works better if d.min and/or d.max are set
+* as per Kurt Hornik's e-mail, added a sentinal "_PACKAGE" file to the documentation
+* added run puns
+* elbowages are now saved with more relevant information in the file name
 
 # rbacon 3.1.1
 * repaired a bug related to an upgrade in the rintcal package, which caused problems with plotting young radiocarbon dates
