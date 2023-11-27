@@ -50,7 +50,7 @@ Bacon will calibrate any C-14 dates, do the MCMC run, calculate age ranges, prod
   
 ![Bacon output plot](./images/Bacon_output.png)
 
-Besides the graph, Bacon also produces files containing age estimates (95% ranges and the mean) for each depth (by default every cm from the top to the bottom core depth). This file can be found in the core's folder (see [here](./foldersfiles.html)).
+Besides the graph, Bacon also produces files containing age estimates (95% ranges and the mean) for each depth (by default every cm from the top to the bottom core depth). This file can be found in the core's folder (see '6 Folders and Files').
 
 To see all options and settings, ask for help:
 
