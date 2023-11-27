@@ -305,7 +305,7 @@ After reading the FAQ, you can contact Maarten Blaauw <maarten.blaauw@qub.ac.uk>
 
 ## I've found a bug or have an idea for a new feature
 
-Please contact Maarten Blaauw <maarten.blaauw@qub.ac.uk> for rbacon-specific bugs/features, and/or Andres Christen <jac@cimat.mx> if your question contains much statistical detail. Thank you.
+Please contact Maarten Blaauw <maarten.blaauw@qub.ac.uk> for rbacon-specific bugs/features, and/or Andres Christen <jac@cimat.mx> if your question contains much statistical detail.
 
 ## Where do I put my files?
 
@@ -476,7 +476,7 @@ Finally, check that the age-depth model itself looks reasonable given the inform
 
 [^3]: Christen, J.A., Perez E., S., 2010. A new robust statistical model for radiocarbon data. *Radiocarbon* 51, 1047-1059
 
-[^4]: Brooks, SP. and Gelman, A. (1998) General methods for monitoring convergence of iterative simulations. *Journal of Computational and Graphical Statistics* 7, 434-455
+[^4]: Brooks, SP. and Gelman, A. 1998. General methods for monitoring convergence of iterative simulations. *Journal of Computational and Graphical Statistics* 7, 434-455
 
 [^5]: Blaauw, M., Christen, J.A., Bennett, K.D., Reimer, P.J., 2018. Double the dates and go for Bayes – impacts of model choice, dating density and quality on chronologies. *Quaternary Science Reviews* 188, 58-66
 

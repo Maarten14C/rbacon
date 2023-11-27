@@ -47,7 +47,7 @@ the files:
 // [[Rcpp::export]]
 int bacon( std::string inputfile1, std::string outputfile1, int ssize, std::string dircc) {// Command line: bacon inputfile outputfile
 //
-
+  //Rprintf("inputfile is: %s,\n outputfile: %s,\n ssize %d,\n dircc %s", inputfile1, outputfile1, ssize, dircc);
   char *inputfile = new char[inputfile1.length() + 1];
 //  printf("%s\n", inputfile1.c_str());
   strcpy(inputfile, inputfile1.c_str());
@@ -76,12 +76,14 @@ int bacon( std::string inputfile1, std::string outputfile1, int ssize, std::stri
   // }
 
   // char  ax[BUFFSIZE];
+  //Rprintf("antes!\n");
 
   //Program file
   //sprintf( ax, "Cores/%s/%s.bacon", argv[1], argv[2]);
   // sprintf( ax, "%s", argv[1]);
   //Read everything from the program file
   Input All( inputfile, MAXNUMOFCURVES, MAXNUMOFDETS, dircc);
+  //Rprintf("despues!\n");
 
   //File to save the twalk output
   // sprintf( ax, "%s", argv[2]);
@@ -103,7 +105,6 @@ int bacon( std::string inputfile1, std::string outputfile1, int ssize, std::stri
   
   //Run the twalk
   All.RunTwalk( outputfile, it, every);
-
   All.PrintNumWarnings();
 
   All.outputFiles(outputfile1); // this was not present in rbacon's bacon.cpp! March 2021

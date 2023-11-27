@@ -1,10 +1,6 @@
 # to enable direct use of ccurve, mix.curves, calibration functions, pMC.age & age.pMC
 library(rintcal)
 
-# set.initvals() doesn't work, eternal loop. Make it tell the user to click on the graph...
-
-# bacon.calib: does it need to use cc.dir when calling ccurve?
-
 # Check if we can/should return to using a gamma distribution instead of a uniform one for the hiatus
 
 # do: check that overlap function continues to function (sometimes reports 0% overlap when the dates fit well), check rplum bugs w youngest.age (is the bug in rbacon or in rplum?) and w larger-than-previous error sizes
@@ -420,7 +416,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
       boundary <- info$slumpboundary
     info$hiatus.depths <- boundary
     if(length(add) == 0)
-      add <- min(1, 1.1*info$acc.mean) # then add a short (max)hiatus, large enough not to crash Bacon but not affect the chronology much. Needs more work
+      add <- max(1, 1.5*max(info$acc.mean)) # then add a short (max)hiatus, large enough not to crash Bacon but not affect the chronology much. Needs more work
     info$hiatus.max <- add
   }
   assign_to_global("info", info)
@@ -446,7 +442,8 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   cook <- function() {
     bacon.its(ssize, burnin, info) # information on amounts of iterations
     txt <- paste0(info$prefix, ".bacon")
-    bacon(txt, outfile, ssize+burnin, cc.dir)
+    #cat("this is the bacon file: ", txt)
+    bacon(txt, as.character(outfile), ssize+burnin, cc.dir)
     scissors(burnin, info)
     agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=TRUE, age.unit=age.unit, depth.unit=depth.unit, ...)
     if(plot.pdf)
@@ -459,6 +456,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
         dev.off()
       }
   }
+
 
 ### run bacon if initial graphs seem OK; run automatically, not at all, or only plot the age-depth model
   write.Bacon.file(info, younger.than=younger.than, older.than=older.than)

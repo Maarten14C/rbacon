@@ -32,9 +32,12 @@ set.initvals <- function(set=get('info'), core=set$core, values=c(), click=1) {
   elbows <- set$elbows
 
   if(length(values) == 0) { # then the user will click on an existing graph to select age-depth points
+    message("Please select your initval age-depth points on the graph by clicking with your left mouse button. When you are done selecting, use right-click.")
     if(click == 1) # user right-clicks once done
       draft.agedepth <- locator() else
         draft.agedepth <- locator(click)
+    points(draft.agedepth, col=2, pch=4, cex=5, lwd=2)
+    message("Lovely.")
     ages <- approx(draft.agedepth$x, draft.agedepth$y, elbows, rule=2)$y
     agedepth <- cbind(elbows, ages)
     accs <- diff(ages) / diff(elbows)
