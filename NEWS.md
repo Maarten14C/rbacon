@@ -1,7 +1,7 @@
 # rbacon 3.2.0
 * the overlap function now works better if d.min and/or d.max are set
-* as per Kurt Hornik's e-mail, added a sentinal "_PACKAGE" file to the documentation
-* changed occurrences of %lu in twalk.h to %llu per CRAN (Prof. Ripley) request
+* as per CRAN (Kurt Hornik)'s e-mail, added a sentinel "_PACKAGE" file to the documentation
+* changed occurrences of %lu in twalk.h to %llu per CRAN (Prof. Brian Ripley) request
 * added run puns
 * elbowages are now saved with more relevant information in the file name
 * now links to rintcal 0.6.4

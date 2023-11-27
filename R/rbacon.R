@@ -9,12 +9,6 @@ library(rintcal)
 
 # for future versions: add function to estimate best thick value, check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), produce proxy.ghost graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac; use normalizePath or other R-based solutions)
 
-# added line 133 to bacon.cpp, All.outputFiles(outputfile1); this line is present in rplum's bacon.cpp
-# added #include <vector> at line 14 of input.h. 
-# twalk.h, line 306, delete phi; was delete[] phi (as this is what it says on jac's site)
-# kernel 3 hop, in kernel.cpp, line 155, has intProd += (h[j]-x[j])*(h[j]-x[j]);, but x is xp in rplum's version
-# vector.cpp, lines 28-34, fver_vector differs between rplum and rbacon
-
 # read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum. Currently done using utils::getFromNamespace which is basically a way to allow :::
 
 #' @name Bacon
