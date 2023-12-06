@@ -350,6 +350,10 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
 #    dets <- dets[ order(dets[,4]), ] #CHANGED: se elimina "set" antes de dets, por un error en uso del objeto
     changed <- 1
   }
+  if(length(grep(",", dets[,1])) > 0)  {# commas in the lab IDs, which can confuse bacon (c++)
+    dets[,1] <- sub(",", "", dets[,1])
+    message("Warning, I removed commas from the lab ID fields")
+  }
 
   # if current dets differ from original .csv file, rewrite it
   if(changed > 0)

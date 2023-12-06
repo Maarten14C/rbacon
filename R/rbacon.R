@@ -29,7 +29,7 @@ library(rintcal)
 #' (for terrestrial northern hemisphere material; Reimer et al., 2020), Marine20 (for marine dates; Hughen et al., 2020),
 #' SHCal20 (for southern hemisphere dates; Hogg et al., 2020) or any other calibration curve (see below), while modern 14C
 #' dates are calibrated using one of the post-bomb calibration curves (NH1, NH2 or NH3 for the northern hemisphere,
-#' SH1-2 or SH3 for the southern hemisphere; Hua et al., 2013). See \url{http://calib.org/CALIBomb/} if you are unsure which
+#' SH1-2 or SH3 for the southern hemisphere; Hua et al., 2022). See \url{http://calib.org/CALIBomb/} if you are unsure which
 #' postbomb curve you need. If Bacon finds postbomb dates (negative 14C ages) and you haven't specified a postbomb curve,
 #' you will be prompted. Provide postbomb curves as, e.g., \code{postbomb=1} for the NH1 postbomb curve (2 for NH2, 3 for NH3, 4 for SH1-2, 5 for SH3).
 #' For calendar dates, i.e. dates that are already on the calendar scale and thus should not be calibrated, set\code{cc=0}.
@@ -168,8 +168,7 @@ library(rintcal)
 #'
 #' Hughen et al. 2020 Marine20-the marine radiocarbon age calibration curve (0-55,000 cal BP). Radiocarbon 62(4): 779-820.  \doi{10.1017/RDC.2020.68}
 #'
-#' Hua, Q., Barbetti, M., Rakowski, A.Z., 2013. Atmospheric radiocarbon for the period 1950-2010.
-#' Radiocarbon 55(4): 2059-2072. \doi{10.2458/azu_js_rc.v55i2.16177}
+#' Hua et al. 2022 Atmospheric radiocarbon for the period 1950-2019. Radiocarbon 64(4), 723-745, \doi{10.1017/RDC.2021.95}
 #'
 #' Jones, V.J., Stevenson, A.C., Battarbee, R.W., 1989. Acidification of lakes in Galloway, south west Scotland
 #' - a diatom and pollen study of the post-glacial history of the Round Loch of Glenhead.
