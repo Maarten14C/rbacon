@@ -1,3 +1,6 @@
+# rbacon 3.2.1
+* the default file name for cc4 is now "mixed.14C"
+
 # rbacon 3.2.0
 * the overlap function now works better if d.min and/or d.max are set
 * as per CRAN (Kurt Hornik)'s e-mail, added a sentinel "_PACKAGE" file to the documentation

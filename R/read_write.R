@@ -471,7 +471,7 @@ Bacon.settings <- function(core, coredir, dets, thick, remember=TRUE, d.min, d.m
 
 
 # write files to be read by the main Bacon age-depth modelling function
-write.Bacon.file <- function(set=get('info'), younger.than=c(), older.than=c()) {
+write.Bacon.file <- function(set=get('info'), younger.than=c(), older.than=c(), save.info=TRUE) {
   if(length(set$slump) > 0) {
     dets <- set$slumpdets
     hiatus.depths <- set$slumphiatus
@@ -576,7 +576,8 @@ write.Bacon.file <- function(set=get('info'), younger.than=c(), older.than=c()) 
       set$hiatus.max <- rep(set$hiatus.max, length(hiatus.depths))
 #      if(length(set$hiatus.shape)==1)
 #        set$hiatus.shape <- rep(set$hiatus.shape, length(set$hiatus.depths))
-    assign_to_global ("info", set)
+    if(save.info)
+      assign_to_global("info", set)
 
     cat("\n\n### Depths and priors for fixed hiatuses, in descending order",
       "\n##### cm  alpha beta      ha     hb", file=fl)

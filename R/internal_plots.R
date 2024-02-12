@@ -89,7 +89,7 @@ PlotAccPrior <- function(s, mn, set=get('info'), depth.unit=depth.unit, age.unit
 
 
 # plot the prior for the memory (= accumulation rate varibility between neighbouring depths)
-PlotMemPrior <- function(s, mn, thick, ds=1, set=get('info'), xlab="Memory (ratio)", ylab="Density", main="", add=FALSE, legend=TRUE, csize=.9) {
+PlotMemPrior <- function(s, mn, thick, set=get('info'), xlab="Memory (ratio)", ylab="Density", main="", add=FALSE, legend=TRUE, csize=.9) {
   o <- order(s, decreasing=TRUE)
 #  priors <- unique(cbind(s[o],mn[o])[,1:2])
   priors <- cbind(unique(s[o]), unique(mn[o]))[,1:2]
@@ -99,12 +99,13 @@ PlotMemPrior <- function(s, mn, thick, ds=1, set=get('info'), xlab="Memory (rati
     curve(dbeta(x, s*mn, s*(1-mn)), from=0, to=1, col=3, lwd=2, xlab=xlab, ylab=ylab, add=add)
     txt <- paste0("mem.strength: ", s, "\nmem.mean: ", mn, "\n", set$K, " ", round(thick,3)," ", noquote(set$depth.unit), " sections")
   } else {
-	  priors <- priors[order(priors[,1]*priors[,2]),]
+      priors <- priors[order(priors[,1]*priors[,2]),]
       curve(dbeta(x, priors[1,1]*priors[1,2], priors[1,1]*(1-priors[1,2])), from=0, to=1, col=3, lwd=2, xlab=xlab, ylab=ylab, add=add)
       for(i in 2:nrow(priors))
         curve(dbeta(x, priors[i,1]*priors[i,2], priors[i,1]*(1-priors[i,2])), from=0, to=1, col=3, lwd=2, xlab="", ylab="", add=TRUE)
       txt <- paste("acc.shape: ", toString(priors[,1]), "\nacc.mean: ", toString(priors[,2]))
     }
+
   if(legend)
     legend("topleft", txt, bty="n", cex=csize, text.col=2, xjust=0)
   warn <- FALSE
@@ -207,7 +208,7 @@ PlotMemPost <- function(set=get('info'), corenam, K, main="", s=set$mem.strength
     mem.lab <- "Memory"
   plot(0, type="n", xlab=mem.lab, xlim=mem.xlim, ylim=mem.ylim, ylab="", main="", xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
   polygon(post, col=grey(.8), border=grey(.4))
-  PlotMemPrior(s, mn, thick, add=TRUE, xlab="", ylab=ylab, main=main, csize=prior.size)
+  PlotMemPrior(s, mn, thick, set, add=TRUE, xlab="", ylab=ylab, main=main, csize=prior.size)
 }
 
 
