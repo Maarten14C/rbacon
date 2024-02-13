@@ -1,5 +1,6 @@
 # rbacon 3.2.1
 * the default file name for cc4 is now "mixed.14C"
+* Bacon can now run without saving the variable 'info' in the session. E.g., one can run mycore <- Bacon() and then query mycore as one would query info.
 
 # rbacon 3.2.0
 * the overlap function now works better if d.min and/or d.max are set
