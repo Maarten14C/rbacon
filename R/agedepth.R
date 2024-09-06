@@ -262,8 +262,11 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
   if(set$isplum)
     if(remove.tail) {
+      # has to check for non-210Pb dates below the tail
       above <- which(set$background < pb.background)
-      d.lim[which(d.lim==max(d.lim))] <- max(set$dets[above,4])
+      if(set$hasBaconData) 
+        d.lim <- range(set$dets[above,4], set$detsBacon[,4])[2:1] else
+          d.lim[which(d.lim==max(d.lim))] <- max(set$dets[above,4])
     }
 
   if(rotate.axes)

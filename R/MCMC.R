@@ -101,7 +101,7 @@ scissors <- function(burnin, set=get('info'), write=TRUE, save.info=TRUE) {
 #' }
 #'
 #' @export
-thinner <- function(proportion=0.1, set=get('info'), write=TRUE) {
+thinner <- function(proportion=0.1, set=get('info'), write=TRUE, save.info=TRUE) {
   output <- fastread(paste0(set$prefix, ".out"))
   if(set$isplum)
     plumout <- fastread(paste0(set$prefix, "_plum.out"))
@@ -152,7 +152,7 @@ thinner <- function(proportion=0.1, set=get('info'), write=TRUE) {
 #' @references
 #' Brooks, SP. and Gelman, A. (1998) General methods for monitoring
 #' convergence of iterative simulations.
-#' _Journal of Computational and Graphical Statistics, *7*, 434-455.
+#' _Journal of Computational and Graphical Statistics_, *7*, 434-455.
 #' @export
 Baconvergence <- function(core="MSB2K", runs=5, suggest=FALSE, verbose=TRUE, ...) {
   MCMC <- list()

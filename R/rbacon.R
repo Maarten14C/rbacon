@@ -1,9 +1,7 @@
-# to enable direct use of ccurve, mix.curves, calibration functions, pMC.age & age.pMC
-library(rintcal)
+# to enable direct use of, e.g., mix.curves, calibration functions, pMC.age & age.pMC
+library(rice)
 
 # check if we can make saving info (and hists) into the working environment optional. Could be tricky as many functions rely on reading/writing the info variable. Check functions Bacon.rng
-
-# cc4="mixed.14C" as default doesn't work. Add that file to rintcal, or add checks to line 508 of rbacon's read_write.R to enable default usage of mixed.14C
 
 # Check if we can/should return to using a gamma distribution instead of a uniform one for the hiatus
 
@@ -99,7 +97,7 @@ library(rintcal)
 #' @param cc1 For northern hemisphere terrestrial 14C dates (IntCal20).
 #' @param cc2 For marine 14C dates (Marine20).
 #' @param cc3 For southern hemisphere 14C dates (SHCal20).
-#' @param cc4 Provide the name of an alternative curve (3 columns: cal BP, 14C age, error, separated by white spaces and saved as a plain-text file). See \code{cc.dir}. Defaults to \code{cc4="mixed.14C"}.
+#' @param cc4 Provide the name of an alternative curve (3 columns: cal BP, 14C age, error, separated by white spaces and saved as a plain-text file). It is important here to first produce a tailor-made folder for your and the default calibration curves to live in. See \code{cc.dir}. Defaults to \code{cc4="mixed.14C"}. 
 #' @param cc.dir Directory where the calibration curves for C14 dates \code{cc} are located. By default uses the location of the rintcal package which provides the calibration curves. If you want to use custom-made calibration curves, first set up a new folder using the function new.ccdir() in the rintcal package, e.g., \code{new.ccdir="MyCurves"}, then place the custom curve in that folder using \code{mix.ccurves(, cc.dir="MyCurves", save=TRUE)}.
 #' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages. \code{0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}
 #' @param delta.R Mean of core-wide age offsets (e.g., regional marine offsets).
@@ -244,11 +242,14 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   if(length(mem.strength) > 1)
     stop("Can only use one value for mem.strength across a core", call.=FALSE)
     
-  if(!is.na(boundary[1]))
-    boundary <- sort(unique(boundary))
+  if(!is.na(boundary[1])) {
+    boundary <- sort(unique(boundary)) 
+    if(length(acc.mean) == 1) # August 2024
+      acc.mean <- rep(acc.mean, length(boundary)+1)	
+  }
   if(!is.na(hiatus.depths[1])) {
     hiatus.depths <- sort(unique(hiatus.depths))
-    if(length(acc.mean) == 1)
+    if(length(acc.mean) == 1) # why not for boundary?
       acc.mean <- rep(acc.mean, length(hiatus.depths)+1)
   }
 
