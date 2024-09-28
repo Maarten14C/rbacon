@@ -251,13 +251,13 @@ agedepth()
 
 R provides a very versatile environment to query the age-model output. To get the age estimate of any single core depth:
 
-```{r}
+```{r, fig.width=5, fig.height=4}
 Bacon.hist(20)
 ```
 
 You can also store the iterations of the age estimates of that depth in a new variable and then query it:
 
-```{r}
+```{r, fig.width=5, fig.height=4}
 a.d20 <- Bacon.Age.d(20)
 summary(a.d20)
 hist(a.d20)
@@ -265,7 +265,7 @@ hist(a.d20)
 
 Or calculate how much time has passed between 30 and 20 cm depth:
 
-```{r}
+```{r, fig.width=5, fig.height=4}
 a.d30 <- Bacon.Age.d(30)
 a.d20 <- Bacon.Age.d(20)
 summary(a.d30-a.d20)

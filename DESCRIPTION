@@ -50,6 +50,7 @@ Description: An approach to age-depth modelling that uses Bayesian statistics to
 Encoding: UTF-8
 Repository: CRAN
 License: GPL (>= 2)
+Language: en-GB
 NeedsCompilation: yes
 Imports: coda (>= 0.19-1), graphics, grDevices, Rcpp (>= 0.12.12),
         stats, utils, data.table, rintcal
