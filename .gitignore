@@ -2,3 +2,5 @@
 /doc/
 .DS_Store
 
+# GitHub and CI/CD files
+.github/
