@@ -96,7 +96,7 @@ agedepth(
   mgp = c(1.7, 0.7, 0),
   xaxs = "r",
   yaxs = "i",
-  MCMC.col = grey(0.5),
+  MCMC.col = grey(0.4),
   post.col = grey(0.8),
   post.border = grey(0.4),
   prior.col = 3,
@@ -308,17 +308,17 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{righthand}{Adapt the righthand margins by a certain amount (default 2) to allow a righthand axis to be plotted (for plum)}
 
-\item{mgp}{Axis text margins (where should titles, labels and tick marks be plotted). Defaults to \code{mgp=c(1.7, .7, .0)}.}
+\item{mgp}{Axis text margins (where should titles, labels and tick marks be plotted). Defaults to \code{mgp=c(1.7, 0.7, 0.0)}.}
 
 \item{xaxs}{Extension of x-axis. By default, add some extra white-space at both extremes (\code{xaxs="r"}). See ?par for other options.}
 
 \item{yaxs}{Extension of y-axis. By default, add no extra white-space at both extremes (\code{yaxs="i"}). See ?par for other options.}
 
-\item{MCMC.col}{Colour of the MCMC output. Defaults to \code{post.col=grey(.5))}.}
+\item{MCMC.col}{Colour of the MCMC output. Defaults to \code{post.col=grey(0.4))}.}
 
-\item{post.col}{Colour of the posterior histogram. Defaults to \code{post.col=grey(.8))}.}
+\item{post.col}{Colour of the posterior histogram. Defaults to \code{post.col=grey(0.8))}.}
 
-\item{post.border}{Colour of the posterior border. Defaults to \code{post.border=grey(.4))}.}
+\item{post.border}{Colour of the posterior border. Defaults to \code{post.border=grey(0.4))}.}
 
 \item{prior.col}{Colour of the prior curve. Defaults to light green, \code{prior.col=3)}.}
 

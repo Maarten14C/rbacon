@@ -140,15 +140,16 @@ accrate.depth.summary <- function(d, set=get('info'), cmyr=FALSE, na.rm=FALSE, p
 #'   accrate.age.summary(5000)
 #' }
 #' @export
-accrate.age.summary <- function(age, set=get('info'), cmyr=FALSE, na.rm=FALSE, probs=c(.025, .16, .84, .975, .5)) {
+accrate.age.summary <- function(age, set=get('info'), cmyr=FALSE, na.rm=TRUE, probs=c(.025, .16, .84, .975, .5)) {
   if(length(age) > 1)
     stop("can handle one depth at a time only")
-  accs <- accrate.age(age, set, cmyr, na.rm, probs)
+  accs <- accrate.age(age, set, cmyr, na.rm=na.rm)
   qu <- quantile(accs, probs, na.rm=na.rm)
   mn <- mean(accs, na.rm=na.rm)
   names(mn) <- "mean"
   return(c(mn, qu))
 }
+
 
 
 #' @name accrates.core

@@ -4,3 +4,5 @@
 ^doc$
 ^Meta$
 ^CRAN-SUBMISSION$
+^\.github$
+^\.DS_Store$

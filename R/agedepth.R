@@ -93,12 +93,12 @@
 #' @param mar.right Plot margins for the topright panel (amount of white space along edges of axes 1-4). Default \code{mar.right=c(3,3,1,1)}.
 #' @param mar.main Plot margins for the main panel (amount of white space along edges of axes 1-4). Default \code{mar.main=c(3,3,1,1)}.
 #' @param righthand Adapt the righthand margins by a certain amount (default 2) to allow a righthand axis to be plotted (for plum)
-#' @param mgp Axis text margins (where should titles, labels and tick marks be plotted). Defaults to \code{mgp=c(1.7, .7, .0)}.
+#' @param mgp Axis text margins (where should titles, labels and tick marks be plotted). Defaults to \code{mgp=c(1.7, 0.7, 0.0)}.
 #' @param xaxs Extension of x-axis. By default, add some extra white-space at both extremes (\code{xaxs="r"}). See ?par for other options.
 #' @param yaxs Extension of y-axis. By default, add no extra white-space at both extremes (\code{yaxs="i"}). See ?par for other options.
-#' @param MCMC.col Colour of the MCMC output. Defaults to \code{post.col=grey(.5))}.
-#' @param post.col Colour of the posterior histogram. Defaults to \code{post.col=grey(.8))}.
-#' @param post.border Colour of the posterior border. Defaults to \code{post.border=grey(.4))}.
+#' @param MCMC.col Colour of the MCMC output. Defaults to \code{post.col=grey(0.4))}.
+#' @param post.col Colour of the posterior histogram. Defaults to \code{post.col=grey(0.8))}.
+#' @param post.border Colour of the posterior border. Defaults to \code{post.border=grey(0.4))}.
 #' @param prior.col Colour of the prior curve. Defaults to light green, \code{prior.col=3)}.
 #' @param prior.lwd Line width of the prior curve. Defaults to \code{prior.lwd=2)}.
 #' @param prior.fontcol Colour of the font accompanying the posterior histograms. Defaults to red, \code{prior.fontcol=2)}.

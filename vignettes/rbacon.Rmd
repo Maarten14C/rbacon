@@ -281,6 +281,14 @@ acc.a4500 <- accrate.age(4500)
 summary(acc.a4500)
 ```
 
+To automate the above, and write a file with accumulation rate summaries to your core's folder:
+
+```{r}
+accrate.depth.summary(20)
+accrate.age.summary(4500)
+accrates.core()
+```
+
 # Frequently Asked Questions
 
 ## What does Bacon stand for?
