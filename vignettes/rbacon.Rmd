@@ -460,6 +460,15 @@ Bayesian age-models can deal with an impressive range of dating density and qual
 
 Those are the age distributions of the dated depths. They lie on the calendar axis, and their probabilities for each year are expressed on the depth scale (imagine an invisible additional axis for each individual date). Each date has the same plotted area by default, so very precise dates will peak much higher (on the depth axis) than less precise dates.
 
+## I want different colours
+
+Play around with the following options within the `agedepth` function: `C14.col`, `C14.border`, `cal.col`, `cal.border`. These set the colours for the distributions and their borders for the (calibrated) C14 dates and cal BP dates, respectively. If you want to set an individual colour for each date, you can also use the option `dates.col`, e.g.:
+
+```{r, eval=FALSE}
+my_fancy_colours <- sample(colours(), nrow(info$dets))
+agedepth(height=50, dates.col=my_fancy_colours)
+```
+
 ## What indicates a good age-depth model?
 
 First of all, check that the MCMC run (top-left panel) looks stable, like white noise with no major structure where iterations seem 'stuck'. Ensure that there is no burn-in remaining. If the MCMC looks bad, try a longer run by specifying a different value for `ssize` (default 4000). You can always run the `scissors` or `thinner` commands to trim the MCMC run to something nice and manageable after the run.
