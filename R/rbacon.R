@@ -3,7 +3,7 @@
 
 # in agedepth, have an optional vector with ex, e.g. ex=5 for dates 10:20, 1 for 1:9
 
-# make a fucntion to include e.g. cumulative weight/pollen instead of depths - 'fake' depths
+# make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths
 
 # add an option F14C to indicate which dates are in F14C (e.g., postbomb dates). So people don't have to transfer to C14 ages manually. 
 
