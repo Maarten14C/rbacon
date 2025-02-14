@@ -126,6 +126,8 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.
       lines(pr.mn.ages, proxy[,2], col=mean.col)
   }
   box(bty=bty)
+  
+  invisible(list(ages=age.seq, proxy=proxyseq, counts=max.counts))
 }
 
 

@@ -1,6 +1,8 @@
 # to enable direct use of, e.g., mix.curves, calibration functions, pMC.age & age.pMC
 # library(rice)
 
+# check if d.max in agedepth() works as expected
+
 # in agedepth, have an optional vector with ex, e.g. ex=5 for dates 10:20, 1 for 1:9
 
 # make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths
