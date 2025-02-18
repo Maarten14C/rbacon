@@ -127,7 +127,7 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.
   }
   box(bty=bty)
   
-  invisible(list(ages=age.seq, proxy=proxyseq, counts=max.counts))
+  invisible(list(ages=age.seq, proxy=proxyseq, counts=max.counts, means=cbind(pr.mn.ages, proxy[,2])))
 }
 
 
