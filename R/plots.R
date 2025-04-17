@@ -55,7 +55,7 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.
   proxy <- proxy[which(proxy[,1] <= set$d.max),]
   proxy <- proxy[which(proxy[,1] >= set$d.min),]
   pr.mn.ages <- approx(set$ranges[,1], set$ranges[,5], proxy[,1], rule=1)$y
-  if(length(unique(proxy[,2]))==1)
+  if(length(unique(proxy[,2])) == 1)
     stop("this proxy's values remain constant throughout the core, and cannot be proxy-ghosted!", call.=FALSE)
   proxyseq <- seq(min(proxy[,2]), max(proxy[,2]), length=proxy.res)
 #  out <- list(yrseq=c(), binned=c(), maxs=c())
@@ -111,7 +111,7 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.
     age.seq <- 1950-rev(age.seq)
   }
 
-  if(length(proxy.lim)==0)
+  if(length(proxy.lim) == 0)
     proxy.lim <- range(proxyseq)
   if(proxy.rev)
     proxy.lim <- proxy.lim[2:1]

@@ -1,5 +1,3 @@
-# to enable direct use of, e.g., mix.curves, calibration functions, pMC.age & age.pMC
-# library(rice)
 
 # check if d.max in agedepth() works as expected
 

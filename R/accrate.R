@@ -14,6 +14,7 @@
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param cmyr Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm.
 #' @param na.rm Remove NA entries. These are NOT removed by default, ensuring that always the same amount of iterations is returned.
+#' @param inversion.threshold Very small accumulation rate values will become very large when their inverse is calculated. By default, any accumulation rate smaller than 1e-6 is set to 1e-6.
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return all MCMC estimates of accumulation rate of the chosen depth.
 #' @examples
@@ -26,16 +27,19 @@
 #'   mean(d20)
 #' }
 #' @export
-accrate.depth <- function(d, set=get('info'), cmyr=FALSE, na.rm=FALSE) {
+accrate.depth <- function(d, set=get('info'), cmyr=FALSE, na.rm=FALSE, inversion.threshold=1e-6) {
   accs.elbows <- set$output[,2:(set$K+1)]
   if(min(set$elbows) <= d && max(set$elbows) >= d)
     accs <- unlist(accs.elbows[max(which(set$elbows <= d))]) else
-  #  accs <- set$output[,1+min(which(set$elbows >= d))] else # was 1 + max(which(set$elbows < d))...
       accs <- NA
   accs <- as.numeric(accs)
   if(na.rm)
     accs <- accs[!is.na(accs)]
-  if(cmyr) 1/accs else accs
+  if(cmyr) {
+    accs[accs < inversion.threshold] <- inversion.threshold
+    accs <- 1/accs
+  }
+  return(accs)
 }
 
 
@@ -70,28 +74,33 @@ accrate.depth <- function(d, set=get('info'), cmyr=FALSE, na.rm=FALSE) {
 accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCAD, silent=TRUE, na.rm=FALSE) {
   if(length(ages) == 0)
     ages <- sapply(set$elbows, Bacon.Age.d)
+  if(BCAD)
+    ages <- BCADtocalBP(ages)
 
   if(!silent)
     if(age < min(ages) || age > max(ages))
-     stop(" Warning, age outside the core's age range!\n")
+      stop(" Warning, age outside the core's age range!\n")
 
-  # can this be made faster, i.e. without the loop?
-  # accs <- c()
+   # these two lines do the same as the loop below, 
+   #   but at the same speed and values outside the ages do not get NAs
+   # col_indices <- rowSums(ages <= age) + 1 
+   # accs <- set$output[cbind(seq_len(nrow(ages)), col_indices)]
+
   accs <- rep(NA_real_, nrow(ages)) # suggested by henningte on github
   for(i in 2:ncol(ages)) {
-    if(BCAD)
-      these <- (ages[,i-1] > age) * (ages[,i] < age) else
-        these <- (ages[,i-1] < age) * (ages[,i] > age)
+    these <- (ages[,i-1] < age) & (ages[,i] > age)
     if(sum(these) > 0) # age lies within these age-model iterations
-      #accs <- c(accs, set$output[which(these>0),i]) # was i+1
       accs[which(these>0)] <- set$output[which(these>0),i] # Jan 2023
   }
+
   if(na.rm)
     accs <- accs[!is.na(accs)]
   if(cmyr)
     accs <- 1/accs
+
   return(accs)
 }
+
 
 
 #' @name accrate.depth.summary

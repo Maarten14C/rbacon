@@ -1,6 +1,7 @@
 # rbacon 3.3.2
 * radiocarbon ages can now be entered as F14C or pMC values (e.g. for postbomb dates). Please indicate using the F14C or pMC option which ones are in F14C/pMC (e.g., Bacon(F14C=2:4) if dates 2 to 4 are in F14C). These values will then automatically be rewritten as C14 ages.
 * the proxy.ghost function now invisibly returns a table of the values used in the grid composing the greyscale plot.
+* add.dates now plots additional dates as expected, also when rotate.axes=TRUE.
 
 # rbacon 3.3.1
 * now uses the updated rice package (which loads the data rintcal package).
