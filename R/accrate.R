@@ -234,7 +234,6 @@ accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, na.rm=FALSE, pr
 #' @param yaxs Extension of y-axis. By default, add no extra white-space at both extremes (\code{yaxs="i"}). See ?par for other options.
 #' @param bty Type of box to be drawn around the plot (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).
 #' @param remove.laststep Add a white line to remove spurious lines at the extreme of the graph. Defaults to TRUE.
-#' @param use.raster Sometimes greyscales are plotted 'blocky'. Then try setting \code{use.raster=FALSE}. Defaults to TRUE.
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A grey-scale plot of accumulation rate against core depth, and (invisibly) the list of depths and their accumulation rates (ranges, medians, means).
 #' @examples
@@ -246,7 +245,7 @@ accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, na.rm=FALSE, pr
 #'   head(tmp)
 #' }
 #' @export
-accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, cutoff=0.001, rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2,  rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE, xaxs="r", yaxs="r", bty="l", remove.laststep=TRUE, use.raster=TRUE) {
+accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, cutoff=0.001, rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2,  rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE, xaxs="r", yaxs="r", bty="l", remove.laststep=TRUE) {
   max.acc <- 0; max.dens <- 0
   acc <- list(); min.rng <- numeric(length(d)); max.rng <- numeric(length(d)); mean.rng <- numeric(length(d)); median.rng <- numeric(length(d))
   for(i in 1:length(d))
@@ -310,7 +309,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
       for(i in 2:length(d)) {
         accs <- acc[[i-1]]
         col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(accs$y[!is.na(accs$y)]), 0, length=rgb.res)) # was acc[[i]]
-        image(d[c(i-1, i)], accs$x, 1-t(accs$y), add=TRUE, col=col, useRaster=use.raster) # was acc[[i]]
+        image(d[c(i-1, i)], accs$x, 1-t(accs$y), add=TRUE, col=col, useRaster=TRUE) # was acc[[i]]
       }
       if(plot.range) {
         lines(d, min.rng, type="s", col=range.col, lty=range.lty, pch=NA)
@@ -371,7 +370,6 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' @param xaxs Extension of the x-axis. White space can be added to the vertical axis using \code{xaxs="r"}.
 #' @param yaxs Extension of the y-axis. White space can be added to the vertical axis using \code{yaxs="r"}.
 #' @param bty Type of box to be drawn around the plot (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).
-#' @param use.raster Sometimes greyscales are plotted 'blocky'. Then try setting \code{use.raster=FALSE}. Defaults to TRUE.
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A greyscale plot of accumulation rate against calendar age, and (invisibly) the list of ages and their accumulation rates (ranges, medians, means).
 #' @examples
@@ -383,7 +381,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #'   head(tmp)
 #' }
 #' @export
-accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FALSE, age.res=400, acc.res=200, cutoff=.001, dark=1, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, xaxs="i", yaxs="i", bty="l", use.raster=TRUE) {
+accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FALSE, age.res=400, acc.res=200, cutoff=.001, dark=1, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, xaxs="i", yaxs="i", bty="l") {
   if(length(age.lim) == 0) 
      age.lim <- extendrange(set$ranges[,5]) # just the mean ages, not the extremes
   if(set$BCAD) # was set$BCAD
@@ -465,7 +463,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
         axis(1, pretty(age.lim), labels=1950-pretty(age.lim)) else
         if(kcal)
           axis(1, pretty(age.lim), labels=pretty(age.lim)/1e3)
-      image(age.seq, acc.seq, t(t(z)), col=cols, add=TRUE, use.raster)
+      image(age.seq, acc.seq, t(t(z)), col=cols, add=TRUE, useRaster=TRUE)
       if(plot.range) {
         lines(age.seq, acc.rng[,1], pch=".", col=range.col, lty=range.lty)
         lines(age.seq, acc.rng[,2], pch=".", col=range.col, lty=range.lty)
@@ -523,7 +521,6 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
 #' @param rev.flux The flux axis can be reversed with \code{rev.flux=TRUE}.
 #' @param rev.age The direction of the age axis can be reversed using \code{rev.age=TRUE}.
 #' @param rev.yr Deprecated - use rev.age instead
-#' @param use.raster Sometimes greyscales are plotted 'blocky'. Then try setting \code{use.raster=FALSE}. Defaults to TRUE.
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A plot of flux rates.
 #' @examples
@@ -533,7 +530,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
 #'   flux.age.ghost(1)
 #' }
 #' @export
-flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr.res=age.res, set=get('info'), flux=c(), plot.range=TRUE, prob=.8, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, flux.lim=c(), flux.lab=expression("flux (g cm"^-1*" yr"^-1*")"), upper=.95, rgb.scale=c(0,0,0), rgb.res=100, dark=set$dark, cutoff=0.001, BCAD=set$BCAD, age.lab=c(), yr.lab=age.lab, rotate.axes=FALSE, rev.flux=FALSE, rev.age=FALSE, rev.yr=rev.age, use.raster=TRUE) {
+flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr.res=age.res, set=get('info'), flux=c(), plot.range=TRUE, prob=.8, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, flux.lim=c(), flux.lab=expression("flux (g cm"^-1*" yr"^-1*")"), upper=.95, rgb.scale=c(0,0,0), rgb.res=100, dark=set$dark, cutoff=0.001, BCAD=set$BCAD, age.lab=c(), yr.lab=age.lab, rotate.axes=FALSE, rev.flux=FALSE, rev.age=FALSE, rev.yr=rev.age) {
   if(length(flux) == 0) { # then read a .csv file, expecting data in columns with headers
     flux <- read.csv(paste0(set$coredir, set$core, "/", set$core, "_flux.csv"))
     flux <- cbind(flux[,1], flux[,1+proxy])
@@ -603,8 +600,8 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr
       col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3],
         seq(0, max(flux.hist$y[!is.na(flux.hist$y)]), length=rgb.res))
       if(rotate.axes)
-        image(flux.hist$x, age.seq[c(i-1,i)], matrix(flux.hist$y), add=TRUE, col=col, use.raster=use.raster) else
-          image(age.seq[c(i-1,i)], flux.hist$x, t(matrix(flux.hist$y)), add=TRUE, col=col, use.raster=use.raster)
+        image(flux.hist$x, age.seq[c(i-1,i)], matrix(flux.hist$y), add=TRUE, col=col, useRaster=TRUE) else
+          image(age.seq[c(i-1,i)], flux.hist$x, t(matrix(flux.hist$y)), add=TRUE, col=col, useRaster=TRUE)
     }
   }
 
