@@ -42,6 +42,7 @@ agedepth(
   maxcalc = 500,
   height = 1,
   calheight = 1,
+  ex = 1,
   mirror = TRUE,
   up = TRUE,
   cutoff = 0.1,
@@ -71,6 +72,7 @@ agedepth(
   hiatus.lty = "12",
   rgb.scale = c(0, 0, 0),
   rgb.res = 100,
+  use.raster = TRUE,
   slump.col = grey(0.8),
   normalise.dists = TRUE,
   same.heights = FALSE,
@@ -125,7 +127,8 @@ agedepth(
   dates.only = FALSE,
   model.only = FALSE,
   verbose = TRUE,
-  save.info = TRUE
+  roundby = 2,
+  save.info = set$save.info
 )
 }
 \arguments{
@@ -206,6 +209,8 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{calheight}{Multiplier for the heights of the distributions of dates on the calendar scale. Defaults to \code{calheight=1}.}
 
+\item{ex}{As an alternative to 'height' and 'calheight', the distribution heights can be set as either a single value (e.g., \code{ex=1}) or for each date (for example, \code{myex=rep(1, nrow(info$dets)); myex[1:5] <- 10; agedepth(ex=myex)}).}
+
 \item{mirror}{Plot the dates as 'blobs'. Set to \code{mirror=FALSE} to plot simple distributions.}
 
 \item{up}{Directions of distributions if they are plotted non-mirrored. Default \code{up=TRUE}.}
@@ -263,6 +268,8 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 \item{rgb.scale}{The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}).}
 
 \item{rgb.res}{Resolution of the colour spectrum depicting the age-depth model. Default \code{rgb.res=100}.}
+
+\item{use.raster}{Sometimes greyscales are plotted 'blocky'. Then try setting \code{use.raster=FALSE}. Defaults to TRUE.}
 
 \item{slump.col}{Colour of slumps. Defaults to \code{slump.col=grey(0.8)}.}
 
@@ -371,6 +378,8 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 \item{model.only}{By default, panels showing the MCMC iterations and the priors and posteriors for accumulation rate and memory are plotted above the main age-depth model panel. This can be avoided by supplying \code{model.only=TRUE}. Note however that this removes relevant information to evaluate the age-depth model, so we do recommend to present age-models together with these upper panels.}
 
 \item{verbose}{Provide a summary of the age ranges after producing the age-depth model graph; default \code{verbose=FALSE}.}
+
+\item{roundby}{Rounding of the values reported at the end of the function. Defaults to 2 decimals.}
 
 \item{save.info}{By default, a variable called `info' with relevant information about the run (e.g., core name, priors, settings, ages, output) is saved into the working directory. Note that this will overwrite any existing variable with the same name - as an alternative, one could run, e.g., \code{myvar <- Bacon()}, followed by supplying the variable \code{myvar} in any subsequent commands.}
 }

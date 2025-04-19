@@ -35,6 +35,7 @@
 #' @param yr.lab Deprecated - use age.lab instead
 #' @param verbose Provide feedback on what is happening (default \code{verbose=TRUE}).
 #' @param add Add to an existing graph (default \code{add=FALSE}).
+#' @param use.raster Sometimes greyscales are plotted with unwarranted 'blocks' or 'lines'. Then try setting \code{use.raster=FALSE}. Defaults to TRUE.
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A grey-scale graph of the proxy against calendar age.
 #' @examples
@@ -44,7 +45,7 @@
 #'   proxy.ghost()
 #' }
 #' @export
-proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.res=age.res, rgb.scale=c(0,0,0), rgb.res=100, set=get('info'), cutoff=0.001, dark=1, darkest=1, rotate.axes=FALSE, proxy.rev=FALSE, age.rev=FALSE, yr.rev=age.rev, plot.mean=FALSE, mean.col="red", age.lim=NULL, yr.lim=age.lim, proxy.lim=NULL, sep=",", xaxs="i", yaxs="i", xaxt="s", yaxt="s", bty="l", BCAD=set$BCAD, age.lab=ifelse(BCAD, "BC/AD", "cal yr BP"), yr.lab=age.lab, verbose=TRUE, add=FALSE) {
+proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.res=age.res, rgb.scale=c(0,0,0), rgb.res=100, set=get('info'), cutoff=0.001, dark=1, darkest=1, rotate.axes=FALSE, proxy.rev=FALSE, age.rev=FALSE, yr.rev=age.rev, plot.mean=FALSE, mean.col="red", age.lim=NULL, yr.lim=age.lim, proxy.lim=NULL, sep=",", xaxs="i", yaxs="i", xaxt="s", yaxt="s", bty="l", BCAD=set$BCAD, age.lab=ifelse(BCAD, "BC/AD", "cal yr BP"), yr.lab=age.lab, verbose=TRUE, add=FALSE, use.raster=TRUE) {
   if(length(set$Tr)==0)
     stop("please first run agedepth()", call.=FALSE)
   proxies <- read.csv(paste0(set$coredir, set$core, "/", set$core, "_proxies.csv"), header=TRUE, sep=sep)
@@ -73,8 +74,9 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.
   }
   if(verbose)
     message("Calculating histograms")
-  Bacon.hist(ds, set, calc.range=FALSE) # BCAD always FALSE
-  hists <- get('hists')
+
+  hists <- Bacon.hist(ds, set, calc.range=FALSE) # BCAD always FALSE
+  #hists <- get('hists')
   message("\n")
 
   age.min <- c()
@@ -117,11 +119,11 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.
     proxy.lim <- proxy.lim[2:1]
   col <-  rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0, darkest, length=rgb.res))
   if(rotate.axes) {
-    image(proxyseq, age.seq, max.counts, xlim=proxy.lim, ylim=age.lim, col=col, ylab=age.lab, xlab=proxy.lab, xaxs=xaxs, yaxs=yaxs, xaxt=xaxt, yaxt=yaxt, add=add)
+    image(proxyseq, age.seq, max.counts, xlim=proxy.lim, ylim=age.lim, col=col, ylab=age.lab, xlab=proxy.lab, xaxs=xaxs, yaxs=yaxs, xaxt=xaxt, yaxt=yaxt, add=add, useRaster=use.raster)
     if(plot.mean)
       lines(proxy[,2], pr.mn.ages, col=mean.col)
   } else {
-    image(age.seq, proxyseq, t(max.counts), xlim=age.lim, ylim=proxy.lim, col=col, xlab=age.lab, ylab=proxy.lab, xaxs=xaxs, yaxs=yaxs, xaxt=xaxt, yaxt=yaxt, add=add)
+    image(age.seq, proxyseq, t(max.counts), xlim=age.lim, ylim=proxy.lim, col=col, xlab=age.lab, ylab=proxy.lab, xaxs=xaxs, yaxs=yaxs, xaxt=xaxt, yaxt=yaxt, add=add, useRaster=use.raster)
     if(plot.mean)
       lines(pr.mn.ages, proxy[,2], col=mean.col)
   }

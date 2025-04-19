@@ -1,19 +1,11 @@
 
-# check if d.max in agedepth() works as expected
-
-# in agedepth, have an optional vector with ex, e.g. ex=5 for dates 10:20, 1 for 1:9
+# Check if we can/should return to using a gamma distribution instead of a uniform one for the hiatus
 
 # make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths
 
-# add an option F14C to indicate which dates are in F14C (e.g., postbomb dates). So people don't have to transfer to C14 ages manually. 
-
-# check if we can make saving info (and hists) into the working environment optional. Could be tricky as many functions rely on reading/writing the info variable. Check functions Bacon.rng
-
-# Check if we can/should return to using a gamma distribution instead of a uniform one for the hiatus
-
 # do: check that overlap function continues to function (sometimes reports 0% overlap when the dates fit well), check rplum bugs w youngest.age (is the bug in rbacon or in rplum?) and w larger-than-previous error sizes
 
-# replacing the plotting of the calibrated distributions by rintcal's functions doesn't seem to speed up anything, so keeping the original method in place for now.
+# replacing the plotting of the calibrated distributions by rice's functions doesn't seem to speed up anything, so keeping the original method in place for now.
 
 # for future versions: add function to estimate best thick value, check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), produce proxy.ghost graph with proxy uncertainties?, smooth bacon, check/adapt behaviour of AgesOfEvents around hiatuses, F14C, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac; use normalizePath or other R-based solutions)
 
@@ -290,8 +282,12 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
 #    MaxAge <- max(1e6, round(dets[,2] + (5*dets[,3])))
 
   info <- Bacon.settings(core=core, coredir=coredir, dets=dets, thick=thick, remember=remember, d.min=d.min, d.max=d.max, d.by=d.by, depths.file=depths.file, slump=slump, acc.mean=acc.mean, acc.shape=acc.shape, mem.mean=mem.mean, mem.strength=mem.strength, boundary=boundary, hiatus.depths=hiatus.depths, hiatus.max=hiatus.max, BCAD=BCAD, cc=cc, postbomb=postbomb, cc1=cc1, cc2=cc2, cc3=cc3, cc4=cc4, depth.unit=depth.unit, normal=normal, t.a=t.a, t.b=t.b, delta.R=delta.R, delta.STD=delta.STD, prob=prob, defaults=defaults, runname=runname, ssize=ssize, dark=dark, youngest.age=youngest.age, oldest.age=oldest.age, cutoff=cutoff, age.res=age.res, after=after, age.unit=age.unit)
-  if(save.info) # make the info variable available in the working environment (will overwrite any existing variable with the name 'info')
+  
+  # make the info variable available in the working environment (will overwrite any existing variable with the name 'info')
+  info$save.info <- save.info
+  if(save.info) 
     assign_to_global("info", info)
+
   info$coredir <- coredir
   if(is.na(seed))
     seed <-sample(1:1e6, 1) # sample an integer
@@ -477,18 +473,20 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     #cat("this is the bacon file: ", txt)
     bacon(txt, as.character(outfile), ssize+burnin, cc.dir)
     info <- scissors(burnin, info, save.info=save.info)
+	output <- info$output # tmp
     info <- agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=TRUE, age.unit=age.unit, depth.unit=depth.unit, save.info=save.info, ...)
+	info$output <- output
     #    cat(mean(info$Tr)) # this is to check how hists and info get saved
 
     if(plot.pdf)
-    #  if(interactive())
-    #    if(length(dev.list()) > 0)
-    if(dev.interactive()) #
-      dev.copy2pdf(file=paste0(info$prefix, ".pdf")) else {
-        pdf(file=paste0(info$prefix, ".pdf"))
-        agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=FALSE, age.unit=age.unit, depth.unit=depth.unit, save.info=FALSE, ...)
-        dev.off()
-      }
+      if(dev.interactive())
+        export.pdf(paste0(info$prefix, ".pdf")) else {
+          if(capabilities("cairo"))
+            cairo_pdf(filename=paste0(info$prefix, ".pdf")) else 
+              pdf(file=paste0(info$prefix, ".pdf"))
+            agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=FALSE, age.unit=age.unit, depth.unit=depth.unit, save.info=FALSE, ...)
+            dev.off()
+        }		
   }
 
 ### run bacon if initial graphs seem OK; run automatically, not at all, or only plot the age-depth model

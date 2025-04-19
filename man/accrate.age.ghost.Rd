@@ -34,7 +34,8 @@ accrate.age.ghost(
   rev.acc = FALSE,
   xaxs = "i",
   yaxs = "i",
-  bty = "l"
+  bty = "l",
+  use.raster = TRUE
 )
 }
 \arguments{
@@ -97,6 +98,8 @@ accrate.age.ghost(
 \item{yaxs}{Extension of the y-axis. White space can be added to the vertical axis using \code{yaxs="r"}.}
 
 \item{bty}{Type of box to be drawn around the plot (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).}
+
+\item{use.raster}{Sometimes greyscales are plotted 'blocky'. Then try setting \code{use.raster=FALSE}. Defaults to TRUE.}
 }
 \value{
 A greyscale plot of accumulation rate against calendar age, and (invisibly) the list of ages and their accumulation rates (ranges, medians, means).
