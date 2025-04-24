@@ -85,7 +85,7 @@
 #' @param label.offset Offsets of the positions of the labels, giving the x and y offsets. Defaults to c(0,0).
 #' @param label.size Size of labels.
 #' @param label.col Colour of the labels. Defaults to the colour given to the borders of the dates.
-#' @param label.adj  Justification of the labels. Follows R's adj option: A value of ‘0’ produces left-justified text, ‘0.5’ (the default) centered text and ‘1’ right-justified text.
+#' @param label.adj  Justification of the labels. Follows R's adj option: A value of '0' produces left-justified text, '0.5' (the default) centered text and '1' right-justified text.
 #' @param label.rot Rotation of the label. 0 by default (horizontal).
 #' @param after Sets a short section above and below hiatus.depths within which to calculate ages. For internal calculations - do not change.
 #' @param bty Type of box to be drawn around plots (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).

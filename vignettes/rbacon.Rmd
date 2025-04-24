@@ -36,7 +36,7 @@ The package comes with two pre-loaded datasets, MSB2K and RLGH3. Start by runnin
 Bacon()
 ```
 
-Bacon will calibrate any C-14 dates, do the MCMC run, calculate age ranges, produce graphs and provide information about the posterior distirbutions and the age-depth model's confidence ranges. The output graph, below, contains a number of panels containing important information (so please don't cut them out for your publications):
+Bacon will calibrate any C-14 dates, do the MCMC run, calculate age ranges, produce graphs and provide information about the posterior distributions and the age-depth model's confidence ranges. The output graph, below, contains a number of panels containing important information (so please don't cut them out for your publications):
 
 * First, at the top left we can see the 'fit' or 'energy' of all MCMC (Markov Chain Monte Carlo) iterations of the run. If the iterations seem clustered with sections of lower and of higher energy, then the run probably didn't go well and you might want to try running your core with more iterations (parameter ssize).
 

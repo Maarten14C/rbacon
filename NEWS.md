@@ -57,7 +57,7 @@
 * repaired warning message about lengths of logical tests
 * now links to rintcal package (renamed from IntCal)
 * better Plum plots
-* runs can now be interrupted by pressing ctrl+c
+* runs can now be interrupted by pressing CTRL+c
 
 # rbacon 2.5.8
 * some minor updates to the vignettes
