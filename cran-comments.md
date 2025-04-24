@@ -1,6 +1,6 @@
 ## Test environments
-* Fedora and Mac, R 4.5.0
-* rhub (devel on linux and Windows)
+* Mac, R 4.5.0
+* rhub (r-devel on windows and several flavours of linux)
 
 ## R CMD check results
 
