@@ -192,8 +192,8 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
         }
 
       if(rotate.axes)
-        image(ages, c(depths[i]-thickness[i], depths[i]), t(z), col=pbmodelled.col(seq(0, 1-max(z),  length=50)), add=TRUE) else
-          image(c(depths[i]-thickness[i], depths[i]), ages, z, col=pbmodelled.col(seq(0, 1-max(z), length=50)), add=TRUE)
+        ghost.mirror(ages, c(depths[i]-thickness[i], depths[i]), t(z), col=pbmodelled.col(seq(0, 1-max(z),  length=50))) else
+          ghost.mirror(c(depths[i]-thickness[i], depths[i]), ages, z, col=pbmodelled.col(seq(0, 1-max(z), length=50)))
     }
   }
 

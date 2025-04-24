@@ -35,8 +35,7 @@ flux.age.ghost(
   rotate.axes = FALSE,
   rev.flux = FALSE,
   rev.age = FALSE,
-  rev.yr = rev.age,
-  use.raster = TRUE
+  rev.yr = rev.age
 )
 }
 \arguments{
@@ -102,8 +101,6 @@ flux.age.ghost(
 \item{rev.age}{The direction of the age axis can be reversed using \code{rev.age=TRUE}.}
 
 \item{rev.yr}{Deprecated - use rev.age instead}
-
-\item{use.raster}{Sometimes greyscales are plotted 'blocky'. Then try setting \code{use.raster=FALSE}. Defaults to TRUE.}
 }
 \value{
 A plot of flux rates.

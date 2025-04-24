@@ -3,7 +3,7 @@
 * the proxy.ghost function now invisibly returns a table of the values used in the grid composing the greyscale plot.
 * add.dates now plots additional dates as expected, also when rotate.axes=TRUE (although rotate.axes still has to be set to TRUE after using the agedepth function with agedepth=TRUE).
 * the agedepth function now treats provided values for d.min and d.max better.
-* greyscale 'ghost' plots (`agedepth`, `accrate.depth.ghost`, `accrate.age.ghost`, `proxy.ghost`) should now plot with fewer disturbances such as lines. If this doesn't work, please use the option 'use.raster=FALSE'.
+* greyscale 'ghost' plots (`agedepth`, `accrate.depth.ghost`, `accrate.age.ghost`, `proxy.ghost`) should now plot with fewer disturbances such as lines. This is done by setting `useRaster=TRUE` in `image`.
 * if available on your system, 'cairo_pdf' will be used to plot pdfs.
 * after a run, the posteriors (for accumulation rate, memory, and if present hiatus, phi and supported) are now summarized in a message.
 * The heights of the distributions of the dates can now also be set through a variable `ex`, which could either be of length 1, or have a value for each date in the core. This way, some dates can be plotted at different heights. 

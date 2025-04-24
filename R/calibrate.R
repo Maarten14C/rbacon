@@ -130,8 +130,8 @@ calib.plot <- function(set=get('info'), dets=set$dets, accordion=c(), BCAD=set$B
   age.min <- min(lims)
   age.max <- max(lims)
   if(BCAD) {
-    age.min <- 1950 - age.min
-    age.max <- 1950 - age.max
+    age.min <- rice::calBPtoBCAD(age.min)
+    age.max <- rice::calBPtoBCAD(age.max)
     }
   if(length(age.lab) == 0)
     age.lab <- ifelse(set$BCAD, "BC/AD", paste("cal", set$age.unit, " BP"))
@@ -174,7 +174,7 @@ calib.plot <- function(set=get('info'), dets=set$dets, accordion=c(), BCAD=set$B
       if(length(accordion) == 2)
         d <- stretch(d, accordion[1], accordion[2])
       if(BCAD)
-        cal[,1] <- 1950-cal[,1]
+        cal[,1] <- rice::calBPtoBCAD(cal[,1])
       if((max(cal[,1]) - min(cal[,1])) > 4*agesteps)
         cal <- approx(cal[,1], cal[,2], seq(min(cal[,1]), max(cal[,1]), by=agesteps)) else
           cal <- approx(cal[,1], cal[,2], seq(min(cal[,1]), max(cal[,1]), length=100))

@@ -3,11 +3,11 @@
 #################### user-invisible plot functions ####################
 
 # to plot greyscale/ghost graphs of the age-depth model
-agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, accordion=c(), BCAD=set$BCAD, rotate.axes=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), rgb.scale=c(0,0,0), cutoff=0.001, age.lim) {
+agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, accordion=c(), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), rgb.scale=c(0,0,0), cutoff=0.001, age.lim) {
   if(length(dseq) == 0)
     dseq <- seq(d.min, d.max, length=d.res)
   if(length(age.lim) == 0)
-    age.lim <- range(set$ranges[,2:3]) # added sort April 2025 
+    age.lim <- range(set$ranges[,2:3]) # 95% age ranges
   
   if(set$isplum) # plum has a strange feature with a grey shape appearing
     dseq <- dseq[-1] # at dmin. Thus removing the first depth
@@ -24,8 +24,7 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
  if(length(accordion) == 2)
     dseq <- squeeze(dseq, accordion[1], accordion[2])
 
-  hists <- Bacon.hist(dseq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE)
-  #hists <- get('hists')
+  hists <- Bacon.hist(dseq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE, save.info=FALSE)
   
   scales <- array(0, dim=c(length(dseq), age.res)) # depths vertical/rows, ages horizontal/columns 
   ageseq <- seq(min(age.lim), max(age.lim), length=age.res)
@@ -54,17 +53,26 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
   scales[scales<cutoff] <- NA # so that pixels with probs very close to 0 are not plotted as white but empty
   scales[is.na(scales)] <- 0
 
-  coors <- par("usr")
-  if(rotate.axes) # age horizontal/columns, depths vertical/rows
-    scales <- t(scales) 	
-  if(coors[2] < coors[1]) 
-     scales <- scales[nrow(scales):1,]
-  if(coors[4] < coors[3]) 
-     scales <- scales[,ncol(scales):1]     
-
   if(rotate.axes)
-    image(ageseq, dseq, scales, add=TRUE, col=cols, useRaster=TRUE) else
-      image(dseq, ageseq, scales, add=TRUE, col=cols, useRaster=TRUE)
+    ghost.mirror(ageseq, dseq, t(scales), col=cols) else
+      ghost.mirror(dseq, ageseq, scales, col=cols)
+}
+
+
+
+ghost.mirror <- function(xseq, yseq, z, col) {
+  coors <- par("usr")
+  
+  if(coors[2] < coors[1]) 
+     z <- z[nrow(z):1,]
+  if(coors[4] < coors[3]) 
+     z <- z[,ncol(z):1]
+
+  # ensure regular spacing (even when there are slumps)
+  xseq <- seq(xseq[1], xseq[length(xseq)], length.out=length(xseq))
+  yseq <- seq(yseq[1], yseq[length(yseq)], length.out=length(yseq))
+  
+  image(xseq, yseq, z, add=TRUE, col=col, useRaster=TRUE)
 }
 
 

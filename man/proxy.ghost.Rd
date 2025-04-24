@@ -35,8 +35,7 @@ proxy.ghost(
   age.lab = ifelse(BCAD, "BC/AD", "cal yr BP"),
   yr.lab = age.lab,
   verbose = TRUE,
-  add = FALSE,
-  use.raster = TRUE
+  add = FALSE
 )
 }
 \arguments{
@@ -101,8 +100,6 @@ proxy.ghost(
 \item{verbose}{Provide feedback on what is happening (default \code{verbose=TRUE}).}
 
 \item{add}{Add to an existing graph (default \code{add=FALSE}).}
-
-\item{use.raster}{Sometimes greyscales are plotted with unwarranted 'blocks' or 'lines'. Then try setting \code{use.raster=FALSE}. Defaults to TRUE.}
 }
 \value{
 A grey-scale graph of the proxy against calendar age.

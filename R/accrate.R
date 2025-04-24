@@ -292,7 +292,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
     for(i in 2:length(d)) {
       accs <- acc[[i-1]]
       col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(accs$y[!is.na(accs$y)]), 0, length=rgb.res)) # was acc[[i]]
-      image(accs$x, d[c(i-1, i)], t(1-t(accs$y)), add=TRUE, col=col) # was acc[[i]]
+      ghost.mirror(accs$x, d[c(i-1, i)], t(1-t(accs$y)), col=col) # was acc[[i]]
     }
     if(plot.range) {
       lines(min.rng, d, type="s", col=range.col, lty=range.lty)
@@ -309,7 +309,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
       for(i in 2:length(d)) {
         accs <- acc[[i-1]]
         col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(accs$y[!is.na(accs$y)]), 0, length=rgb.res)) # was acc[[i]]
-        image(d[c(i-1, i)], accs$x, 1-t(accs$y), add=TRUE, col=col, useRaster=TRUE) # was acc[[i]]
+        ghost.mirror(d[c(i-1, i)], accs$x, 1-t(accs$y), col=col) # was acc[[i]]
       }
       if(plot.range) {
         lines(d, min.rng, type="s", col=range.col, lty=range.lty, pch=NA)
@@ -385,7 +385,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
   if(length(age.lim) == 0) 
      age.lim <- extendrange(set$ranges[,5]) # just the mean ages, not the extremes
   if(set$BCAD) # was set$BCAD
-    age.lim <- 1950 - age.lim # work with cal BP internally
+    age.lim <- rice::BCADtocalBP(age.lim) # work with cal BP internally
   age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
     
   if(length(acc.lim) == 0) {
@@ -444,11 +444,11 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
     yaxt <- ifelse(kcal || BCAD, "n", "s")
     plot(0, type="n", ylim=age.lim, ylab=age.lab, xlim=acc.lim, xlab=acc.lab, yaxs=xaxs, xaxs=yaxs, yaxt=yaxt, bty="n")
     if(BCAD)
-      axis(2, pretty(age.lim), labels=1950-pretty(age.lim)) else
+      axis(2, pretty(age.lim), labels=rice::calBPtoBCAD(pretty(age.lim))) else
         if(kcal)
           axis(2, pretty(age.lim), labels=pretty(age.lim)/1e3)
-    image(acc.seq, age.seq, t(z), col=cols, add=TRUE)
-    if(plot.range) {
+    ghost.mirror(acc.seq, age.seq, t(z), col=cols)
+	if(plot.range) {
       lines(acc.rng[,1], age.seq, pch=".", col=range.col, lty=range.lty)
       lines(acc.rng[,2], age.seq, pch=".", col=range.col, lty=range.lty)
     }
@@ -460,10 +460,10 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
       xaxt <- ifelse(kcal || BCAD, "n", "s")
       plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=acc.lim, xaxt=xaxt, ylab=acc.lab, xaxs=xaxs, yaxs=yaxs, bty="n")
       if(BCAD)
-        axis(1, pretty(age.lim), labels=1950-pretty(age.lim)) else
+        axis(1, pretty(age.lim), labels=rice::calBPtoBCAD(pretty(age.lim))) else
         if(kcal)
           axis(1, pretty(age.lim), labels=pretty(age.lim)/1e3)
-      image(age.seq, acc.seq, t(t(z)), col=cols, add=TRUE, useRaster=TRUE)
+      ghost.mirror(age.seq, acc.seq, z, col=cols)
       if(plot.range) {
         lines(age.seq, acc.rng[,1], pch=".", col=range.col, lty=range.lty)
         lines(age.seq, acc.rng[,2], pch=".", col=range.col, lty=range.lty)
@@ -477,6 +477,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
   box(bty=bty)
   invisible(stored)
 }
+
 
 
 #' @name flux.age.ghost
@@ -578,8 +579,8 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr
       plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=flux.lim, ylab=flux.lab, xaxt="n")
   if(BCAD && !set$BCAD) {
     if(rotate.axes)
-      axis(2, pretty(age.lim), labels=1950-pretty(age.lim)) else
-        axis(1, pretty(age.lim), labels=1950-pretty(age.lim))
+      axis(2, pretty(age.lim), labels=rice::calBPtoBCAD(pretty(age.lim))) else
+        axis(1, pretty(age.lim), labels=rice::calBPtoBCAD(pretty(age.lim)))
   } else
       ifelse(rotate.axes, axis(2), axis(1))
 
@@ -600,8 +601,8 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr
       col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3],
         seq(0, max(flux.hist$y[!is.na(flux.hist$y)]), length=rgb.res))
       if(rotate.axes)
-        image(flux.hist$x, age.seq[c(i-1,i)], matrix(flux.hist$y), add=TRUE, col=col, useRaster=TRUE) else
-          image(age.seq[c(i-1,i)], flux.hist$x, t(matrix(flux.hist$y)), add=TRUE, col=col, useRaster=TRUE)
+        ghost.mirror(flux.hist$x, age.seq[c(i-1,i)], matrix(flux.hist$y), col=col) else
+          ghost.mirror(age.seq[c(i-1,i)], flux.hist$x, t(matrix(flux.hist$y)), col=col)
     }
   }
 

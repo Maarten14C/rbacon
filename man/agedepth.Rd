@@ -72,7 +72,6 @@ agedepth(
   hiatus.lty = "12",
   rgb.scale = c(0, 0, 0),
   rgb.res = 100,
-  use.raster = TRUE,
   slump.col = grey(0.8),
   normalise.dists = TRUE,
   same.heights = FALSE,
@@ -268,8 +267,6 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 \item{rgb.scale}{The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}).}
 
 \item{rgb.res}{Resolution of the colour spectrum depicting the age-depth model. Default \code{rgb.res=100}.}
-
-\item{use.raster}{Sometimes greyscales are plotted 'blocky'. Then try setting \code{use.raster=FALSE}. Defaults to TRUE.}
 
 \item{slump.col}{Colour of slumps. Defaults to \code{slump.col=grey(0.8)}.}
 
