@@ -56,7 +56,7 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
          ages <- NA # Feb 2021
 
     if(BCAD)
-      ages <- rice::calBPtoBCAD(ages)
+      ages <- calBPtoBCAD(ages)
     return(c(ages))
 }
 
@@ -86,7 +86,7 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
 Bacon.d.Age <- function(age, set=get("info"), BCAD=set$BCAD, its=set$output, na.rm=FALSE ){
 
   if(BCAD && !set$BCAD) 
-    age <- rice::BCADtocalBP(age)
+    age <- BCADtocalBP(age)
   if(length(age) > 1) 
     stop("Bacon.d.Age can handle one age at a time only", call. = FALSE)
   if(length(its) == 0 ) 

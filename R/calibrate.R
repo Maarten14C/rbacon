@@ -47,7 +47,7 @@
 #' @export
 add.dates <- function(mn, sdev, depth, cc=1, set=get('info'), above=1e-6, postbomb=0, normal=TRUE, delta.R=0, delta.STD=0, t.a=set$t.a, t.b=set$t.b, date.res=100, height=1, calheight=1, agesteps=1, cutoff=0.005, col=rgb(1,0,0,.5), border=rgb(1,0,0,.5), rotate.axes=FALSE, mirror=TRUE, up=TRUE, BCAD=FALSE, pch=4, cc.dir=c()) {
 
-  dists <- rice::draw.dates(mn-delta.R, sqrt(sdev^2+delta.STD^2), depth, cc=cc, postbomb=postbomb, normal=normal, t.a=t.a, t.b=t.b, dist.res=date.res, ex=height, threshold=cutoff, col=col, border=border, draw.hpd=FALSE, rotate.axes=!rotate.axes, mirror=mirror, up=up, cc.dir=cc.dir, add=TRUE, BCAD=BCAD)
+  dists <- draw.dates(mn-delta.R, sqrt(sdev^2+delta.STD^2), depth, cc=cc, postbomb=postbomb, normal=normal, t.a=t.a, t.b=t.b, dist.res=date.res, ex=height, threshold=cutoff, col=col, border=border, draw.hpd=FALSE, rotate.axes=!rotate.axes, mirror=mirror, up=up, cc.dir=cc.dir, add=TRUE, BCAD=BCAD)
 
   if(length(pch) > 0) {
     best <- c()
@@ -130,8 +130,8 @@ calib.plot <- function(set=get('info'), dets=set$dets, accordion=c(), BCAD=set$B
   age.min <- min(lims)
   age.max <- max(lims)
   if(BCAD) {
-    age.min <- rice::calBPtoBCAD(age.min)
-    age.max <- rice::calBPtoBCAD(age.max)
+    age.min <- calBPtoBCAD(age.min)
+    age.max <- calBPtoBCAD(age.max)
     }
   if(length(age.lab) == 0)
     age.lab <- ifelse(set$BCAD, "BC/AD", paste("cal", set$age.unit, " BP"))
@@ -174,7 +174,7 @@ calib.plot <- function(set=get('info'), dets=set$dets, accordion=c(), BCAD=set$B
       if(length(accordion) == 2)
         d <- stretch(d, accordion[1], accordion[2])
       if(BCAD)
-        cal[,1] <- rice::calBPtoBCAD(cal[,1])
+        cal[,1] <- calBPtoBCAD(cal[,1])
       if((max(cal[,1]) - min(cal[,1])) > 4*agesteps)
         cal <- approx(cal[,1], cal[,2], seq(min(cal[,1]), max(cal[,1]), by=agesteps)) else
           cal <- approx(cal[,1], cal[,2], seq(min(cal[,1]), max(cal[,1]), length=100))

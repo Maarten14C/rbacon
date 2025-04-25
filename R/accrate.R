@@ -75,7 +75,7 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
   if(length(ages) == 0)
     ages <- sapply(set$elbows, Bacon.Age.d)
   if(BCAD)
-    ages <- rice::BCADtocalBP(ages)
+    ages <- BCADtocalBP(ages)
 
   if(!silent)
     if(age < min(ages) || age > max(ages))
@@ -385,7 +385,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
   if(length(age.lim) == 0) 
      age.lim <- extendrange(set$ranges[,5]) # just the mean ages, not the extremes
   if(set$BCAD) # was set$BCAD
-    age.lim <- rice::BCADtocalBP(age.lim) # work with cal BP internally
+    age.lim <- BCADtocalBP(age.lim) # work with cal BP internally
   age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
     
   if(length(acc.lim) == 0) {
@@ -444,7 +444,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
     yaxt <- ifelse(kcal || BCAD, "n", "s")
     plot(0, type="n", ylim=age.lim, ylab=age.lab, xlim=acc.lim, xlab=acc.lab, yaxs=xaxs, xaxs=yaxs, yaxt=yaxt, bty="n")
     if(BCAD)
-      axis(2, pretty(age.lim), labels=rice::calBPtoBCAD(pretty(age.lim))) else
+      axis(2, pretty(age.lim), labels=calBPtoBCAD(pretty(age.lim))) else
         if(kcal)
           axis(2, pretty(age.lim), labels=pretty(age.lim)/1e3)
     ghost.mirror(acc.seq, age.seq, t(z), col=cols)
@@ -460,7 +460,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
       xaxt <- ifelse(kcal || BCAD, "n", "s")
       plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=acc.lim, xaxt=xaxt, ylab=acc.lab, xaxs=xaxs, yaxs=yaxs, bty="n")
       if(BCAD)
-        axis(1, pretty(age.lim), labels=rice::calBPtoBCAD(pretty(age.lim))) else
+        axis(1, pretty(age.lim), labels=calBPtoBCAD(pretty(age.lim))) else
         if(kcal)
           axis(1, pretty(age.lim), labels=pretty(age.lim)/1e3)
       ghost.mirror(age.seq, acc.seq, z, col=cols)
@@ -579,8 +579,8 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=200, yr
       plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=flux.lim, ylab=flux.lab, xaxt="n")
   if(BCAD && !set$BCAD) {
     if(rotate.axes)
-      axis(2, pretty(age.lim), labels=rice::calBPtoBCAD(pretty(age.lim))) else
-        axis(1, pretty(age.lim), labels=rice::calBPtoBCAD(pretty(age.lim)))
+      axis(2, pretty(age.lim), labels=calBPtoBCAD(pretty(age.lim))) else
+        axis(1, pretty(age.lim), labels=calBPtoBCAD(pretty(age.lim)))
   } else
       ifelse(rotate.axes, axis(2), axis(1))
 

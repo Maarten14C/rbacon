@@ -217,7 +217,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   if(length(F14C) > 0) {
 	if(min(dets[F14C,2]) < 0 || max(dets[F14C,2]) > 3) 
       stop("The F14C values cannot be negative and are unlikely to be >3. Are you sure these values are in F14C?")		
-    asC14 <- rice::F14CtoC14(dets[F14C,2], dets[F14C,3])
+    asC14 <- F14CtoC14(dets[F14C,2], dets[F14C,3])
 	dets[F14C,2] <- asC14[,1]
 	dets[F14C,3] <- asC14[,2]
     csv.file <- paste0(coredir, core, "/", core, ".csv")
@@ -227,7 +227,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   if(length(pMC) > 0) {
 	if(min(dets[pMC,2]) < 0 || max(dets[pMC,2]) > 300) 
       stop("The pMC values cannot be negative and are unlikely to be >300. Are you sure these values are in pMC?")		
-    asC14 <- rice::pMCtoC14(dets[pMC,2], dets[pMC,3])
+    asC14 <- pMCtoC14(dets[pMC,2], dets[pMC,3])
 	dets[pMC,2] <- asC14[,1]
 	dets[pMC,3] <- asC14[,2]
     csv.file <- paste0(coredir, core, "/", core, ".csv")

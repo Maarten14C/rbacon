@@ -107,9 +107,9 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.
   if(age.rev)
     age.lim <- age.lim[2:1]
   if(BCAD) {
-    age.lim <- rice::calBPtoBCAD(age.lim)
+    age.lim <- calBPtoBCAD(age.lim)
     max.counts <- max.counts[,ncol(max.counts):1]
-    age.seq <- rice::calBPtoBCAD(rev(age.seq))
+    age.seq <- calBPtoBCAD(rev(age.seq))
   }
 
   if(length(proxy.lim) == 0)
@@ -231,7 +231,7 @@ AgesOfEvents <- function(window, move, set=get('info'), plot.steps=FALSE, BCAD=s
   events(min.age, max.age, move, window, outfile, MCMCname, nrow(set$output), set$K, set$elbows[1], set$thick, probfile, nrow(probs))
   probs <- fastread(outfile)
   if(BCAD) {
-    probs[,1] <- rice::calBPtoBCAD(probs[,1])
+    probs[,1] <- calBPtoBCAD(probs[,1])
     o <- order(probs[,1])
     probs <- probs[o,]
   }

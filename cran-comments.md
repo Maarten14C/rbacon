@@ -6,4 +6,4 @@
 
 0 errors | 0 warnings | 0 notes
 
-No revdep issues found with the dependent package 'rplum'
+Any remaining revdep issues found with the dependent package 'rplum' will be resolved by submitting an updated version of 'rplum'
