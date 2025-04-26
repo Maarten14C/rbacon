@@ -1,3 +1,6 @@
+# rbacon 3.4.2
+* adapted `agedepth()`, `draw.pbmodelled()`, `PlotPhiPost()` and `PlotSuppost()` to make rplum plotting more robust. 
+
 # rbacon 3.4.1
 * removed `rice::` mentions to functions called from `rice`, since this could cause warnings in the `rplum` package.
 

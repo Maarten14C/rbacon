@@ -67,10 +67,14 @@ ghost.mirror <- function(xseq, yseq, z, col) {
      z <- z[nrow(z):1,]
   if(coors[4] < coors[3]) 
      z <- z[,ncol(z):1]
+  
+  z <- as.matrix(z)
 
   # ensure regular spacing (even when there are slumps)
   xseq <- seq(xseq[1], xseq[length(xseq)], length.out=length(xseq))
   yseq <- seq(yseq[1], yseq[length(yseq)], length.out=length(yseq))
+  
+  z <<- z; xseq <<- xseq; yseq <<- yseq
   
   image(xseq, yseq, z, add=TRUE, col=col, useRaster=TRUE)
 }
@@ -281,8 +285,8 @@ PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, supp.
   if(length(supp.xlim) == 0)
     supp.xlim <- c(min( set$detsPlum[,4]), max(set$detsPlum[,4]))
 
-  post.mn <- mean(set$ps)
-  post.shape <- post.mn^2 / var(set$ps)
+  post.mn <- mean(unlist(set$ps)) # added unlist April 2025
+  post.shape <- post.mn^2 / var(unlist(set$ps))
 
   if(set$nPs > 1) {
     rng <- array(NA, dim=c(set$nPs, 22)) # 22 is the number of segments to draw. Always???
@@ -333,8 +337,8 @@ PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, supp.
 
 # plot the Supply data (for plum)
 PlotPhiPost <- function(set=get('info'), xlab=paste0("Bq/",expression(m^2)," yr"), ylab="", xaxs="i", yaxs="i", legend=TRUE, yaxt="n", csize=.8, prior.size=.9, panel.size=.9, phi.xlim=c(), phi.ylim=c(), line.col=3, line.width=2, text.col=2, hist.col=grey(0.8), hist.border=grey(0.4)) {
-  post.mn <- mean(set$phi)
-  post.shape <- post.mn^2 / var(set$phi)
+  post.mn <- mean(unlist(set$phi))
+  post.shape <- post.mn^2 / var(unlist(set$phi))
   
   post <- density(set$phi)
   if(length(phi.xlim) == 0)

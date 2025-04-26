@@ -1,3 +1,4 @@
+# adapted agedepth() and draw.pbmodelled(), PlotPhiPost() and PlotSuppost() for rplum 
 
 # Check if we can/should return to using a gamma distribution instead of a uniform one for the hiatus
 
