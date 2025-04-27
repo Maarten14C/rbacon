@@ -82,10 +82,12 @@ ghost.mirror <- function(xseq, yseq, z, col) {
 
 
 # Time series of the log of the posterior
-PlotLogPost <- function(set, from=0, to=set$Tr, xaxs="i", yaxs="i", panel.size=.9, col=grey(0.4))
-  plot(from:(to-1), -set$Us[(from+1):to], type="l",
+PlotLogPost <- function(set, from=0, to=set$Tr, xaxs="i", yaxs="i", panel.size=.9, col=grey(0.4)) {
+  y <- -set$Us[(from+1):to]
+  y[is.infinite(y)] <- NA
+  plot(from:(to-1), y, type="l",
     ylab="Log of Objective", xlab="Iteration", main="", xaxs=xaxs, yaxs=yaxs, col=col, cex.axis=panel.size)
-
+}
 
 
 # plot the prior for the accumulation rate
