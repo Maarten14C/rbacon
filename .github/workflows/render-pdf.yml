@@ -1,4 +1,4 @@
-name: Render Bacon Plot to html
+name: Render Bacon Plot to HTML
 
 on:
   push:
@@ -23,7 +23,6 @@ jobs:
       - name: Install R packages
         run: |
           install.packages(c("rmarkdown", "knitr", "tinytex"), dependencies = TRUE)
-          tinytex::install_tinytex()
         shell: Rscript {0}
 
       - name: Install rbacon (from source in repo or CRAN)
@@ -31,18 +30,18 @@ jobs:
           install.packages(".", repos = NULL, type = "source")
         shell: Rscript {0}
 
-      - name: Render testBaconplots.Rmd to PDF
+      - name: Render testBaconplots.Rmd to HTML
         run: |
           rmarkdown::render("testBaconplots.Rmd", output_format = "html_document")
         shell: Rscript {0}
 
-- name: Debugging: Check available actions
+      - name: Debugging: Check available actions
         run: |
           echo "Available actions:"
           ls -alh /actions/
 
       - name: Upload HTML output
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2  # Changed from v3 to v2
         with:
           name: bacon-html
           path: testBaconplots.html
