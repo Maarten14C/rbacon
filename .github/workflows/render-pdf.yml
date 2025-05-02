@@ -22,7 +22,7 @@ jobs:
 
       - name: Install R packages
         run: |
-          install.packages(c("rmarkdown", "knitr", "tinytex"), dependencies = TRUE)
+          install.packages(c("rmarkdown", "knitr"), dependencies = TRUE)
         shell: Rscript {0}
 
       - name: Install rbacon (from source in repo or CRAN)
