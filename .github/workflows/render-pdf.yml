@@ -2,8 +2,7 @@ name: Render Bacon Plot to PDF
 
 on:
   push:
-    paths:
-      - "testBaconplots.Rmd"
+
   workflow_dispatch:
 
 jobs:
