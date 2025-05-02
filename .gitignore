@@ -2,6 +2,8 @@
 /doc/
 .DS_Store
 /testBaconplots_files/*
+testBaconplots.Rmd
+testBaconplots.html
 
 # GitHub and CI/CD files
 .github/
