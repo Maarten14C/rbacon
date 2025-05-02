@@ -1,0 +1,121 @@
+---
+title: "rbacon plots & image"
+author: "Maarten Blaauw"
+
+---
+
+```{r, results="hide"}
+require(rbacon)
+require(devtools)
+load_all("~/Dropbox/devsoftware/rbacon")
+Bacon(run=FALSE, ask=F, coredir="~/peat/Bacon", ssize=500, BCAD=F)
+agedepth()
+```
+
+```{r, results="hide"}
+agedepth(rotate.axes=TRUE)
+```
+
+```{r, results="hide"}
+agedepth(BCAD=TRUE)
+```
+
+```{r, results="hide"}
+agedepth(rev.d=TRUE)
+```
+
+```{r, results="hide"}
+agedepth(rev.age=TRUE)
+```
+
+```{r, results="hide"}
+agedepth(BCAD=T)
+```
+
+```{r, results="hide"}
+agedepth(BCAD=T, rev.age=T)
+```
+
+```{r, results="hide"}
+agedepth(BCAD=F)
+```
+
+```{r, results="hide"}
+layout(1)
+accrate.depth.ghost()
+```
+
+```{r, results="hide"}
+accrate.depth.ghost(rotate.axes=T)
+```
+
+```{r, results="hide"}
+accrate.depth.ghost(rev.d=T)
+```
+
+```{r, results="hide"}
+accrate.depth.ghost(rev.acc=T)
+```
+
+```{r, results="hide"}
+accrate.depth.ghost(rev.d=T, rev.acc=T)
+```
+
+```{r, results="hide"}
+accrate.depth.ghost(rev.d=T, rev.acc=T, rotate.axes=T)
+```
+
+```{r, results="hide"}
+accrate.age.ghost()
+```
+
+```{r, results="hide"}
+accrate.age.ghost(rotate.axes=T)
+```
+
+```{r, results="hide"}
+accrate.age.ghost(rev.age=T)
+```
+
+```{r, results="hide"}
+accrate.age.ghost(rev.acc=T)
+```
+
+```{r, results="hide"}
+accrate.age.ghost(rev.age=T, rev.acc=T)
+```
+
+```{r, results="hide"}
+accrate.age.ghost(rev.age=T, rev.acc=T, rotate.axes=T)
+```
+
+```{r, results="hide"}
+flux.age.ghost()
+```
+
+```{r, results="hide"}
+flux.age.ghost(rotate.axes=T)
+```
+
+```{r, results="hide"}
+flux.age.ghost(rev.flux=T)
+```
+
+
+```{r, results="hide"}
+flux.age.ghost(rev.age=T)
+```
+
+
+```{r, results="hide"}
+Bacon(slump=c(20,21), ssize=500, coredir="~/peat/Bacon", ask=F)
+```
+
+
+
+
+
+
+
+
+

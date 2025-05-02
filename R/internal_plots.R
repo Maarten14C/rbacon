@@ -4,30 +4,24 @@
 
 # to plot greyscale/ghost graphs of the age-depth model
 agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, accordion=c(), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), rgb.scale=c(0,0,0), cutoff=0.001, age.lim) {
+
   if(length(dseq) == 0)
-    dseq <- seq(d.min, d.max, length=d.res)
+    d.seq <- seq(d.min, d.max, length=d.res)
+  d.lim <- range(d.seq)
+
   if(length(age.lim) == 0)
     age.lim <- range(set$ranges[,2:3]) # 95% age ranges
-  
+  age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
+
   if(set$isplum) # plum has a strange feature with a grey shape appearing
-    dseq <- dseq[-1] # at dmin. Thus removing the first depth
-  if(length(set$slump) > 0) {
-    d.inside <- c()
-    for(i in 1:nrow(set$slump)) {
-      inside <- which(dseq < max(set$slump[i,]))
-      inside <- which(dseq[inside] > min(set$slump[i,]))
-      d.inside <- c(d.inside, inside)
-    }
-  dseq <- dseq[-d.inside]
-  }
+    d.seq <- d.seq[-1] # at dmin. Thus removing the first depth
 
- if(length(accordion) == 2)
-    dseq <- squeeze(dseq, accordion[1], accordion[2])
+ if(length(accordion) == 2) # but will not work with image since constant bins required
+    d.seq <- squeeze(ds.eq, accordion[1], accordion[2])
 
-  hists <- Bacon.hist(dseq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE, save.info=FALSE)
-  
-  scales <- array(0, dim=c(length(dseq), age.res)) # depths vertical/rows, ages horizontal/columns 
-  ageseq <- seq(min(age.lim), max(age.lim), length=age.res)
+  hists <- Bacon.hist(d.seq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE, save.info=FALSE)
+
+  z <- array(0, dim=c(length(d.seq), age.res)) # depths vertical/rows, ages horizontal/columns
   for(i in 1:length(hists)) { # was length(dseq)
   if(length(hists[[i]]) < 7)
       ages <- sort(unlist(hists[[i]])) else {
@@ -35,48 +29,47 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
          ages <- NA else
            ages <- seq(hists[[i]]$th0, hists[[i]]$th1, length=hists[[i]]$n)
        if(length(ages[!is.na(ages)]) > 0)
-        scales[i,] <- approx(ages, hists[[i]]$counts, ageseq, rule=2)$y
+        z[i,] <- approx(ages, hists[[i]]$counts, age.seq, rule=2)$y
      }
   }
   minmax <- hists[[length(hists)]]$min
   maxmax <- hists[[length(hists)]]$max
-  scales <- scales/maxmax # normalise to the height of most precise age estimate
+  z <- z/maxmax # normalise to the height of most precise age estimate
   if(length(dark) == 0)
     dark <- 10 * minmax/maxmax
-  scales[scales > dark] <- dark
-  scales <- scales/max(scales) # May 2021
-  dseq <- sort(dseq)
+  z[z > dark] <- dark
+  z <- z/max(z) # May 2021
+
   if(length(accordion) == 2)
-    dseq <- stretch(dseq, accordion[1], accordion[2]) # careful now!
+    d.seq <- stretch(d.seq, accordion[1], accordion[2]) # careful now!
   cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))
   
-  scales[scales<cutoff] <- NA # so that pixels with probs very close to 0 are not plotted as white but empty
-  scales[is.na(scales)] <- 0
+  z[z<cutoff] <- NA # so that pixels with probs very close to 0 are not plotted as white but empty
+  z[is.na(z)] <- 0
+  
+  if(rev.d)
+    d.lim <- rev(d.lim)
+  if(rev.age)
+    age.lim <- rev(age.lim)
 
   if(rotate.axes)
-    ghost.mirror(ageseq, dseq, t(scales), col=cols) else
-      ghost.mirror(dseq, ageseq, scales, col=cols)
+    ghost.image(age.seq, d.seq, t(z), xlim=age.lim, ylim=d.lim, col=cols, rev.y=rev.d, rev.x=rev.age) else
+      ghost.image(d.seq, age.seq, z, xlim=d.lim, ylim=age.lim, col=cols, rev.x=rev.d, rev.y=rev.age)
 }
 
 
 
-ghost.mirror <- function(xseq, yseq, z, col) {
-  coors <- par("usr")
-  
-  if(coors[2] < coors[1]) 
-     z <- z[nrow(z):1,]
-  if(coors[4] < coors[3]) 
-     z <- z[,ncol(z):1]
-  
-  z <- as.matrix(z)
+ghost.image <- function(xseq, yseq, z, col, xlim, ylim, rev.x=FALSE, rev.y=FALSE) {
 
   # ensure regular spacing (even when there are slumps)
   xseq <- seq(xseq[1], xseq[length(xseq)], length.out=length(xseq))
   yseq <- seq(yseq[1], yseq[length(yseq)], length.out=length(yseq))
-  
-  z <<- z; xseq <<- xseq; yseq <<- yseq
-  
-  image(xseq, yseq, z, add=TRUE, col=col, useRaster=TRUE)
+
+#  message("\nxseq: ", xseq[1], " to ", xseq[length(xseq)], ", length ", length(xseq), ", yseq: ", yseq[1], " to ", yseq[2], ", length ", length(yseq))
+#  message("xlim: ", xlim[1], " to ", xlim[2], ", ylim: ", ylim[1], " to ", ylim[2])
+#  message("z: nrow ", nrow(z), ", ncol ", ncol(z))
+
+  image(xseq, yseq, z, xlim=xlim, ylim=ylim, add=TRUE, col=col, useRaster=TRUE)
 }
 
 
