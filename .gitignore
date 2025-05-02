@@ -2,6 +2,7 @@
 /doc/
 .DS_Store
 /testBaconplots_files/
+/testBaconplots_files/figure-html/
 
 # GitHub and CI/CD files
 .github/
