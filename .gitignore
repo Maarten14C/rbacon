@@ -1,8 +1,8 @@
 /Meta/
 /doc/
 .DS_Store
-/testBaconplots_files/
-/testBaconplots_files/figure-html/
+/testBaconplots_files/*
 
 # GitHub and CI/CD files
 .github/
+Bacon_runs

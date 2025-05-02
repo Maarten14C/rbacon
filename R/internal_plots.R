@@ -69,6 +69,20 @@ ghost.image <- function(xseq, yseq, z, col, xlim, ylim, rev.x=FALSE, rev.y=FALSE
 #  message("xlim: ", xlim[1], " to ", xlim[2], ", ylim: ", ylim[1], " to ", ylim[2])
 #  message("z: nrow ", nrow(z), ", ncol ", ncol(z))
 
+# useRaster=F results in more consistent orientation of image when rev.y
+# but useRaster=T results in more coherent greyscales
+
+# image() assumes that rows of z match increasing y values
+# 	The lowest row on the plot corresponds to the smallest value in y
+# 	So to match printed matrices visually, flip the rows of z or reverse y
+# coors <- par("usr")[3:4]...
+
+  if(rev.y) # reverse axis
+    z <- z[,ncol(z):1] # should logically really be nrow, but image rotates z
+  
+  if(rev.x)
+	  z <- z[nrow(z):1,]
+
   image(xseq, yseq, z, xlim=xlim, ylim=ylim, add=TRUE, col=col, useRaster=TRUE)
 }
 
