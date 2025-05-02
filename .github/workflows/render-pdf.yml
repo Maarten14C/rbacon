@@ -36,6 +36,11 @@ jobs:
           rmarkdown::render("testBaconplots.Rmd", output_format = "html_document")
         shell: Rscript {0}
 
+- name: Debugging: Check available actions
+        run: |
+          echo "Available actions:"
+          ls -alh /actions/
+
       - name: Upload HTML output
         uses: actions/upload-artifact@v2
         with:
