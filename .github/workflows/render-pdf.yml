@@ -15,10 +15,13 @@ jobs:
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
 
+      - name: Setup pandoc
+        uses: r-lib/actions/setup-pandoc@v2		
+
       - name: Install system dependencies for HTML rendering
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev libpng-dev
 
       - name: Install R packages
         run: |
