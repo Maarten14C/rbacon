@@ -7,3 +7,25 @@ testBaconplots.html
 
 # GitHub and CI/CD files
 Bacon_runs
+
+# OS-specific compilation files
+*.o
+*.so
+*.dll
+*.a
+
+# R package check/build dirs
+.Rcheck/
+src/*.o
+src/*.so
+src/*.dll
+src/*.a
+libs/
+
+# R package build artifacts
+.Rbuildignore
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.tar.gz
