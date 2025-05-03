@@ -21,7 +21,7 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
 
   hists <- Bacon.hist(d.seq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE, save.info=FALSE)
 
-  z <- array(0, dim=c(length(d.seq), age.res)) # depths vertical/rows, ages horizontal/columns
+  z <- array(0, dim=c(age.res, length(d.seq))) # ages in rows, depths in columns
   for(i in 1:length(hists)) { # was length(dseq)
   if(length(hists[[i]]) < 7)
       ages <- sort(unlist(hists[[i]])) else {
@@ -29,9 +29,10 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
          ages <- NA else
            ages <- seq(hists[[i]]$th0, hists[[i]]$th1, length=hists[[i]]$n)
        if(length(ages[!is.na(ages)]) > 0)
-        z[i,] <- approx(ages, hists[[i]]$counts, age.seq, rule=2)$y
+        z[,i] <- approx(ages, hists[[i]]$counts, age.seq, rule=2)$y
      }
   }
+  z <- z[nrow(z):1,] # images are calculated from bottom up
   minmax <- hists[[length(hists)]]$min
   maxmax <- hists[[length(hists)]]$max
   z <- z/maxmax # normalise to the height of most precise age estimate
@@ -39,51 +40,45 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
     dark <- 10 * minmax/maxmax
   z[z > dark] <- dark
   z <- z/max(z) # May 2021
-
+  z[z<cutoff] <- NA # do not plot pixels with probs very close to 0
+  z[is.na(z)] <- 0
+  
   if(length(accordion) == 2)
     d.seq <- stretch(d.seq, accordion[1], accordion[2]) # careful now!
   cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))
   
-  z[z<cutoff] <- NA # so that pixels with probs very close to 0 are not plotted as white but empty
-  z[is.na(z)] <- 0
-  
   if(rev.d)
-    d.lim <- rev(d.lim)
+    d.seq <- rev(d.seq)
   if(rev.age)
-    age.lim <- rev(age.lim)
-
+    age.seq <- rev(age.seq)
+  if(BCAD)
+     z <- z[nrow(z):1,]
   if(rotate.axes)
-    ghost.image(age.seq, d.seq, t(z), xlim=age.lim, ylim=d.lim, col=cols, rev.y=rev.d, rev.x=rev.age) else
-      ghost.image(d.seq, age.seq, z, xlim=d.lim, ylim=age.lim, col=cols, rev.x=rev.d, rev.y=rev.age)
+     z <- z[nrow(z):1,]
+	
+  if(rotate.axes)
+    ghost.image(age.seq, d.seq, t(z), col=cols, rev.y=rev.d, rev.x=rev.age, to.one=FALSE) else
+      ghost.image(d.seq, age.seq, z, col=cols, rev.x=rev.d, rev.y=rev.age, to.one=FALSE)
 }
 
 
 
-ghost.image <- function(xseq, yseq, z, col, xlim, ylim, rev.x=FALSE, rev.y=FALSE) {
-
+ghost.image <- function(xseq, yseq, z, col, rev.x=FALSE, rev.y=FALSE, to.one=TRUE) {
   # ensure regular spacing (even when there are slumps)
   xseq <- seq(xseq[1], xseq[length(xseq)], length.out=length(xseq))
   yseq <- seq(yseq[1], yseq[length(yseq)], length.out=length(yseq))
 
-#  message("\nxseq: ", xseq[1], " to ", xseq[length(xseq)], ", length ", length(xseq), ", yseq: ", yseq[1], " to ", yseq[2], ", length ", length(yseq))
-#  message("xlim: ", xlim[1], " to ", xlim[2], ", ylim: ", ylim[1], " to ", ylim[2])
-#  message("z: nrow ", nrow(z), ", ncol ", ncol(z))
+  if(rev.x) # flip x 
+    z <- z[,ncol(z):1]
+  if(rev.y) # flip y 
+    z <- z[nrow(z):1,] 
+  if(to.one) # then scale to 0 - 1
+    z <- (z - min(z)) / (max(z) - min(z))
 
-# useRaster=F results in more consistent orientation of image when rev.y
-# but useRaster=T results in more coherent greyscales
-
-# image() assumes that rows of z match increasing y values
-# 	The lowest row on the plot corresponds to the smallest value in y
-# 	So to match printed matrices visually, flip the rows of z or reverse y
-# coors <- par("usr")[3:4]...
-
-  if(rev.y) # reverse axis
-    z <- z[,ncol(z):1] # should logically really be nrow, but image rotates z
+  z_cols <- col[as.numeric(cut(z, breaks = 100))] 	  
+  img <- matrix(z_cols, nrow=length(xseq), ncol=length(yseq)) # not ncol/nrow?
   
-  if(rev.x)
-	  z <- z[nrow(z):1,]
-
-  image(xseq, yseq, z, xlim=xlim, ylim=ylim, add=TRUE, col=col, useRaster=TRUE)
+  rasterImage(as.raster(img), min(xseq), min(yseq), max(xseq), max(yseq))
 }
 
 
