@@ -32,7 +32,7 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
         z[,i] <- approx(ages, hists[[i]]$counts, age.seq, rule=2)$y
      }
   }
-  z <- z[nrow(z):1,] # images are calculated from bottom up
+  z <- z[nrow(z):1,] # images are drawn as bitmaps from bottom left up
   minmax <- hists[[length(hists)]]$min
   maxmax <- hists[[length(hists)]]$max
   z <- z/maxmax # normalise to the height of most precise age estimate
@@ -45,7 +45,6 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
   
   if(length(accordion) == 2)
     d.seq <- stretch(d.seq, accordion[1], accordion[2]) # careful now!
-  cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))
   
   if(rev.d)
     d.seq <- rev(d.seq)
@@ -55,15 +54,17 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
      z <- z[nrow(z):1,]
   if(rotate.axes)
      z <- z[nrow(z):1,]
+
+  cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))
 	
   if(rotate.axes)
-    ghost.image(age.seq, d.seq, t(z), col=cols, rev.y=rev.d, rev.x=rev.age, to.one=FALSE) else
-      ghost.image(d.seq, age.seq, z, col=cols, rev.x=rev.d, rev.y=rev.age, to.one=FALSE)
+    ghost.image(age.seq, d.seq, t(z), col=cols, rev.y=rev.d, rev.x=rev.age) else
+      ghost.image(d.seq, age.seq, z, col=cols, rev.x=rev.d, rev.y=rev.age)
 }
 
 
 
-ghost.image <- function(xseq, yseq, z, col, rev.x=FALSE, rev.y=FALSE, to.one=TRUE) {
+ghost.image <- function(xseq, yseq, z, col, rev.x=FALSE, rev.y=FALSE, to.one=FALSE) {
   # ensure regular spacing (even when there are slumps)
   xseq <- seq(xseq[1], xseq[length(xseq)], length.out=length(xseq))
   yseq <- seq(yseq[1], yseq[length(yseq)], length.out=length(yseq))
@@ -77,7 +78,6 @@ ghost.image <- function(xseq, yseq, z, col, rev.x=FALSE, rev.y=FALSE, to.one=TRU
 
   z_cols <- col[as.numeric(cut(z, breaks = 100))] 	  
   img <- matrix(z_cols, nrow=length(xseq), ncol=length(yseq)) # not ncol/nrow?
-  
   rasterImage(as.raster(img), min(xseq), min(yseq), max(xseq), max(yseq))
 }
 

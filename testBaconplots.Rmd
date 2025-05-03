@@ -37,7 +37,6 @@ agedepth(rev.age=TRUE)
 agedepth(rev.d=TRUE, rev.age=TRUE)
 ```
 
-
 ```{r, results="hide"}
 agedepth(rotate.axes=TRUE, rev.d=TRUE, rev.age=TRUE)
 ```
@@ -52,6 +51,10 @@ agedepth(BCAD=T, rev.age=T)
 
 ```{r, results="hide"}
 agedepth(BCAD=F)
+```
+
+```{r, results="hide"}
+proxy.ghost()
 ```
 
 ```{r, results="hide"}

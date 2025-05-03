@@ -292,8 +292,13 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
     plot(0, type="n", xlab=acc.lab, ylab=d.lab, ylim=d.lim, xlim=acc.lim, bty="n", xaxs=xaxs, yaxs=yaxs)
     for(i in 2:length(d)) {
       accs <- acc[[i-1]]
-      col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(accs$y[!is.na(accs$y)]), 0, length=rgb.res)) # was acc[[i]]
-      image(accs$x, d[c(i-1, i)], 1-t(t(accs$y)), col=col, add=TRUE, useRaster=use.raster)
+      z <- 1-t(accs$y)
+      if(rev.acc)
+        z <- rev(z)
+      col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(accs$y[!is.na(accs$y)]), 0, length=rgb.res))
+      z_cols <- col[as.numeric(cut(z, breaks = 100))] 	  
+      img <- matrix(z_cols, ncol=2, nrow=length(accs$y))
+      rasterImage(as.raster(t(img)), min(accs$x), d[i-1], max(accs$x), d[i])
     }
     if(plot.range)
       for(i in 2:(length(d))) {
@@ -318,9 +323,13 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
       plot(0, type="n", xlab=d.lab, ylab=acc.lab, xlim=d.lim, ylim=acc.lim, bty="n", xaxs=xaxs, yaxs=yaxs)
       for(i in 2:length(d)) {
         accs <- acc[[i-1]]
+        z <- rev(1-t(accs$y))
+        if(rev.acc)
+	      z <- rev(z)
         col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(accs$y[!is.na(accs$y)]), 0, length=rgb.res))
-
-       image(d[c(i-1, i)], accs$x, 1-t(accs$y), col=col, add=TRUE, useRaster=use.raster)
+	    z_cols <- col[as.numeric(cut(z, breaks = 100))] 	  
+	    img <- matrix(z_cols, ncol=2, nrow=length(accs$y))
+	    rasterImage(as.raster(img), d[i-1], min(accs$x), d[i], max(accs$x))
       }
       if(plot.range) {
         lines(d, min.rng, type="s", col=range.col, lty=range.lty, pch=NA)
@@ -407,7 +416,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
   }  
   acc.seq <- seq(min(acc.lim, na.rm=TRUE), max(acc.lim, na.rm=TRUE), length=acc.res)
   
-  z <- array(0, dim=c(age.res, acc.res))
+  z <- array(0, dim=c(acc.res, age.res)) # accs in rows, ages in columns
   acc.rng <- array(NA, dim=c(age.res, 2))
   acc.mean <- rep(NA, age.res); acc.median <- acc.mean
 
@@ -422,29 +431,40 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
     acc <- accrate.age(age.seq[i], cmyr=cmyr, ages=ages, silent=TRUE, BCAD=FALSE)
     acc <- acc[!is.na(acc)]
     if(length(acc[!is.na(acc)]) > 1) {
-      z[i,] <- density(acc, from=min(acc.lim, na.rm=TRUE), to=max(acc.lim, na.rm=TRUE), n=acc.res)$y
+      z[,i] <- density(acc, from=min(acc.lim, na.rm=TRUE), to=max(acc.lim, na.rm=TRUE), n=acc.res)$y
       acc.rng[i,] <- quantile(acc, c((1-prob)/2, 1-((1-prob)/2)))
       acc.mean[i] <- mean(acc)
       acc.median[i] <- median(acc)
     }
   }
-  message("\n")
+  message("") # prints a newline
   stored <- cbind(age.seq, acc.rng[,1], acc.rng[,2], acc.median, acc.mean)
   colnames(stored) <- c("ages", "min.rng", "max.rng", "median", "mean")
 
+  z <- z[nrow(z):1,] # images are drawn as bitmaps from bottom left up
   z <- z/(dark*max(z)) # normalise, set dark to black
   z[z>1] <- 1 # avoid values > 1
-  z[z<cutoff] <- NA # do not plot very small/light greyscale values
+  z[z<cutoff] <- NA # do not plot very small/light greyscale values  	
 
+  if(rev.acc) {
+    acc.lim <- rev(acc.lim)  
+    acc.seq <- rev(acc.seq)
+	z <- z[nrow(z):1,]
+  }
   if(rev.age) {
     age.lim <- rev(age.lim)
-    #z <- z[nrow(z):1,]
+    age.seq <- rev(age.seq)
+	#z <- z[,ncol(z):1]
   }
-  if(rev.acc) {
-    acc.lim <- rev(acc.lim)
-    #z <- z[,ncol(z):1]
-  }
-    
+  if(BCAD)
+     z <- z[nrow(z):1,]
+  if(rotate.axes)
+     z <- t(z)
+
+  cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))	
+  z_cols <- cols[as.numeric(cut(z, breaks = 100))]  
+  img <- matrix(z_cols, nrow=acc.res, ncol=age.res)
+
   if(length(age.lab) == 0)
     if(BCAD)
       age.lab <- "BC/AD" else
@@ -454,8 +474,6 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
       acc.lab <- paste0("accumulation rate (", set$depth.unit, "/", set$age.unit, ")") else
         acc.lab <- paste0("accumulation rate (", set$age.unit, "/", set$depth.unit, ")")
 
-  cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0, 1, length=rgb.res))
-
   if(rotate.axes) {
     yaxt <- ifelse(kcal || BCAD, "n", "s")
     plot(0, type="n", ylim=age.lim, ylab=age.lab, xlim=acc.lim, xlab=acc.lab, yaxs=xaxs, xaxs=yaxs, yaxt=yaxt, bty="n")
@@ -463,7 +481,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
       axis(2, pretty(age.lim), labels=calBPtoBCAD(pretty(age.lim))) else
         if(kcal)
           axis(2, pretty(age.lim), labels=pretty(age.lim)/1e3)
-    ghost.image(acc.seq, age.seq, t(z), xlim=acc.lim, ylim=age.lim, col=cols, rev.y=rev.age, rev.x=rev.acc)
+  	rasterImage(as.raster(img), min(age.seq), min(acc.seq), max(age.seq), max(acc.seq))	
     if(plot.range) {
       lines(acc.rng[,1], age.seq, pch=".", col=range.col, lty=range.lty)
       lines(acc.rng[,2], age.seq, pch=".", col=range.col, lty=range.lty)
@@ -479,7 +497,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
         axis(1, pretty(age.lim), labels=calBPtoBCAD(pretty(age.lim))) else
         if(kcal)
           axis(1, pretty(age.lim), labels=pretty(age.lim)/1e3)
-      ghost.image(age.seq, acc.seq, z, xlim=age.lim, ylim=acc.lim, col=cols, rev.x=rev.age, rev.y=rev.acc)
+	  rasterImage(as.raster(img), min(age.seq), min(acc.seq), max(age.seq), max(acc.seq))	
 
       if(plot.range) {
         lines(age.seq, acc.rng[,1], pch=".", col=range.col, lty=range.lty)
@@ -566,9 +584,10 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=400, yr
 
   age.seq <- seq(min(min.age, max.age), max(min.age, max.age), length=age.res)
 
+  pb <- txtProgressBar(min=0, max=max(1,length(age.seq)-1), style = 3)
   fluxes <- array(NA, dim=c(nrow(set$output), length(age.seq)))
   for(i in 1:nrow(set$output)) {
-    #setTxtProgressBar(pb, i)
+    setTxtProgressBar(pb, i)
     ages <- as.numeric(set$output[i,1:(ncol(set$output)-1)]) # 1st step to calculate ages for each set$elbows
     ages <- c(ages[1], ages[1]+set$thick * cumsum(ages[2:length(ages)])) # now calculate the ages for each set$elbows
     ages.d <- approx(ages, c(set$elbows, max(set$elbows)+set$thick), age.seq, rule=1)$y # find the depth belonging to each age.seq, NA if none
@@ -577,7 +596,8 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=400, yr
     fluxes[i,] <- flux.d / as.numeric(set$output[i,(1+ages.i)]) # (amount / cm^3) / (yr/cm) = amount * cm-2 * yr-1
     fluxes[is.na(fluxes)] <- 0
   }
-  #message("\n")
+  
+  message("") # print newline
   if(length(flux.lim) == 0)
     flux.lim <- c(0, quantile(fluxes[!is.na(fluxes)], upper))
   if(rev.flux)
@@ -608,6 +628,7 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=400, yr
 
   min.rng <- numeric(length(age.seq)); max.rng <- numeric(length(age.seq)); mean.rng <- numeric(length(age.seq)); median.rng <- numeric(length(age.seq))
   for(i in 2:length(age.seq)) {
+    setTxtProgressBar(pb, i)  
     tmp <- fluxes[!is.na(fluxes[,i]),i] # all fluxes that fall at the required age.seq age
     rng <- quantile(tmp, c((1-prob)/2, 1-((1-prob)/2)))
     min.rng[i] <- rng[1]
@@ -621,16 +642,27 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=400, yr
       z <- z / (dark*max.dens) # normalise
       z[z > 1] <- 1 # no values > 1
       z[z < cutoff] <- NA # do not plot very small/light greyscale values
+      z <- z[length(z):1]
+	  
+      if(rev.flux)
+        z <- rev(z)
 
       col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3],
         seq(0, max(z[!is.na(z)]), length=rgb.res))
       age.rng <- age.seq[c(i-1,i)]
 
+	  z_cols <- col[as.numeric(cut(z, breaks = 100))]  
+	  img <- matrix(z_cols, nrow=length(x), ncol=age.res)
+
+	  rasterImage(as.raster(img), min(age.rng), min(x), max(age.rng), max(x))	
+
       if(rotate.axes)
-        ghost.image(x, age.rng, cbind(z), xlim=flux.lim, ylim=age.lim, col=col) else
-          ghost.image(age.rng, x, rbind(z), xlim=age.lim, ylim=flux.lim, col=col)
+        rasterImage(as.raster(t(img)), min(x), min(age.rng), max(x), max(age.rng)) else
+	      rasterImage(as.raster(img), min(age.rng), min(x), max(age.rng), max(x))	
     }
   }
+
+  message("")
 
   if(plot.range)
     if(rotate.axes) {
