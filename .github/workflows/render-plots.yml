@@ -82,29 +82,27 @@ jobs:
           gcc \
           tar
 
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Install R packages
-      run: |
-        mkdir -p "${R_LIBS_USER}"
-        Rscript -e 'install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), repos="https://cloud.r-project.org", dependencies=TRUE)'
+      - name: Install R packages
+        run: |
+          mkdir -p "${R_LIBS_USER}"
+          Rscript -e 'install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), repos="https://cloud.r-project.org", dependencies=TRUE)'
 
-    - name: Install rbacon from source
-      run: |
-        Rscript -e 'install.packages(".", repos = NULL, type = "source")'
+      - name: Install rbacon from source
+        run: |
+          Rscript -e 'install.packages(".", repos = NULL, type = "source")'
 
-    - name: Render HTML from Rmd
-      run: |
-        Rscript -e 'rmarkdown::render("testBaconplots.Rmd", output_format = "html_document", output_file = "testBaconplots_fedora.html")'
+      - name: Render HTML from Rmd
+        run: |
+          Rscript -e 'rmarkdown::render("testBaconplots.Rmd", output_format = "html_document", output_file = "testBaconplots_fedora.html")'
 
-    - name: Upload rendered HTML
-      uses: actions/upload-artifact@v4
-      with:
-        name: bacon-html-fedora
-        path: testBaconplots_fedora.html
-  
-
+      - name: Upload rendered HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: bacon-html-fedora
+          path: testBaconplots_fedora.html
   
   render-html-windows:
     runs-on: windows-latest
