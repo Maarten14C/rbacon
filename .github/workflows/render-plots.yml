@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bacon-html-ubuntu
-          path: testBaconplots.html
+          path: testBaconplots_ubuntu.html
 
   render-html-fedora:
     runs-on: ubuntu-latest
@@ -62,15 +62,26 @@ jobs:
       image: fedora:latest  # This pulls the latest Fedora Docker image
 
     steps:
-      - name: Install system dependencies
+      - name: Install system dependencies and R
         run: |
           dnf -y update
-          dnf -y install R R-devel pandoc curl libcurl-devel openssl-devel libxml2-devel libpng-devel git
+          dnf -y install \
+            R \
+            R-devel \
+            pandoc \
+            libcurl-devel \
+            openssl-devel \
+            libxml2-devel \
+            libpng-devel \
+            git \
+            make \
+            gcc \
+            tar
 
       - name: Set up R_LIBS_USER
         run: echo "R_LIBS_USER=${HOME}/R/library" >> $GITHUB_ENV
 
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Install R packages
@@ -78,19 +89,19 @@ jobs:
           mkdir -p "${R_LIBS_USER}"
           Rscript -e 'install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), repos="https://cloud.r-project.org", dependencies=TRUE)'
 
-      - name: Install rbacon
+      - name: Install rbacon from source
         run: |
           Rscript -e 'install.packages(".", repos = NULL, type = "source")'
 
-      - name: Render RMarkdown
+      - name: Render HTML from Rmd
         run: |
           Rscript -e 'rmarkdown::render("testBaconplots.Rmd", output_format = "html_document")'
 
-      - name: Upload HTML output
+      - name: Upload rendered HTML
         uses: actions/upload-artifact@v4
         with:
           name: bacon-html-fedora
-          path: testBaconplots.html
+          path: testBaconplots_fedora.html
   
   render-html-windows:
     runs-on: windows-latest
@@ -132,6 +143,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bacon-html-windows
-          path: testBaconplots.html
+          path: testBaconplots_windows.html
 
 
