@@ -69,7 +69,7 @@ jobs:
         run: |
           dnf -y install \
             R-core \
-			R-devel \
+            R-devel \
             pandoc \
             wget \
             libcurl-devel \
