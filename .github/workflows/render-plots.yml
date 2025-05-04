@@ -67,19 +67,16 @@ jobs:
     steps:
       - name: Install system dependencies and R
         run: |
-          dnf -y update
           dnf -y install \
-          R \
-          R-devel \
-          pandoc \
-          libcurl-devel \
-          openssl-devel \
-          libxml2-devel \
-          libpng-devel \
-          git \
-          make \
-          gcc \
-          tar
+            pandoc \
+            pandoc-citeproc \
+            wget \
+            libcurl-devel \
+            openssl-devel \
+            libxml2-devel \
+            tar \
+            make \
+            gcc
 
       - name: Checkout repository
         uses: actions/checkout@v3
