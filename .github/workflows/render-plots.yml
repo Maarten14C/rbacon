@@ -82,6 +82,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install R package dependencies
+        run: |
+          install.packages(c("fs", "sass", "bslib", "rmarkdown", "systemfonts", "textshaping", "stringi", "httpuv", "shiny"))
+        shell: Rscript {0}
+
       - name: Install R packages
         run: |
             mkdir -p "${HOME}/R/library"
@@ -106,7 +111,9 @@ jobs:
         with:
           name: bacon-html-fedora
           path: testBaconplots_fedora.html
-  
+
+
+ 
   render-html-windows:
     if: false  
     runs-on: windows-latest
