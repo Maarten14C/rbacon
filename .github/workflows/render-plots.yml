@@ -56,6 +56,43 @@ jobs:
           name: bacon-html-ubuntu
           path: testBaconplots.html
 
+jobs:
+  render-html-fedora:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest  # This pulls the latest Fedora Docker image
+
+    steps:
+      - name: Install system dependencies
+        run: |
+          dnf -y update
+          dnf -y install R R-devel pandoc curl libcurl-devel openssl-devel libxml2-devel libpng-devel git
+
+      - name: Set up R_LIBS_USER
+        run: echo "R_LIBS_USER=${HOME}/R/library" >> $GITHUB_ENV
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install R packages
+        run: |
+          mkdir -p "${R_LIBS_USER}"
+          Rscript -e 'install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), repos="https://cloud.r-project.org", dependencies=TRUE)'
+
+      - name: Install rbacon
+        run: |
+          Rscript -e 'install.packages(".", repos = NULL, type = "source")'
+
+      - name: Render RMarkdown
+        run: |
+          Rscript -e 'rmarkdown::render("testBaconplots.Rmd", output_format = "html_document")'
+
+      - name: Upload HTML output
+        uses: actions/upload-artifact@v4
+        with:
+          name: bacon-html-fedora
+          path: testBaconplots.html
+  
   render-html-windows:
     runs-on: windows-latest
 
@@ -97,3 +134,5 @@ jobs:
         with:
           name: bacon-html-windows
           path: testBaconplots.html
+
+
