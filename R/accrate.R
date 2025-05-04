@@ -663,14 +663,7 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=400, yr
         seq(0, max(z[!is.na(z)]), length=rgb.res))
       age.rng <- age.seq[c(i-1,i)]
 
-	  z_cols <- col[as.numeric(cut(z, breaks = 100))]  
-	  img <- matrix(z_cols, nrow=length(x), ncol=age.res)
-
-	#  rasterImage(as.raster(img), min(age.rng), min(x), max(age.rng), max(x))	
-
       if(rotate.axes)
-     #   rasterImage(as.raster(t(img)), min(x), min(age.rng), max(x), max(age.rng)) else
-	 #     rasterImage(as.raster(img), min(age.rng), min(x), max(age.rng), max(x))
         image(flux.hist$x, age.seq[c(i-1, i)], matrix(flux.hist$y), add=TRUE, col=col) else
           image(age.seq[c(i-1, i)], flux.hist$x, t(matrix(flux.hist$y)), add=TRUE, col=col)	  
     }
