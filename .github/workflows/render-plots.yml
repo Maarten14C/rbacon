@@ -45,9 +45,9 @@ jobs:
           install.packages(".", repos = NULL, type = "source")
         shell: Rscript {0}
 
-      - name: Render testBaconplots_ubuntu.Rmd to HTML
+      - name: Render testBaconplots.Rmd to HTML
         run: |
-          rmarkdown::render("testBaconplots_ubuntu.Rmd", output_format = "html_document")
+          rmarkdown::render("testBaconplots.Rmd", output_format = "html_document", , output_file = "testBaconplots_ubuntu.html")
         shell: Rscript {0}
 
       - name: Upload HTML output
@@ -95,7 +95,7 @@ jobs:
 
       - name: Render HTML from Rmd
         run: |
-          Rscript -e 'rmarkdown::render("testBaconplots_fedora.Rmd", output_format = "html_document")'
+          Rscript -e 'rmarkdown::render("testBaconplots.Rmd", output_format = "html_document", output_file = "testBaconplots_fedora.html")'
 
       - name: Upload rendered HTML
         uses: actions/upload-artifact@v4
@@ -136,7 +136,7 @@ jobs:
 
       - name: Render testBaconplots_windows.Rmd to HTML
         run: |
-          rmarkdown::render("testBaconplots_windows.Rmd", output_format = "html_document")
+          rmarkdown::render("testBaconplots.Rmd", output_format = "html_document", output_file = "testBaconplots_windows.html")
         shell: Rscript {0}
 
       - name: Upload HTML output
