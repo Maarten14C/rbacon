@@ -86,10 +86,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install R packages
-        run: |
-          mkdir -p "${R_LIBS_USER}"
-          Rscript -e '.libPaths(Sys.getenv("R_LIBS_USER")); install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), repos="https://cloud.r-project.org", dependencies=TRUE)'
+	  - name: Install R packages
+	    run: |
+	      mkdir -p "${HOME}/R/library"
+	      Rscript -e 'install.packages(c("htmlwidgets", "maps", "usethis", "fs", "miniUI", "pkgdown", "pkgload", "profvis", "roxygen2", "testthat"), repos = "https://cloud.r-project.org")'
+	      Rscript -e 'install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), repos = "https://cloud.r-project.org", dependencies = TRUE)'
+
 
       - name: Check if rmarkdown is installed
         run: |
