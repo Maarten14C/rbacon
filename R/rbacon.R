@@ -1,3 +1,5 @@
+# in the inst/dev/ folder, there is now a testBaconplots.Rmd function which automates plotting and checking many functions. There is also a file render-plots.yml which can be used to test many plots on a range of github systems (ubuntu, fedora and windows). Produced html files can be downloaded and checked locally. To do this, the file has to be placed in .github/workflows/.
+
 # Check if we can/should return to using a gamma distribution instead of a uniform one for the hiatus
 
 # make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths

@@ -16,7 +16,7 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
     d.seq <- d.seq[-1] # at dmin. Thus removing the first depth
 
  if(length(accordion) == 2) # but will not work with image since constant bins required
-    d.seq <- squeeze(ds.eq, accordion[1], accordion[2])
+    d.seq <- squeeze(d.seq, accordion[1], accordion[2])
 
   hists <- Bacon.hist(d.seq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE, save.info=FALSE)
 
@@ -81,38 +81,39 @@ deviceIsQuartz <- function() {
 }
 
 
-# not working as consistently across systems as I'd like, so not using for now
-ghost.image <- function(xseq, yseq, z, col, rev.x=FALSE, rev.y=FALSE, to.one=FALSE) {
-  # ensure regular spacing (even when there are slumps)
-  xseq <- seq(xseq[1], xseq[length(xseq)], length.out=length(xseq))
-  yseq <- seq(yseq[1], yseq[length(yseq)], length.out=length(yseq))
 
-  if(rev.x) # flip x 
-    z <- z[,ncol(z):1]
-  if(rev.y) # flip y 
-    z <- z[nrow(z):1,] 
-  if(to.one) # then scale to 0 - 1
-    z <- (z - min(z)) / (max(z) - min(z))
-
-  usr <- par("usr")
-  xscale <- usr[1:2]
-  yscale <- usr[3:4]
-  
-  xmid <- mean(range(xseq))
-    ymid <- mean(range(yseq))
-    w <- diff(range(xseq)) / diff(xscale)
-    h <- diff(range(yseq)) / diff(yscale)
-	
-  z_cols <- col[as.numeric(cut(z, breaks = 100))] 	  
-  img <- matrix(z_cols, nrow=length(xseq), ncol=length(yseq)) # not ncol/nrow?
-  rasterImage(as.raster(img), min(xseq), min(yseq), max(xseq), max(yseq))
-  #grid::grid.raster(as.raster(img), 
-  #  x = grid::unit(mean(range(xseq)), "native"),
-  #  y = grid::unit(mean(range(yseq)), "native"),
-  #  width = grid::unit(diff(range(xseq)), "native"),
-  #  height = grid::unit(diff(range(yseq)), "native"),
-  #  interpolate = FALSE, default.units = "native")
-}
+# # not working as consistently across systems as I'd like, so not using for now
+# ghost.image <- function(xseq, yseq, z, col, rev.x=FALSE, rev.y=FALSE, to.one=FALSE) {
+#   # ensure regular spacing (even when there are slumps)
+#   xseq <- seq(xseq[1], xseq[length(xseq)], length.out=length(xseq))
+#   yseq <- seq(yseq[1], yseq[length(yseq)], length.out=length(yseq))
+#
+#   if(rev.x) # flip x
+#     z <- z[,ncol(z):1]
+#   if(rev.y) # flip y
+#     z <- z[nrow(z):1,]
+#   if(to.one) # then scale to 0 - 1
+#     z <- (z - min(z)) / (max(z) - min(z))
+#
+#   usr <- par("usr")
+#   xscale <- usr[1:2]
+#   yscale <- usr[3:4]
+#
+#   xmid <- mean(range(xseq))
+#     ymid <- mean(range(yseq))
+#     w <- diff(range(xseq)) / diff(xscale)
+#     h <- diff(range(yseq)) / diff(yscale)
+#
+#   z_cols <- col[as.numeric(cut(z, breaks = 100))]
+#   img <- matrix(z_cols, nrow=length(xseq), ncol=length(yseq)) # not ncol/nrow?
+#   rasterImage(as.raster(img), min(xseq), min(yseq), max(xseq), max(yseq))
+#   #grid::grid.raster(as.raster(img),
+#   #  x = grid::unit(mean(range(xseq)), "native"),
+#   #  y = grid::unit(mean(range(yseq)), "native"),
+#   #  width = grid::unit(diff(range(xseq)), "native"),
+#   #  height = grid::unit(diff(range(yseq)), "native"),
+#   #  interpolate = FALSE, default.units = "native")
+# }
 
 
 

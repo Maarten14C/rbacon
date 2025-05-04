@@ -36,6 +36,9 @@
 #' @param rev.age The direction of the age axis, which can be reversed using \code{rev.age=TRUE}.
 #' @param rev.yr Deprecated - use rev.age instead.
 #' @param rev.d The direction of the depth axis, which can be reversed using \code{rev.d=TRUE}.
+#' @param use.raster Rasters can be aligned or not in the underlying image function. Setting \code{use.raster=FALSE, default} takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. However, the alternative of \code{use.raster=TRUE} causes greyscales on some devices (e.g., OSX quartz) to 'flip'. If this is the case, use 'flip.acc=TRUE'.
+#' @param flip.age When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.age=TRUE} can flip the ages back again. 
+#' @param flip.d When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.d=TRUE} can flip the depths back again. 
 #' @param depth.unit Units of the depths. Defaults to the one provided in the Bacon() command, \code{depth.unit=set$depth.unit}.
 #' @param age.unit Units of the ages. Defaults to \code{age.unit="yr"}.
 #' @param unit Deprecated and replaced by \code{depth.unit}.
