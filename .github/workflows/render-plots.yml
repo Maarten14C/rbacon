@@ -70,6 +70,7 @@ jobs:
           dnf -y install \
             R-core \
             R-devel \
+            gawk \
             pandoc \
             wget \
             libcurl-devel \
@@ -90,9 +91,9 @@ jobs:
       - name: Install R packages
         run: |
             mkdir -p "${HOME}/R/library"
-            Rscript -e 'install.packages(c("htmlwidgets", "maps", "usethis", "fs", "miniUI", "pkgdown", "pkgload", "profvis", "roxygen2", "testthat"), repos = "https://cloud.r-project.org")'
+            Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), dependencies = TRUE)'
             Rscript -e 'install.packages(c("rmarkdown", "knitr", "coda", "rintcal"), repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))'            Rscript -e 'install.packages(c("rmarkdown", "knitr", "coda", "rintcal"), repos = "https://cloud.r-project.org", dependencies = TRUE)'
-
+        shell: Rscript {0}
 
       - name: Check if rmarkdown is installed
         run: |
@@ -100,7 +101,7 @@ jobs:
 
       - name: Install rbacon from source
         run: |
-          Rscript -e 'install.packages(".", repos = NULL, type = "source")'
+          Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); install.packages(".", repos = NULL, type = "source")'
 
       - name: Render HTML from Rmd
         run: |
