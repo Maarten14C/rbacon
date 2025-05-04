@@ -6,6 +6,7 @@ on:
 
 jobs:
   render-html-ubuntu:
+    if: false
     runs-on: ubuntu-latest
 
     steps:
@@ -63,7 +64,7 @@ jobs:
     container:
       image: fedora:latest  # This pulls the latest Fedora Docker image
     env:
-      R_LIBS_USER: ${{ github.workspace }}/R/library  # Use github.workspace for the path
+      R_LIBS_USER: /github/home/R/library  # Use github.workspace for the path
 
     steps:
       - name: Install system dependencies and R
@@ -88,7 +89,7 @@ jobs:
       - name: Install R packages
         run: |
           mkdir -p "${R_LIBS_USER}"
-          Rscript -e 'install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), repos="https://cloud.r-project.org", dependencies=TRUE)'
+          Rscript -e '.libPaths(Sys.getenv("R_LIBS_USER")); install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), repos="https://cloud.r-project.org", dependencies=TRUE)'
 
       - name: Check if rmarkdown is installed
         run: |
@@ -109,6 +110,7 @@ jobs:
           path: testBaconplots_fedora.html
   
   render-html-windows:
+	if: false  
     runs-on: windows-latest
 
     steps:
