@@ -34,8 +34,9 @@ jobs:
 
       - name: Install R packages
         run: |
-          install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), dependencies = TRUE)
-        shell: Rscript {0}
+          mkdir -p "${HOME}/R/library"
+		  Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), dependencies = TRUE)'
+        shell: bash
 
       - name: Clean previous builds
         run: |
