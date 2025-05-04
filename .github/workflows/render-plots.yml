@@ -68,7 +68,7 @@ jobs:
       - name: Install system dependencies and R
         run: |
           dnf -y install \
-		    R-core \
+            R-core \
             pandoc \
             wget \
             libcurl-devel \
