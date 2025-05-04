@@ -49,7 +49,7 @@ jobs:
 
       - name: Render testBaconplots.Rmd to HTML
         run: |
-          rmarkdown::render("testBaconplots.Rmd", output_format = "html_document", , output_file = "testBaconplots_ubuntu.html")
+          rmarkdown::render("testBaconplots.Rmd", output_format = "html_document", output_file = "testBaconplots_ubuntu.html")
         shell: Rscript {0}
 
       - name: Upload HTML output
