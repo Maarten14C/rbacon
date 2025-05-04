@@ -35,7 +35,7 @@ jobs:
       - name: Install R packages
         run: |
           mkdir -p "${HOME}/R/library"
-		  Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), dependencies = TRUE)'
+          Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), dependencies = TRUE)'
         shell: bash
 
       - name: Clean previous builds
