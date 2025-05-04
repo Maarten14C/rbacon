@@ -78,7 +78,8 @@ jobs:
             libxml2-devel \
             tar \
             make \
-            gcc
+            gcc \
+            fontconfig-devel
 
       - name: Checkout repository
         uses: actions/checkout@v3
