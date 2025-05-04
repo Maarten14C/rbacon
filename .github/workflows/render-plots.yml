@@ -79,6 +79,7 @@ jobs:
             tar \
             make \
             gcc \
+            libfribidi-dev \
             fontconfig-devel
 
       - name: Checkout repository
