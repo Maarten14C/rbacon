@@ -58,18 +58,18 @@ jobs:
 
 
 
-render-html-fedora:
-  runs-on: ubuntu-latest
-  container:
-    image: fedora:latest  # This pulls the latest Fedora Docker image
-  env:
-    R_LIBS_USER: ${{ runner.temp }}/R/library
+  render-html-fedora:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest  # This pulls the latest Fedora Docker image
+    env:
+      R_LIBS_USER: ${{ runner.temp }}/R/library
 
-  steps:
-    - name: Install system dependencies and R
-      run: |
-        dnf -y update
-        dnf -y install \
+    steps:
+      - name: Install system dependencies and R
+        run: |
+          dnf -y update
+          dnf -y install \
           R \
           R-devel \
           pandoc \
