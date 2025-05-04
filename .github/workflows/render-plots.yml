@@ -90,6 +90,10 @@ jobs:
           mkdir -p "${R_LIBS_USER}"
           Rscript -e 'install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), repos="https://cloud.r-project.org", dependencies=TRUE)'
 
+      - name: Check if rmarkdown is installed
+        run: |
+          Rscript -e 'if (!requireNamespace("rmarkdown", quietly = TRUE)) stop("rmarkdown not installed!")'
+
       - name: Install rbacon from source
         run: |
           Rscript -e 'install.packages(".", repos = NULL, type = "source")'
