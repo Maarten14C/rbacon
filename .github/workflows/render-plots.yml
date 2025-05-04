@@ -45,7 +45,7 @@ jobs:
           install.packages(".", repos = NULL, type = "source")
         shell: Rscript {0}
 
-      - name: Render testBaconplots.Rmd to HTML
+      - name: Render testBaconplots_ubuntu.Rmd to HTML
         run: |
           rmarkdown::render("testBaconplots_ubuntu.Rmd", output_format = "html_document")
         shell: Rscript {0}
@@ -134,7 +134,7 @@ jobs:
           install.packages(".", repos = NULL, type = "source")
         shell: Rscript {0}
 
-      - name: Render testBaconplots.Rmd to HTML
+      - name: Render testBaconplots_windows.Rmd to HTML
         run: |
           rmarkdown::render("testBaconplots_windows.Rmd", output_format = "html_document")
         shell: Rscript {0}
