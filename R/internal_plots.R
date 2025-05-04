@@ -3,8 +3,7 @@
 #################### user-invisible plot functions ####################
 
 # to plot greyscale/ghost graphs of the age-depth model
-agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, accordion=c(), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), rgb.scale=c(0,0,0), cutoff=0.001, age.lim) {
-
+agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, accordion=c(), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), rgb.scale=c(0,0,0), cutoff=0.001, age.lim, use.raster=FALSE, flip.d=FALSE, flip.age=FALSE) {
   if(length(dseq) == 0)
     d.seq <- seq(d.min, d.max, length=d.res)
   d.lim <- range(d.seq)
@@ -32,7 +31,8 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
         z[,i] <- approx(ages, hists[[i]]$counts, age.seq, rule=2)$y
      }
   }
-  z <- z[nrow(z):1,] # images are drawn as bitmaps from bottom left up
+  #z <- z[nrow(z):1,] # images are drawn as bitmaps from bottom left up
+  z <- t(z)
   minmax <- hists[[length(hists)]]$min
   maxmax <- hists[[length(hists)]]$max
   z <- z/maxmax # normalise to the height of most precise age estimate
@@ -42,28 +42,46 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
   z <- z/max(z) # May 2021
   z[z<cutoff] <- NA # do not plot pixels with probs very close to 0
   z[is.na(z)] <- 0
+  if(deviceIsQuartz()) 
+    if(use.raster)
+      z <- z[,ncol(z):1] 
+  
+  if(flip.d)
+    z <- z[nrow(z):1,] 
+  if(flip.age)
+    z <- z[,ncol(z):1] 
   
   if(length(accordion) == 2)
     d.seq <- stretch(d.seq, accordion[1], accordion[2]) # careful now!
   
-  if(rev.d)
-    d.seq <- rev(d.seq)
-  if(rev.age)
-    age.seq <- rev(age.seq)
-  if(BCAD)
-     z <- z[nrow(z):1,]
-  if(rotate.axes)
-     z <- z[nrow(z):1,]
+#  if(rev.d) {
+  #  d.seq <- rev(d.seq)
+#  }
+#  if(rev.age)
+#    age.seq <- rev(age.seq)
+#  if(BCAD)
+#     z <- z[nrow(z):1,]
+#  if(rotate.axes)
+#     z <- z[nrow(z):1,]
 
   cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))
 	
   if(rotate.axes)
-    ghost.image(age.seq, d.seq, t(z), col=cols, rev.y=rev.d, rev.x=rev.age) else
-      ghost.image(d.seq, age.seq, z, col=cols, rev.x=rev.d, rev.y=rev.age)
+    image(age.seq, d.seq, t(z), col=cols, add=TRUE, rev.y=rev.d, rev.x=rev.age, useRaster=use.raster) else
+      image(d.seq, age.seq, z, col=cols, add=TRUE, rev.x=rev.d, rev.y=rev.age, useRaster=use.raster)
 }
 
 
 
+# OSX's quartz device sometimes flips greyscale plots around on the y scale
+deviceIsQuartz <- function() {
+  .Platform$OS.type == "unix" &&
+    grepl("darwin", R.version$platform) &&
+    names(dev.cur()) == "quartz"
+}
+
+
+# not working as consistently across systems as I'd like, so not using for now
 ghost.image <- function(xseq, yseq, z, col, rev.x=FALSE, rev.y=FALSE, to.one=FALSE) {
   # ensure regular spacing (even when there are slumps)
   xseq <- seq(xseq[1], xseq[length(xseq)], length.out=length(xseq))
@@ -76,9 +94,24 @@ ghost.image <- function(xseq, yseq, z, col, rev.x=FALSE, rev.y=FALSE, to.one=FAL
   if(to.one) # then scale to 0 - 1
     z <- (z - min(z)) / (max(z) - min(z))
 
+  usr <- par("usr")
+  xscale <- usr[1:2]
+  yscale <- usr[3:4]
+  
+  xmid <- mean(range(xseq))
+    ymid <- mean(range(yseq))
+    w <- diff(range(xseq)) / diff(xscale)
+    h <- diff(range(yseq)) / diff(yscale)
+	
   z_cols <- col[as.numeric(cut(z, breaks = 100))] 	  
   img <- matrix(z_cols, nrow=length(xseq), ncol=length(yseq)) # not ncol/nrow?
   rasterImage(as.raster(img), min(xseq), min(yseq), max(xseq), max(yseq))
+  #grid::grid.raster(as.raster(img), 
+  #  x = grid::unit(mean(range(xseq)), "native"),
+  #  y = grid::unit(mean(range(yseq)), "native"),
+  #  width = grid::unit(diff(range(xseq)), "native"),
+  #  height = grid::unit(diff(range(yseq)), "native"),
+  #  interpolate = FALSE, default.units = "native")
 }
 
 
