@@ -42,9 +42,9 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
   z <- z/max(z) # May 2021
   z[z<cutoff] <- NA # do not plot pixels with probs very close to 0
   z[is.na(z)] <- 0
-  if(deviceIsQuartz()) 
-    if(use.raster)
-      z <- z[,ncol(z):1] 
+#  if(deviceIsQuartz()) 
+#    if(use.raster)
+#      z <- z[,ncol(z):1] 
   
   if(flip.d)
     z <- z[nrow(z):1,] 

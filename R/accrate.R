@@ -234,7 +234,7 @@ accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, na.rm=FALSE, pr
 #' @param yaxs Extension of y-axis. By default, add no extra white-space at both extremes (\code{yaxs="i"}). See ?par for other options.
 #' @param bty Type of box to be drawn around the plot (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).
 #' @param remove.laststep Add a white line to remove spurious lines at the extreme of the graph. Defaults to TRUE.
-#' @param use.raster Rasters can be aligned or not in the underlying image function. By default, we use \code{use.raster=FALSE}. This takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. Therefore, \code{use.raster=TRUE} would be preferable, however on some devices this causes greyscales to 'flip'. If this is the case, use 'flip.acc=TRUE'.
+#' @param use.raster Rasters can be aligned or not in the underlying image function. Setting \code{use.raster=FALSE} takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. Therefore, \code{use.raster=TRUE} is the default, however on some devices (e.g., OSX quartz) this causes greyscales to 'flip'. If this is the case, use 'flip.acc=TRUE'.
 #' @param flip.acc When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.acc=TRUE} solves this. 
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A grey-scale plot of accumulation rate against core depth, and (invisibly) the list of depths and their accumulation rates (ranges, medians, means).
@@ -293,11 +293,13 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
     plot(0, type="n", xlab=acc.lab, ylab=d.lab, ylim=d.lim, xlim=acc.lim, bty="n", xaxs=xaxs, yaxs=yaxs)
     for(i in 2:length(d)) {
       accs <- acc[[i-1]]
-      z <- 1-t(accs$y)
-#      if(rev.acc)
-#        z <- rev(z)	  
-   if(flip.acc)
-     z <- rev(z)
+      if(flip.acc)
+        z <- 1-t(rev(accs$y)) else
+          z <- 1-t(accs$y)
+      if(deviceIsQuartz()) 
+        if(use.raster)
+          if(rev.acc)	
+            z <- t(rev(z))
 	  
       col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(accs$y[!is.na(accs$y)]), 0, length=rgb.res))
 	  image(accs$x, d[c(i - 1, i)], t(z), add=TRUE, col=col, useRaster=use.raster)
@@ -328,6 +330,9 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
        if(flip.acc)
          z <- 1-t(rev(accs$y)) else
            z <- 1-t(accs$y)
+       if(deviceIsQuartz()) 
+         if(use.raster)
+           z <- t(z[length(z):1])
 			
         col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(accs$y[!is.na(accs$y)]), 0, length=rgb.res))
 		image(d[c(i - 1, i)], accs$x, z, add=TRUE, col=col, useRaster=use.raster) 
@@ -392,7 +397,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' @param xaxs Extension of the x-axis. White space can be added to the vertical axis using \code{xaxs="r"}.
 #' @param yaxs Extension of the y-axis. White space can be added to the vertical axis using \code{yaxs="r"}.
 #' @param bty Type of box to be drawn around the plot (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).
-#' @param use.raster Rasters can be aligned or not in the underlying image function. By default, we use \code{use.raster=FALSE}. This takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. Therefore, \code{use.raster=TRUE} would be preferable, however on some devices this causes greyscales to 'flip'. If this is the case, use 'flip.acc=TRUE'.
+#' @param use.raster Rasters can be aligned or not in the underlying image function. Setting \code{use.raster=FALSE} takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. Therefore, \code{use.raster=TRUE} is the default, however on some devices (e.g., OSX quartz) this causes greyscales to 'flip'. If this is the case, use 'flip.acc=TRUE'.
 #' @param flip.acc When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.acc=TRUE} solves this. 
 #' @param flip.age When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.age=TRUE} solves this. 
 #' @author Maarten Blaauw, J. Andres Christen
@@ -569,6 +574,9 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
 #' @param rev.flux The flux axis can be reversed with \code{rev.flux=TRUE}.
 #' @param rev.age The direction of the age axis can be reversed using \code{rev.age=TRUE}.
 #' @param rev.yr Deprecated - use rev.age instead
+#' @param use.raster Rasters can be aligned or not in the underlying image function. By default, we use \code{use.raster=FALSE}. This takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. Therefore, \code{use.raster=TRUE} would be preferable, however on some devices this causes greyscales to 'flip'. If this is the case, use 'flip.flux=TRUE' or 'flip.age=TRUE'.
+#' @param flip.flux When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.acc=TRUE} solves this. 
+#' @param flip.age When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.age=TRUE} solves this. 
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A plot of flux rates.
 #' @examples
@@ -578,7 +586,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
 #'   flux.age.ghost(1)
 #' }
 #' @export
-flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=400, yr.res=age.res, set=get('info'), flux=c(), plot.range=TRUE, prob=.8, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, flux.lim=c(), flux.lab=expression("flux (g cm"^-1*" yr"^-1*")"), upper=.95, rgb.scale=c(0,0,0), rgb.res=100, dark=set$dark, cutoff=0.001, BCAD=set$BCAD, age.lab=c(), yr.lab=age.lab, rotate.axes=FALSE, rev.flux=FALSE, rev.age=FALSE, rev.yr=rev.age) {
+flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=400, yr.res=age.res, set=get('info'), flux=c(), plot.range=TRUE, prob=.8, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, flux.lim=c(), flux.lab=expression("flux (g cm"^-1*" yr"^-1*")"), upper=.95, rgb.scale=c(0,0,0), rgb.res=100, dark=set$dark, cutoff=0.001, BCAD=set$BCAD, age.lab=c(), yr.lab=age.lab, rotate.axes=FALSE, rev.flux=FALSE, rev.age=FALSE, rev.yr=rev.age, use.raster=FALSE, flip.age=FALSE, flip.flux=FALSE) {
   if(length(flux) == 0) { # then read a .csv file, expecting data in columns with headers
     flux <- read.csv(paste0(set$coredir, set$core, "/", set$core, "_flux.csv"))
     flux <- cbind(flux[,1], flux[,1+proxy])
@@ -655,6 +663,10 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=400, yr
       z[z > 1] <- 1 # no values > 1
       z[z < cutoff] <- NA # do not plot very small/light greyscale values
       z <- z[length(z):1]
+
+#      if(use.raster)
+#        if(deviceIsQuartz()) 
+#          z <- z[nrow(z):1,]
 	  
       if(rev.flux)
         z <- rev(z)
@@ -664,8 +676,8 @@ flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=400, yr
       age.rng <- age.seq[c(i-1,i)]
 
       if(rotate.axes)
-        image(flux.hist$x, age.seq[c(i-1, i)], matrix(flux.hist$y), add=TRUE, col=col) else
-          image(age.seq[c(i-1, i)], flux.hist$x, t(matrix(flux.hist$y)), add=TRUE, col=col)	  
+        image(flux.hist$x, age.seq[c(i-1, i)], matrix(flux.hist$y), add=TRUE, col=col, useRaster=use.raster) else
+          image(age.seq[c(i-1, i)], flux.hist$x, t(matrix(flux.hist$y)), add=TRUE, col=col, useRaster=use.raster)	  
     }
   }
 

@@ -1,7 +1,5 @@
 ---
-title: "rbacon plots & image"
-author: "Maarten Blaauw"
-
+title: "rbacon plot tests"
 ---
 
 ```{r, results="hide"}
@@ -127,12 +125,9 @@ flux.age.ghost(rotate.axes=T, flux=myflux)
 flux.age.ghost(rev.flux=T, flux=myflux)
 ```
 
-
 ```{r, results="hide"}
 flux.age.ghost(rev.age=T, flux=myflux)
 ```
-
-
 
 ```{r, results="hide"}
 Bacon(slump=c(20,21), ssize=500, coredir=fry, ask=F)
@@ -140,7 +135,7 @@ Bacon(slump=c(20,21), ssize=500, coredir=fry, ask=F)
 
 
 ```{r, results="hide"}
-Bacon("RLGH3", accept.suggestions=T, ask=F)
+Bacon("RLGH3", coredir=fry, accept.suggestions=T, ask=F)
 ```
 
 
