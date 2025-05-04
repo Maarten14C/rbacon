@@ -44,12 +44,12 @@ jobs:
 
       - name: Install rbacon (from source in repo or CRAN)
         run: |
-          install.packages(".", repos = NULL, type = "source")
+          Rscript -e 'install.packages(".", repos = NULL, type = "source")'
         shell: Rscript {0}
 
       - name: Render testBaconplots.Rmd to HTML
         run: |
-          rmarkdown::render("testBaconplots.Rmd", output_format = "html_document", output_file = "testBaconplots_ubuntu.html")
+          Rscript -e 'rmarkdown::render("testBaconplots.Rmd", output_format = "html_document", output_file = "testBaconplots_ubuntu.html")'
         shell: Rscript {0}
 
       - name: Upload HTML output
@@ -92,7 +92,7 @@ jobs:
 
       - name: Install R package dependencies
         run: |
-          install.packages(c("fs", "sass", "bslib", "rmarkdown", "systemfonts", "textshaping", "stringi", "httpuv", "shiny"))
+          Rscript -e 'install.packages(c("fs", "sass", "bslib", "rmarkdown", "systemfonts", "textshaping", "stringi", "httpuv", "shiny"))'
         shell: bash
 
       - name: Install R packages
@@ -145,12 +145,12 @@ jobs:
 
       - name: Install R packages
         run: |
-          install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), dependencies = TRUE)
+          Rscript -e 'install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), dependencies = TRUE)'
         shell: Rscript {0}
 
       - name: Install rbacon (from source in repo)
         run: |
-          install.packages(".", repos = NULL, type = "source")
+          Rscript -e 'install.packages(".", repos = NULL, type = "source")'
         shell: Rscript {0}
 
       - name: Render testBaconplots_windows.Rmd to HTML
