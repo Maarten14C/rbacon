@@ -56,7 +56,6 @@ jobs:
           name: bacon-html-ubuntu
           path: testBaconplots.html
 
-jobs:
   render-html-fedora:
     runs-on: ubuntu-latest
     container:
