@@ -63,7 +63,7 @@ jobs:
     container:
       image: fedora:latest  # This pulls the latest Fedora Docker image
     env:
-      R_LIBS_USER: ${{ runner.temp }}/R/library
+      R_LIBS_USER: ${{ github.workspace }}/R/library  # Use github.workspace for the path
 
     steps:
       - name: Install system dependencies and R
