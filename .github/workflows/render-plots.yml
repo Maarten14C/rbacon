@@ -92,7 +92,7 @@ jobs:
         run: |
             mkdir -p "${HOME}/R/library"
             Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), dependencies = TRUE)'
-            Rscript -e 'install.packages(c("rmarkdown", "knitr", "coda", "rintcal"), repos = "https://cloud.r-project.org", dependencies = c("Depends", "Imports"))'            Rscript -e 'install.packages(c("rmarkdown", "knitr", "coda", "rintcal"), repos = "https://cloud.r-project.org", dependencies = TRUE)'
+		    Rscript -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), dependencies = TRUE)'
         shell: Rscript {0}
 
       - name: Check if rmarkdown is installed
