@@ -82,10 +82,6 @@ jobs:
           install.packages(c("rmarkdown", "knitr", "coda", "rintcal", "rice"), dependencies = TRUE)
         shell: Rscript {0}
 
-      - name: Clean previous builds
-        run: |
-          unlink(c("rbacon/src/*.o", "rbacon/src/*.so", "rbacon/src/*.dll", "rbacon/libs"), recursive = TRUE)
-
       - name: Install rbacon (from source in repo)
         run: |
           install.packages(".", repos = NULL, type = "source")
