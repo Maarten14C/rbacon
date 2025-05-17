@@ -1,3 +1,8 @@
+# rbacon 3.4.3
+* accrate.age.ghost and accrate.depth.ghost can now be run without saving `info`, e.g. as in: 'mycore <- Bacon(save.info=FALSE, ask=FALSE); layout(1); accrate.depth.ghost(set=mycore)'.
+* adding delta.R and delta.STD columns to a .csv file was causing an occasional error which has been fixed (reported by Najoua Gharsalli).
+* a new function save.ages to help users work with summaries of age estimates. 
+
 # rbacon 3.4.2
 * adapted `agedepth()`, `draw.pbmodelled()`, `PlotPhiPost()` and `PlotSuppost()` to make rplum plotting more robust. 
 * changes to how greyscales are plotted. The setting use.raster=TRUE introduced in rbacon 3.4.0 unfortunately causes unexpected behaviour especially between different operation systems (sometimes the images are flipped). Therefore the default will be use.raster=FALSE, with options to set it to TRUE (the user can unflip the images using the 'flip.acc', 'flip.d' and 'flip.age' options).
