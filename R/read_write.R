@@ -687,29 +687,41 @@ assign_to_global <- function(key, val, pos=1) {
 #' @name save.ages
 #' @title save age summary of depth(s) 
 #' @description Calculates an age summary (min/max probability range, median and mean) of a depth or a series of depths. The depths are returned and can be saved to a file.  
-#' @return The minimum and maximum of the probability range (default 2.5% of both sides), median and mean ages for a depth or series of depths
+#' @return The minimum and maximum of the probability range (default 2.5% of both sides), median and mean ages for a depth or series of depths.
 #' @param d Depth or depths for which age summaries are to be calculated. If left empty, a sequence of depths is calculated from the top to the bottom of the core, see \link{d.by}.
 #' @param file The name of the file where the age summary has to be stored. If empty (default), the ages are returned.
-#' @param sep Separator for the fields, if saving to a file.
+#' @param sep Separator for the fields, if saving to a file (defaults to a tab, "\t").
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param BCAD The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
 #' @param na.rm Whether or not NAs are to be removed. Defaults to \code{na.rm=FALSE}.
 #' @param prob Probability range. Half of the range is taken away from both sides of the distribution (e.g., 2.5\% for the default of \code{prob=0.95}).
 #' @param d.by Steps for calculation of depths, if \link{d} is left empty. Defaults to steps of 1. 
 #' @param roundby Rounding for the age estimates. Defaults to 1 decimal.
+#' @param show.progress Show a progress bar. Defaults to TRUE.
 #' @examples
 #'   myages <- save.ages(20:30)
 #'   myages
 #' @export
-save.ages <- function(d=c(), file=c(), sep=",", set=get("info"), BCAD=set$BCAD, na.rm=FALSE, prob=0.95, d.by=1, roundby=1) {
+save.ages <- function(d=c(), file=c(), sep="\t", set=get("info"), BCAD=set$BCAD, na.rm=FALSE, prob=0.95, d.by=1, roundby=1, show.progress=TRUE) {
   if(length(d) == 0)
     d <- seq(set$d.min, set$d.max, by=d.by)
+  
+  n <- length(d)
   mins <- numeric(length(d))
   maxs <- numeric(length(d))
   medians <- numeric(length(d))
   means <- numeric(length(d))
- 
-  for(i in 1:length(d)) {
+
+  if(show.progress)
+    if(n > 50) 
+      pb <- txtProgressBar(min=0, max=max(1, length(d)-1), style=3)
+	   
+  for(i in seq_len(n)) {
+	if(show.progress)
+      if(n >= 50)
+        if(n < 500 || i %% 10 == 0) 
+          setTxtProgressBar(pb, i)
+	  
     ages <- Bacon.Age.d(d[i], set, BCAD=BCAD, na.rm=na.rm)
     quan <- quantile(ages, c((1-prob)/2, 1-((1-prob)/2), .5))
     mins[i] <- quan[1]
@@ -717,7 +729,9 @@ save.ages <- function(d=c(), file=c(), sep=",", set=get("info"), BCAD=set$BCAD, 
     medians[i] <- quan[3]
     means[i] <- mean(ages) 	
   }
-
+  if(show.progress && n>50)
+    message("")
+  
   if(length(d) == 1) {
     summ <- c(
       min=round(mins, roundby),
@@ -732,7 +746,7 @@ save.ages <- function(d=c(), file=c(), sep=",", set=get("info"), BCAD=set$BCAD, 
         median=round(medians, roundby),
         mean=round(means, roundby))
       }
-  if(length(file) == 0)
-    return(summ) else
-      write.table(summ, file, row.names=FALSE, sep=sep, quote=FALSE) 
+  if(length(file) > 0)
+    write.table(summ, file, row.names=FALSE, sep=sep, quote=FALSE)
+  return(summ)	  
 }

@@ -240,7 +240,8 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(verbose)
     message("Calculating age ranges...")
   modelranges <- c()
-  ranges <- Bacon.rng(d, set, BCAD=BCAD, prob=prob)
+  #ranges <- Bacon.rng(d, set, BCAD=BCAD, prob=prob)
+  ranges <- save.ages(d, set=set, BCAD=BCAD, prob=prob)[,-1]
   d.rng <- d
   # calculate calendar axis limits
   modelranges <- range(ranges[!is.na(ranges)])
@@ -308,7 +309,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
   if(!dates.only) {
     if(verbose)
-      message("\nPreparing ghost graph... ")
+      message("Preparing ghost graph... ")
     agedepth.ghost(set, rotate.axes=rotate.axes, accordion=accordion, BCAD=BCAD, d.res=d.res, age.res=age.res, rev.d=rev.d, rev.age=rev.age, rgb.res=rgb.res, dark=dark, rgb.scale=rgb.scale, age.lim=age.lim, use.raster=use.raster, flip.age=flip.age, flip.d=flip.d)
   }
 

@@ -7,7 +7,7 @@
 save.ages(
   d = c(),
   file = c(),
-  sep = ",",
+  sep = "\\t",
   set = get("info"),
   BCAD = set$BCAD,
   na.rm = FALSE,
@@ -21,7 +21,7 @@ save.ages(
 
 \item{file}{The name of the file where the age summary has to be stored. If empty (default), the ages are returned.}
 
-\item{sep}{Separator for the fields, if saving to a file.}
+\item{sep}{Separator for the fields, if saving to a file (defaults to a tab, "\t").}
 
 \item{set}{Detailed information of the current run, stored within this session's memory as variable \code{info}.}
 
@@ -36,11 +36,12 @@ save.ages(
 \item{roundby}{Rounding for the age estimates. Defaults to 1 decimal.}
 }
 \value{
-The minimum and maximum of the probability range (default 2.5% of both sides), median and mean ages for a depth or series of depths
+The minimum and maximum of the probability range (default 2.5% of both sides), median and mean ages for a depth or series of depths.
 }
 \description{
 Calculates an age summary (min/max probability range, median and mean) of a depth or a series of depths. The depths are returned and can be saved to a file.
 }
 \examples{
   myages <- save.ages(20:30)
+  myages
 }
