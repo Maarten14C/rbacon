@@ -1,3 +1,6 @@
+# rbacon 3.5.1
+* reduced the runtime of the ageranges examples to avoid the CRAN NOTE
+
 # rbacon 3.5.0
 * accrate.age.ghost and accrate.depth.ghost can now be run without saving `info`, e.g. as in: 'mycore <- Bacon(save.info=FALSE, ask=FALSE); layout(1); accrate.depth.ghost(set=mycore)'.
 * adding delta.R and delta.STD columns to a .csv file was causing an occasional error which has been fixed (reported by Najoua Gharsalli).

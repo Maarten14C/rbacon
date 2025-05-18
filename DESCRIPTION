@@ -1,7 +1,7 @@
 Package: rbacon
 Type: Package
 Title: Age-Depth Modelling using Bayesian Statistics
-Version: 3.5.0
+Version: 3.5.1
 Author: Maarten Blaauw [aut, cre] (<https://orcid.org/0000-0002-5680-1515>),
   J. Andres Christen [aut, ctb, cph]
     (<https://orcid.org/0000-0002-5795-4345>),
