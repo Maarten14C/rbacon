@@ -1,7 +1,7 @@
 # rbacon 3.4.3
 * accrate.age.ghost and accrate.depth.ghost can now be run without saving `info`, e.g. as in: 'mycore <- Bacon(save.info=FALSE, ask=FALSE); layout(1); accrate.depth.ghost(set=mycore)'.
 * adding delta.R and delta.STD columns to a .csv file was causing an occasional error which has been fixed (reported by Najoua Gharsalli).
-* a new function save.ages to help users work with summaries of age estimates. 
+* a new function ageranges to summarize age estimates of depths. 
 
 # rbacon 3.4.2
 * adapted `agedepth()`, `draw.pbmodelled()`, `PlotPhiPost()` and `PlotSuppost()` to make rplum plotting more robust. 

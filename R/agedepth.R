@@ -240,11 +240,14 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(verbose)
     message("Calculating age ranges...")
   modelranges <- c()
+  if(length(rounded) == 0)
+    rounded <- ifelse(set$isplum, 1, 0) # plum tends to need higher precision
   #ranges <- Bacon.rng(d, set, BCAD=BCAD, prob=prob)
-  ranges <- save.ages(d, set=set, BCAD=BCAD, prob=prob)[,-1]
+  ranges <- ageranges(d, paste0(set$prefix, "_ages.txt"), 
+    set=set, BCAD=BCAD, prob=prob, roundby=rounded) 
   d.rng <- d
   # calculate calendar axis limits
-  modelranges <- range(ranges[!is.na(ranges)])
+  modelranges <- range(ranges[,-1], na.rm=TRUE)
   if(length(set$calib$probs) > 0) {
     dates <- set$calib$probs
   dateranges <- c()
@@ -376,22 +379,25 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     for(i in 1:ncol(th)) {
       h <- th[1,i] : th[2,i]
       if(rotate.axes) {
-        lines(ranges[h,1], d[h], col=range.col, lty=range.lty, lwd=range.lwd)
         lines(ranges[h,2], d[h], col=range.col, lty=range.lty, lwd=range.lwd)
-        lines(ranges[h,3], d[h], col=med.col, lty=med.lty, lwd=med.lwd) # median
-        lines(ranges[h,4], d[h], col=mn.col, lty=mn.lty, lwd=mn.lwd) # mean
+        lines(ranges[h,3], d[h], col=range.col, lty=range.lty, lwd=range.lwd)
+        lines(ranges[h,4], d[h], col=med.col, lty=med.lty, lwd=med.lwd) # median
+        lines(ranges[h,5], d[h], col=mn.col, lty=mn.lty, lwd=mn.lwd) # mean
       } else {
-          lines(d[h], ranges[h,1], col=range.col, lty=range.lty, lwd=range.lwd)
           lines(d[h], ranges[h,2], col=range.col, lty=range.lty, lwd=range.lwd)
-          lines(d[h], ranges[h,3], col=med.col, lty=med.lty, lwd=med.lwd) # median
-          lines(d[h], ranges[h,4], col=mn.col, lty=mn.lty, lwd=mn.lwd) # mean
+          lines(d[h], ranges[h,3], col=range.col, lty=range.lty, lwd=range.lwd)
+          lines(d[h], ranges[h,4], col=med.col, lty=med.lty, lwd=med.lwd) # median
+          lines(d[h], ranges[h,5], col=mn.col, lty=mn.lty, lwd=mn.lwd) # mean
         }
     }
 
-  if(length(rounded) == 0)
-    rounded <- ifelse(set$isplum, 1, 0)
-  set$ranges <- cbind(d, round(ranges, rounded))
-  colnames(set$ranges) <- c("depth", "min", "max", "median", "mean")
+#  if(length(rounded) == 0)
+#    rounded <- ifelse(set$isplum, 1, 0) # plum tends to need higher precision
+#  set$ranges <- cbind(d, round(ranges, rounded))
+#  colnames(set$ranges) <- c("depth", "min", "max", "median", "mean")
+#  fastwrite(ranges, paste0(set$prefix, "_ages.txt"), quote=FALSE, row.names=FALSE, sep="\t") # was write.table
+
+  set$ranges <- ranges
   if(save.info)
     assign_to_global("info", set)
 
@@ -399,11 +405,9 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     if(names(dev.cur()) != "null device")
       export.pdf(paste0(set$prefix, ".pdf"))
 
-  fastwrite(set$ranges, paste0(set$prefix, "_ages.txt"), quote=FALSE, row.names=FALSE, sep="\t") # was write.table
-  rng <- abs(round(set$ranges[,3]-set$ranges[,2], rounded))
+  rng <- abs(ranges[,3]-ranges[,2])
   min.rng <- d[which(rng==min(rng, na.rm=TRUE))]
   max.rng <- d[which(rng==max(rng, na.rm=TRUE))]
-
   if(length(min.rng)==1)
     min.rng <- paste(age.unit, "at", min.rng, noquote(depth.unit)) else
       min.rng <- paste(age.unit, "between", min(min.rng), "and", max(min.rng), noquote(depth.unit))
@@ -413,19 +417,21 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
   if(verbose) {
     if(!dates.only)
-      message("\nMean ", 100*prob, "% confidence ranges ", round(mean(rng), rounded), " ", age.unit, ", min. ",
+      message("\nMean ", 100*prob, "% confidence ranges ", 
+	    round(mean(rng), rounded), " ", age.unit, ", min. ",
         min(rng), " ", min.rng, ", max. ", max(rng), " ", max.rng)
 
     if(set$isplum) {
       below <- which(bg > pb.background)
       if(length(below) == 0)
         message("\nIt seems that the Pb-measurements haven't reached background") else {
-        message("Pb-210 likely at or below detection limit from ", min(set$dets[below,4]), " ", set$depth.unit, " depth onward: ")
-        for(i in seq_along(below))
-          cat(set$dets[below[i],4], " ", set$depth.unit,
-            " (", round(100*bg[below[i]]), "%)",
-            if(i < length(below)) ", " else "\n", sep = "")
-      }
+          message("Pb-210 likely at or below detection limit from ", 
+		    min(set$dets[below,4]), " ", set$depth.unit, " depth onward: ")
+          for(i in seq_along(below))
+            cat(set$dets[below[i],4], " ", set$depth.unit,
+              " (", round(100*bg[below[i]]), "%)",
+              if(i < length(below)) ", " else "\n", sep = "")
+        }
     } else
         overlap(set)
 
