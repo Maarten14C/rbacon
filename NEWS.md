@@ -15,7 +15,7 @@
 # rbacon 3.4.0
 * radiocarbon ages can now be entered as F14C or pMC values (e.g. for postbomb dates). Please indicate using the F14C or pMC option which ones are in F14C/pMC (e.g., `Bacon(F14C=2:4)` if dates 2 to 4 are in F14C). These values will then automatically be rewritten as C14 ages.
 * the proxy.ghost function now invisibly returns a table of the values used in the grid composing the greyscale plot.
-* add.dates now plots additional dates as expected, also when rotate.axes=TRUE (although rotate.axes still has to be set to TRUE after using the agedepth function with agedepth=TRUE).
+* add.dates now plots additional dates as expected, also when rotate.axes=TRUE (although rotate.axes still has to be set to TRUE after using the agedepth function with rotate.axes=TRUE).
 * the agedepth function now treats provided values for d.min and d.max better.
 * greyscale 'ghost' plots (`agedepth`, `accrate.depth.ghost`, `accrate.age.ghost`, `proxy.ghost`) should now plot with fewer disturbances such as lines. This is done by setting `useRaster=TRUE` in `image`.
 * if available on your system, 'cairo_pdf' will be used to plot pdfs.

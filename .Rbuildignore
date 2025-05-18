@@ -6,5 +6,5 @@
 ^CRAN-SUBMISSION$
 ^\.github$
 ^\.DS_Store$
-^\testBaconplots.Rmd$
-^\testBaconplots.html$
+inst/dev/*.Rmd
+inst/dev/*.html

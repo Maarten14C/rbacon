@@ -387,7 +387,7 @@ hist(depth23.45)
 mean(depth23.45)
 ```
 
-To summarize the age estimates (95% ranges, medians, means) of depths of interest, use:
+To summarize the age estimates (95% ranges, medians, means) of depths of interest (for example, from 10 to 20 cm), use:
 
 ```{r}
 ageranges(10:20)
