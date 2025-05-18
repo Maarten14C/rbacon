@@ -699,9 +699,6 @@ assign_to_global <- function(key, val, pos=1) {
 #' @param d.by Steps for calculation of depths, if `d` is left empty. Defaults to steps of 1. 
 #' @param roundby Rounding for the age estimates. Defaults to 1 decimal.
 #' @param show.progress Show a progress bar. Defaults to TRUE.
-#' @examples
-#'   tmp <- Bacon(ask=FALSE, ssize=100, coredir=tempfile(), save.info=FALSE)
-#'   ageranges(20:22, set=tmp)
 #' @export
 ageranges <- function(d=c(), file=c(), sep="\t", set=get("info"), BCAD=set$BCAD, na.rm=FALSE, prob=0.95, d.by=1, roundby=1, show.progress=TRUE) {
   if(length(d) == 0)

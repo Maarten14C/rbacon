@@ -1,3 +1,6 @@
+# rbacon 3.5.2
+* removed the ageranges example to avoid the CRAN NOTE about a slow example
+
 # rbacon 3.5.1
 * reduced the runtime of the ageranges examples to avoid the CRAN NOTE
 
