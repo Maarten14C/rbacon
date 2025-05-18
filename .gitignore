@@ -2,8 +2,8 @@
 /doc/
 .DS_Store
 /testBaconplots_files/*
-testBaconplots.Rmd
-testBaconplots.html
+inst/dev/*.Rmd
+inst/dev/*.html
 
 # GitHub and CI/CD files
 Bacon_runs
