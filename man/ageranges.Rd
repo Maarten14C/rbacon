@@ -44,7 +44,3 @@ The minimum and maximum of the probability range (default 2.5% of both sides), m
 \description{
 Calculates an age summary (min/max probability range, median and mean) of a depth or a series of depths. The depths are returned and can be saved to a file.
 }
-\examples{
-  tmp <- Bacon(ask=FALSE, ssize=100, coredir=tempfile(), save.info=FALSE)
-  ageranges(20:22, set=tmp)
-}

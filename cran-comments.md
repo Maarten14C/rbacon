@@ -4,8 +4,8 @@
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 notes
+0 errors | 0 warnings | 0 notes
 
-As per request, the @example for ageranges has been made faster so as to keep run times under 5 seconds.
+The @example for ageranges has been removed.
 
 revdep checks (against dependent package rplum) were run and no issues were found.
