@@ -479,7 +479,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     bacon(txt, as.character(outfile), ssize+burnin, cc.dir)
     info <- scissors(burnin, info, save.info=save.info)
     output <- info$output # tmp
-    info <- agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=TRUE, age.unit=age.unit, depth.unit=depth.unit, save.info=save.info, ...)
+    info <- agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=TRUE, age.unit=age.unit, depth.unit=depth.unit, save.info=save.info, ssize=ssize, ...)
     info$output <- output
     #    cat(mean(info$Tr)) # this is to check how hists and info get saved
 

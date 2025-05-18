@@ -366,7 +366,9 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
 
   rng <- array(NA, dim=c(length(d), 4)) # R > 4.0 does not like to fill c() using loops
   if(calc.range) {
-    rng <- save.ages(d, set=set, BCAD=BCAD, prob=prob)[,-1]
+    if(length(d) == 1)
+      rng <- rbind(ageranges(d, set=set, BCAD=BCAD, prob=prob)) else
+        rng <- ageranges(d, set=set, BCAD=BCAD, prob=prob)[,-1]
     for(i in 1:length(d))
       hists$rng[[i]] <- rng[i,]
   }

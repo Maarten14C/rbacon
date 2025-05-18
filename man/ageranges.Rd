@@ -18,21 +18,21 @@ ageranges(
 )
 }
 \arguments{
-\item{d}{Depth or depths for which age summaries are to be calculated. If left empty, a sequence of depths is calculated from the top to the bottom of the core, see \link{d.by}.}
+\item{d}{Depth or depths for which age summaries are to be calculated. If left empty, a sequence of depths is calculated from the top to the bottom of the core, see 'd.by'.}
 
 \item{file}{The name of the file where the age summary has to be stored. If empty (default), the ages are returned.}
 
-\item{sep}{Separator for the fields, if saving to a file (defaults to a tab, "\t").}
+\item{sep}{Separator for the fields, if saving to a file (defaults to a tab, "\\t").}
 
 \item{set}{Detailed information of the current run, stored within this session's memory as variable \code{info}.}
 
 \item{BCAD}{The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
 
-\item{na.rm}{Whether or not NAs are to be removed. Defaults to \code{na.rm=FALSE}.}
+\item{na.rm}{Whether or not NAs are to be removed. Defaults to \code{na.rm=FALSE}. NAs will still be returned for depths outside of the core's depth range.}
 
 \item{prob}{Probability range. Half of the range is taken away from both sides of the distribution (e.g., 2.5\% for the default of \code{prob=0.95}).}
 
-\item{d.by}{Steps for calculation of depths, if \link{d} is left empty. Defaults to steps of 1.}
+\item{d.by}{Steps for calculation of depths, if `d` is left empty. Defaults to steps of 1.}
 
 \item{roundby}{Rounding for the age estimates. Defaults to 1 decimal.}
 
@@ -45,6 +45,6 @@ The minimum and maximum of the probability range (default 2.5% of both sides), m
 Calculates an age summary (min/max probability range, median and mean) of a depth or a series of depths. The depths are returned and can be saved to a file.
 }
 \examples{
-  myages <- ageranges(20:30)
-  myages
+  tmp <- Bacon(ask=FALSE, ssize=100, coredir=tempfile(), save.info=FALSE)
+  ageranges(20:30, set=tmp)
 }
