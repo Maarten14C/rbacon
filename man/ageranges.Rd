@@ -46,5 +46,5 @@ Calculates an age summary (min/max probability range, median and mean) of a dept
 }
 \examples{
   tmp <- Bacon(ask=FALSE, ssize=100, coredir=tempfile(), save.info=FALSE)
-  ageranges(20:30, set=tmp)
+  ageranges(20:22, set=tmp)
 }
