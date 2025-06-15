@@ -368,6 +368,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' The grey-scale reconstruction around the oldest ages of any reconstruction often indicates very low accumulation rates.
 #' This is due to only some MCMC iterations reaching those old ages, and these iterations will have modelled very slow accumulation rates.
 #' Currently does not deal well with hiatuses, so do not interpret accumulation rates close to depths with inferred hiatuses.
+#' If warning messages such as "In min(x) : no non-missing arguments to min; returning Inf" appear, Bacon likely became confused about whether or not to use BC/AD. Best run your core again with the desired setting for BCAD. 
 #' @param set Detailed information of the current run, stored within this session's memory as variable info.
 #' @param age.lim Minimum and maximum calendar age ranges, calculated automatically by default (\code{age.lim=c()}).
 #' @param age.lab The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}).
