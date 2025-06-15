@@ -22,7 +22,7 @@ Bacon.hist(
   mean.col = "red",
   verbose = TRUE,
   save.info = set$save.info,
-  NA.stop = TRUE
+  stop.ifabove = TRUE
 )
 }
 \arguments{
