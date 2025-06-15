@@ -435,8 +435,11 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
               " (", round(100*bg[below[i]]), "%)",
               if(i < length(below)) ", " else "\n", sep = "")
         }
-    } else
-        overlap(set)
+    } else {
+        overlap.intervals(set)
+        if(length(rounded==0)) rounded <- 1	
+		set$overlap <- model.dates.overlap(set, talk=TRUE, roundby=rounded)
+      }
 
     # report summaries of posteriors
     posteriors <- c(set$post.acc, set$post.mem)	

@@ -243,8 +243,38 @@ MCMC.diagnostics <- function(set=get("info"), ssize=nrow(set$output)) {
 
 
 
+model.dates.overlap <- function(set=get('info'), talk=TRUE, roundby=c()) {
+  dates <- set$calib$probs
+  depths <- set$dets[,4]
+  
+  model.ages <- lapply(depths, function(d) {
+    dens <- density(Bacon.Age.d(d))
+    list(x = dens$x, y = dens$y)
+  })
+
+  overl <- mapply(function(date, modelled) {
+    rice::overlap(list(date, cbind(modelled$x, modelled$y)),
+      talk = FALSE, visualise = FALSE)
+  }, dates, model.ages)
+
+  if(talk) {
+   if(length(roundby) == 0) roundby <- 2
+    min.overlap <- which(overl==min(overl))[1]
+    min.overlap <- cbind(round(overl[min.overlap], roundby), depths[min.overlap])
+    max.overlap <- which(overl==max(overl))[1]
+    max.overlap <- cbind(round(overl[max.overlap], roundby), depths[max.overlap])
+    mean.overlap <- round(mean(overl), roundby)
+
+    message("Average overlap between model and dates: ", mean.overlap, "%, from ",
+	  min.overlap[1], "% at ", min.overlap[2], " ", set$unit, " to ", 
+	  max.overlap[1], "% at ", max.overlap[2], set$unit)
+  }
+
+  return(cbind(depths, overl))
+}
+
 # calculate the proportion of dates that are within the age-depth model's confidence ranges
-overlap <- function(set=get('info'), digits=0, verbose=TRUE) {
+overlap.intervals <- function(set=get('info'), digits=0, verbose=TRUE) {
   d <- set$dets[,4]
   top <- ifelse(length(set$d.min) == 0, 1, min(which(d >= set$d.min)))
   bottom <- ifelse(length(set$d.max) == 0, length(d), max(which(d <= set$d.max)))

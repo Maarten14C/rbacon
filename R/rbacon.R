@@ -1,3 +1,4 @@
+# make Bacon.hist(-10) fail more gracefully (when depth outside range)
 
 # make flux ghostplot more efficient by filling a grid (using cut?)
 

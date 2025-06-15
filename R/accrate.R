@@ -434,12 +434,12 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
   # speed things up by not repeatedly calculating ages in accrate.age
   ages <- array(0, dim=c(nrow(set$output), length(set$elbows)))
   for(i in 1:ncol(ages))
-    ages[,i] <- Bacon.Age.d(set$elbows[i], set, BCAD=FALSE)
+    ages[,i] <- Bacon.Age.d(set$elbows[i], set, BCAD=BCAD) # BCAD was F, June '25
 
   pb <- txtProgressBar(min=0, max=max(1,length(age.seq)-1), style = 3)
   for(i in 1:age.res) {
     setTxtProgressBar(pb, i)
-    acc <- accrate.age(age.seq[i], set, cmyr=cmyr, ages=ages, silent=TRUE, BCAD=FALSE)
+    acc <- accrate.age(age.seq[i], set, cmyr=cmyr, ages=ages, silent=TRUE, BCAD=BCAD) # BCAD was F, June '25
     acc <- acc[!is.na(acc)]
     if(length(acc[!is.na(acc)]) > 1) {
       z[,i] <- density(acc, from=min(acc.lim, na.rm=TRUE), to=max(acc.lim, na.rm=TRUE), n=acc.res)$y
@@ -449,9 +449,10 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
     }
   }
   message("") # print a newline
+  
   stored <- cbind(age.seq, acc.rng[,1], acc.rng[,2], acc.median, acc.mean)
   colnames(stored) <- c("ages", "min.rng", "max.rng", "median", "mean")
-
+  stored <<- stored
   z <- t(z) # when using image to draw the greyscales, it will rotate z
   if(flip.acc)
     z <- z[,ncol(z):1] 

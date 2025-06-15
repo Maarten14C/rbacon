@@ -327,7 +327,7 @@ hiatus.slopes <- function(set=get('info'), hiatus.option=1) {
 #'   Bacon.hist(20:30)
 #' }
 #' @export
-Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c(), hist.lab="Frequency", calc.range=TRUE, hist.lim=c(), draw=TRUE, prob=set$prob, hist.col=grey(0.5), hist.border=grey(.2), range.col="blue", med.col="green", mean.col="red", verbose=TRUE, save.info=set$save.info) {
+Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c(), hist.lab="Frequency", calc.range=TRUE, hist.lim=c(), draw=TRUE, prob=set$prob, hist.col=grey(0.5), hist.border=grey(.2), range.col="blue", med.col="green", mean.col="red", verbose=TRUE, save.info=set$save.info, NA.stop=TRUE) {
   outfile <- paste0(set$prefix, ".out")
   if(length(set$output) == 0 || length(set$Tr) == 0) {
     set <- Bacon.AnaOut(outfile, set, MCMC.resample=FALSE)
@@ -335,6 +335,12 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
       assign_to_global("set", set) # should that be 'info'?
   }
   
+  if(NA.stop)
+    if(min(d) < min(set$elbows)) {
+		these.d <- d[which(d < min(set$elbows))]
+		stop("depth(s) ", paste(these.d, collapse=", "), " lie above the top/minimum depth (", min(set$elbows), " ", set$unit, "). Adjust d.min?")
+	}
+	  
   hist3 <- function(d, BCAD) {
     hsts <- list(); maxhist <- 0; minhist <- 1
     pb <- txtProgressBar(min=0, max=max(1,length(d)-1), style = 3)

@@ -1,3 +1,7 @@
+# rbacon 3.6.0
+* after a run, besides reporting the percentage of dates that overlap with the age-depth model (by default at 95% ranges), the percentage overlap between the distributions of the dates and that of the age-depth model is reported.  
+* If a depth higher than d.min is provided in 'Bacon.hist', this now throws a more interpretable error. 
+
 # rbacon 3.5.2
 * removed the ageranges example to avoid the CRAN NOTE about a slow example
 
