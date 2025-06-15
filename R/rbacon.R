@@ -2,6 +2,10 @@
 
 # make flux ghostplot more efficient by filling a grid (using cut?)
 
+# bug:
+#Bacon(ask=F); accrate.depth(100) # returns values as expected, but:
+#Bacon(ask=F, slump=c(40,47)); accrate.depth(92) # NA
+# must be a lacking check in accrate.depth. Same for accrate.age?
 
 # in the inst/dev/ folder, there is now a testBaconplots.Rmd function which automates plotting and checking many functions. There is also a file render-plots.yml which can be used to test many plots on a range of github systems (ubuntu, fedora and windows). Produced html files can be downloaded and checked locally. To do this, the file has to be placed in .github/workflows/.
 
@@ -9,7 +13,7 @@
 
 # make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths
 
-# do: check that overlap function continues to function (sometimes reports 0% overlap when the dates fit well), check rplum bugs w youngest.age (is the bug in rbacon or in rplum?) and w larger-than-previous error sizes
+# do: check rplum bugs w youngest.age (is the bug in rbacon or in rplum?) and w larger-than-previous error sizes
 
 # replacing the plotting of the calibrated distributions by rice's functions doesn't seem to speed up anything, so keeping the original method in place for now.
 

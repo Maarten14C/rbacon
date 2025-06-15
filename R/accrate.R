@@ -1,7 +1,7 @@
 
 
 ## Accumulation rate calculations
-#' should take into account hiatuses
+#' should take into account hiatuses and slumps
 #' @name accrate.depth
 #' @title Obtain estimated accumulation rates as for any depth of a core.
 #' @description Obtain accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for any depth of a core.
@@ -28,6 +28,9 @@
 #' }
 #' @export
 accrate.depth <- function(d, set=get('info'), cmyr=FALSE, na.rm=FALSE, inversion.threshold=1e-6) {
+  if(length(set$slump) > 0) 
+	d <- toslump(d, set$slump, remove=na.rm)
+
   accs.elbows <- set$output[,2:(set$K+1)]
   if(!is.na(d) && all(!is.na(set$elbows)) && min(set$elbows) <= d && d <= max(set$elbows))
     accs <- unlist(accs.elbows[max(which(set$elbows <= d))]) else
@@ -105,7 +108,7 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
 
 #' @name accrate.depth.summary
 #' @title Provide a summary of the estimated accumulation rates for any depth of a core.
-#' @description Obtain a summary (95\% range, 68\% range, median, mean) of the accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for any depth of a core.
+#' @description Obtain a summary (95\% range, 68\% range, 50\%=median, mean) of the accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for any depth of a core.
 #' @param d The depth for which accumulation rates need to be returned.
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param cmyr Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm.
@@ -181,13 +184,13 @@ accrate.age.summary <- function(age, set=get('info'), cmyr=FALSE, na.rm=TRUE, pr
 #'   myaccrates <- accrates.core()
 #' }
 #' @export
-accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, na.rm=FALSE, probs=c(.025, .16, .84, .975, .5), round=2, write=TRUE, sep="\t") {
+accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, na.rm=TRUE, probs=c(.025, .16, .84, .975, .5), round=2, write=TRUE, sep="\t") {
   if(length(dseq) == 0)
     dseq <- set$depths
   mysummary <- function(dseq)
     accrate.depth.summary(dseq, set, cmyr, na.rm, probs)
   allaccs <- t(sapply(dseq, mysummary))
-  allaccs <- round(allaccs,round)
+  allaccs <- cbind(depths=dseq, round(allaccs,round))
   
   if(write) {
     fl <- paste0(set$coredir, set$core, "/", set$core, "_", set$K, "_accrates.txt")

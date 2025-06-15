@@ -53,10 +53,14 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
             }
         }
     } else
-         ages <- NA # Feb 2021
+        ages <- NA # Feb 2021
+
+   if(na.rm)
+     ages <- ages[!is.na(ages)]  
 
     if(BCAD)
       ages <- calBPtoBCAD(ages)
+	
     return(c(ages))
 }
 
