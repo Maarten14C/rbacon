@@ -122,6 +122,7 @@ rates around the core's maximum ages (only a few of all age-model iterations wil
 The grey-scale reconstruction around the oldest ages of any reconstruction often indicates very low accumulation rates.
 This is due to only some MCMC iterations reaching those old ages, and these iterations will have modelled very slow accumulation rates.
 Currently does not deal well with hiatuses, so do not interpret accumulation rates close to depths with inferred hiatuses.
+If warning messages such as "In min(x) : no non-missing arguments to min; returning Inf" appear, Bacon likely became confused about whether or not to use BC/AD. Best run your core again with the desired setting for BCAD.
 }
 \examples{
 \dontrun{

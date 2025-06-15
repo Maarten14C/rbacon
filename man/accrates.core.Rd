@@ -8,7 +8,7 @@ accrates.core(
   dseq = c(),
   set = get("info"),
   cmyr = FALSE,
-  na.rm = FALSE,
+  na.rm = TRUE,
   probs = c(0.025, 0.16, 0.84, 0.975, 0.5),
   round = 2,
   write = TRUE,

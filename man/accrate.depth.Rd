@@ -30,7 +30,7 @@ all MCMC estimates of accumulation rate of the chosen depth.
 Obtain accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for any depth of a core.
 }
 \details{
-should take into account hiatuses
+should take into account hiatuses and slumps
 
 Considering accumulation rates is crucial for age-depth modelling, and even more so if they are subsequently used for calculating proxy
 influx values, or interpreted as proxy for environmental change such as carbon accumulation.

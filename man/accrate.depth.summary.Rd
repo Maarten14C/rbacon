@@ -27,7 +27,7 @@ accrate.depth.summary(
 A summary of the estimated accumulation rate of the chosen depth: minimum of the 95\% interval, minimum of the 68\% interval, maximum of the 68\% interval, maximum of the 95\% interval, median (i.e., 50\%) and mean.
 }
 \description{
-Obtain a summary (95\% range, 68\% range, median, mean) of the accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for any depth of a core.
+Obtain a summary (95\% range, 68\% range, 50\%=median, mean) of the accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for any depth of a core.
 }
 \examples{
 \dontrun{

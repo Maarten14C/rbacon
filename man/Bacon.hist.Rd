@@ -21,7 +21,8 @@ Bacon.hist(
   med.col = "green",
   mean.col = "red",
   verbose = TRUE,
-  save.info = set$save.info
+  save.info = set$save.info,
+  NA.stop = TRUE
 )
 }
 \arguments{
