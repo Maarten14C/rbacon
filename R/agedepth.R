@@ -421,15 +421,19 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(verbose) {
     if(!dates.only)
       message("\nMean ", 100*prob, "% confidence ranges ", 
-	    round(mean(rng), rounded), " ", age.unit, ", min. ",
+        round(mean(rng), rounded), " ", age.unit, ", min. ",
         min(rng), " ", min.rng, ", max. ", max(rng), " ", max.rng)
 
     if(set$isplum) {
+      set$overlap <- model.Pb.overlap(set, talk=TRUE, roundby=rounded)
+      if(set$hasBaconData) # then also report the overlap with non-210Pb data
+        set$overlap <- model.dates.overlap(set, talk=TRUE, roundby=rounded)
+
       below <- which(bg > pb.background)
       if(length(below) == 0)
-        message("\nIt seems that the Pb-measurements haven't reached background") else {
+        message("It seems that the Pb-measurements haven't reached background") else {
           message("Pb-210 likely at or below detection limit from ", 
-		    min(set$dets[below,4]), " ", set$depth.unit, " depth onward: ")
+            min(set$dets[below,4]), " ", set$depth.unit, " depth onward: ")
           for(i in seq_along(below))
             cat(set$dets[below[i],4], " ", set$depth.unit,
               " (", round(100*bg[below[i]]), "%)",
@@ -437,8 +441,8 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
         }
     } else {
         overlap.intervals(set)
-        if(length(rounded==0)) rounded <- 1	
-		set$overlap <- model.dates.overlap(set, talk=TRUE, roundby=rounded)
+        if(length(rounded==0)) rounded <- 1
+        set$overlap <- model.dates.overlap(set, talk=TRUE, roundby=rounded)
       }
 
     # report summaries of posteriors

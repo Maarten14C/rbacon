@@ -1,13 +1,18 @@
-# make Bacon.hist(-10) fail more gracefully (when depth outside range)
+# add var(posterior)/var(prior) (or as precision=1/var) as a learning ratio. And (prior.mean-posterior.mean) / sd(prior) as z measure of difference posterior/prior. Also write this to a file _summary.txt in the core's folder.
+# var for gamma = mn^2/shape, for beta it's var = [mn × (1 − mn)] / (s + 1)
+
+# MCMC, beside ESS also report IAT. ESS = N/IAT. IAT describes after how many its an independent sample is found, ESS describes how many of those are present in the entire remaining chain. 
+
+# Bacon(hiatus.depths=25, hiatus.max=100); hiatus.max is not obeyed
+
+# check doi:10.1016/j.quageo.2016.01.001 as example of using strat to inform age-depth model
+
+
+# check if we should add testthat folder, check that rplum runs as expected, check vignette
 
 # make flux ghostplot more efficient by filling a grid (using cut?)
 
-# bug:
-#Bacon(ask=F); accrate.depth(100) # returns values as expected, but:
-#Bacon(ask=F, slump=c(40,47)); accrate.depth(92) # NA
-# must be a lacking check in accrate.depth. Same for accrate.age?
-
-# in the inst/dev/ folder, there is now a testBaconplots.Rmd function which automates plotting and checking many functions. There is also a file render-plots.yml which can be used to test many plots on a range of github systems (ubuntu, fedora and windows). Produced html files can be downloaded and checked locally. To do this, the file has to be placed in .github/workflows/.
+# in the inst/dev/ folder, there is now a testBaconplots.Rmd file which automates plotting and checking many functions. There is also a file render-plots.yml which can be used to test many plots on a range of github systems (ubuntu, fedora and windows). Produced html files can be downloaded and checked locally. To do this, the file has to be placed in .github/workflows/.
 
 # Check if we can/should return to using a gamma distribution instead of a uniform one for the hiatus
 

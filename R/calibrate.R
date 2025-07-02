@@ -124,7 +124,8 @@ calib.plot <- function(set=get('info'), dets=set$dets, accordion=c(), BCAD=set$B
   }
 
   if(length(age.lim) == 0)
-    lims <- c()
+    lims <- c() else
+      lims <- age.lim
   for(i in 1:length(set$calib$probs))
     lims <- c(lims, set$calib$probs[[i]][,1])
   age.min <- min(lims)

@@ -33,6 +33,8 @@ Bacon
 #include <math.h>
 //#include <unistd.h>
 #include <string.h>
+#include <cstdio>
+#include <R_ext/Print.h>
 
 #include "cal.h"
 #include "ranfun.h"
@@ -70,24 +72,24 @@ class BaconFix: public Bacon {
 
 			int m, K; //m number of dets, K number of sections
 			int H; //number of hiatuses
-			double *h; //location of the hiatuses
+			double *h; //locations of the hiatuses
 
 			int useT; //=1 to use the t model, =0 to use the normal model
 
             //unsigned long int seed; // MB Oct 2020
 
-			double w, w0, wp0;
+			double w, w0, wp0; // memory
 
-			double *x, *X0, *Xp0, *theta;
+			double *x, *X0, *Xp0, *theta; // accrates, age
 
 			double MinYr, MaxYr;
 			double MaxYrTheta0Plum;
 
 			//Based on depth and increment between depths
-			double c0, Dc;
-			virtual double c(int i) { return c0 + i*Dc; }
+			double c0, Dc; // minimum/starting depth, thickness of sections of the piece-wise linear model
+			virtual double c(int i) { return c0 + i*Dc; } // starting depth of section i
 
-			double U, Uprior, Uli;
+			double U, Uprior, Uli; // accumulation rates
             void AccPars(int prime) { /*fprintf( F, "%f  %f  %f\n", Uprior, Uli, U);*/
             prime=0;}
 
@@ -135,10 +137,13 @@ class BaconFix: public Bacon {
 			}
 			//here ds = 1.0 (in your depth units), it could be changed to a parameter
 
-
 			double *ha, *hb; //a priori pars for the uniform prior on hiatus jumps in each inter hiatus.
 //H Change			double priorHU(int i, const double x) { return (1.0-ha[i])*log(x) + hb[i]*Dc*x; }
-			double priorHU(int i, const double x) { return 1.0; } //Uniform
+			//double priorHU(int i, const double x) { return (1.0-ha[i])*log(x) + hb[i]*Dc*x; } // MB June 2025, reactivating the hiatus constraints
+			// in the R code, ha remains active but hb is no longer provided. This because the hiatus prior is now uniform, no longer a gamma.
+			// but perhaps it'd be best to return to a gamma, since some users do prefer providing info that shorter hiatuses are more likely than longer ones
+			// perhaps a gamma with shape 1 -> exponential
+			double priorHU(int i, const double x) { return 1.0; } //Uniform. Commented June 2025. And uncommented again
 
 			int WarnBeyondLimits;
 			//Sets the thetas and verifies correct limits

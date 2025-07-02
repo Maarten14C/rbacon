@@ -212,33 +212,64 @@ MCMC.diagnostics <- function(set=get("info"), ssize=nrow(set$output)) {
   ess <- coda::effectiveSize(energy)
   z <- abs(coda::geweke.diag(energy)$z)
   
-  ssize.warn <- paste0(" please run more iterations (ssize >", ssize, ")")
+  ssize.warn <- paste0(" please run using more iterations (ssize >", ssize, ")")
   
   if(length(energy) < 500) {
     message("Warning: very short MCMC chain,", ssize.warn) 
-	invisible(NA)  
+    invisible(NA)
   } else {
-  			
+
     if(ess < 10)
-	  message("Warning, the MCMC run has a very high autocorrelation (effective sample size=", round(ess,2), ", <100. So,", ssize.warn) else
+      message("Warning, the MCMC run has a very high autocorrelation (effective sample size=", round(ess,2), ", <100. So,", ssize.warn) else
       if(ess < 100)
         message("Warning, poor MCMC mixing (effective sample size=", round(ess,2), ", <100) -" , ssize.warn) else
         if(ess < 200)
           message("MCMC mixing (effective sample size=", round(ess,2),  ", <200) could be better -", ssize.warn) else
-	      if(ess < 1000)
+          if(ess < 1000)
             message("Good MCMC mixing (effective sample size=", round(ess,2), ", >200)") else
-              message("Excellent MCMC mixing (effective sample size=", round(ess,2), ", >1000)")	    
+              message("Excellent MCMC mixing (effective sample size=", round(ess,2), ", >1000)")
 
     if(z < 1.96) # <1 sd
        message("No sign of MCMC drift (z=", round(z,2), ", <1.96), OK") else
        if(z < 2.58) # <2 sd
-         message("Warning, there's a hint of MCMC drift (z=", round(z,2), ", >1.96), run again?", ssize.warn) else  
-           message("Warning, non-stationary MCMC (z=", round(z,2), ", >2.58), please run again", ssize.warn)
+         message("Warning, there's a hint of MCMC drift (z=", round(z,2), ", >1.96),", ssize.warn) else
+           message("Warning, non-stationary MCMC (z=", round(z,2), ", >2.58),", ssize.warn)
 
     diag <- c(ess, z)
     names(diag) <- c("effective sample size (ess)", "z")		  
     invisible(diag)
   }
+}
+
+
+# for plum post-run analysis
+model.Pb.overlap <- function(set=get('info'), talk=TRUE, roundby=c()) {
+
+  depths <- set$dets[,4]
+  A_overlap <- c()
+
+  for(i in 1:nrow(set$dets)) {
+    Aseq <- set$Ai$x[[i]]
+    A_modelled_probs <- set$Ai$y[[i]]
+    A_measured_probs <- dnorm(Aseq, set$dets[i,2], set$dets[i,3]) # Plum assumes a normal dist for A, not rbacon's default student-t
+    A_overlap[i] <- rice::overlap(list(cbind(Aseq, A_modelled_probs), cbind(Aseq, A_measured_probs)),
+      talk = FALSE, visualise = FALSE)
+  }
+
+  if(talk) {
+    if(length(roundby) == 0) roundby <- 2
+      min.overlap <- which(A_overlap==min(A_overlap))[1]
+      min.overlap <- cbind(round(A_overlap[min.overlap], roundby), depths[min.overlap])
+      max.overlap <- which(A_overlap==max(A_overlap))[1]
+      max.overlap <- cbind(round(A_overlap[max.overlap], roundby), depths[max.overlap])
+      mean.overlap <- round(mean(A_overlap), roundby)
+
+      message("Average overlap between measured and modelled Pb-210: ", mean.overlap, "%, from ",
+        min.overlap[1], "% at ", min.overlap[2], " ", set$unit, " to ",
+        max.overlap[1], "% at ", max.overlap[2], set$unit)
+  }
+
+  return(cbind(depths, A_overlap))
 }
 
 
@@ -258,20 +289,22 @@ model.dates.overlap <- function(set=get('info'), talk=TRUE, roundby=c()) {
   }, dates, model.ages)
 
   if(talk) {
-   if(length(roundby) == 0) roundby <- 2
-    min.overlap <- which(overl==min(overl))[1]
-    min.overlap <- cbind(round(overl[min.overlap], roundby), depths[min.overlap])
-    max.overlap <- which(overl==max(overl))[1]
-    max.overlap <- cbind(round(overl[max.overlap], roundby), depths[max.overlap])
-    mean.overlap <- round(mean(overl), roundby)
+    if(length(roundby) == 0) roundby <- 2
+      min.overlap <- which(overl==min(overl))[1]
+      min.overlap <- cbind(round(overl[min.overlap], roundby), depths[min.overlap])
+      max.overlap <- which(overl==max(overl))[1]
+      max.overlap <- cbind(round(overl[max.overlap], roundby), depths[max.overlap])
+      mean.overlap <- round(mean(overl), roundby)
 
-    message("Average overlap between model and dates: ", mean.overlap, "%, from ",
-	  min.overlap[1], "% at ", min.overlap[2], " ", set$unit, " to ", 
-	  max.overlap[1], "% at ", max.overlap[2], set$unit)
+      message("Average overlap between model and dates: ", mean.overlap, "%, from ",
+        min.overlap[1], "% at ", min.overlap[2], " ", set$unit, " to ",
+        max.overlap[1], "% at ", max.overlap[2], set$unit)
   }
 
   return(cbind(depths, overl))
 }
+
+
 
 # calculate the proportion of dates that are within the age-depth model's confidence ranges
 overlap.intervals <- function(set=get('info'), digits=0, verbose=TRUE) {

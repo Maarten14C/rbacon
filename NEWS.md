@@ -1,7 +1,8 @@
 # rbacon 3.6.0
-* after a run, besides reporting the percentage of dates that overlap with the age-depth model (by default at 95% ranges), the percentage overlap between the distributions of the dates and that of the age-depth model is reported.  
+* after a run, besides reporting the percentage of dates that overlap with the age-depth model (by default at 95% ranges), the percentage overlap between the distributions of the dates and that of the age-depth model is reported. For Plum, the overlap between the measured and modelled Pb-210 values is reported.
 * If a depth above/smaller than d.min is provided in 'Bacon.hist', this now fails with a more informative error message. 
 * `accrate.depth` and related functions now deal better with slumps.
+* upon invoking a slump, `accrate.depth` no longer reports NAs for the lowermost sections of the piece-wise age-depth model.
 
 # rbacon 3.5.2
 * removed the ageranges example to avoid the CRAN NOTE about a slow example
@@ -10,7 +11,7 @@
 * reduced the runtime of the ageranges examples to avoid the CRAN NOTE
 
 # rbacon 3.5.0
-* accrate.age.ghost and accrate.depth.ghost can now be run without saving `info`, e.g. as in: 'mycore <- Bacon(save.info=FALSE, ask=FALSE); layout(1); accrate.depth.ghost(set=mycore)'.
+* accrate.age.ghost and accrate.depth.ghost can now be run without adding the variable `info` to the session, e.g. as in: 'mycore <- Bacon(save.info=FALSE, ask=FALSE); layout(1); accrate.depth.ghost(set=mycore)'.
 * adding delta.R and delta.STD columns to a .csv file was causing an occasional error which has been fixed (reported by Najoua Gharsalli).
 * a new function `ageranges` to summarize age estimates of depths. 
 * a new function `MCMC.diagnostics` which calculates the quality of the MCMC run (we're looking for a high value of 'effective sample size' which indicates good mixing, and a low value of 'z' which indicates a stationary run, without drift).
