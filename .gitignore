@@ -4,6 +4,7 @@
 /testBaconplots_files/*
 inst/dev/*.Rmd
 inst/dev/*.html
+ci/
 
 # GitHub and CI/CD files
 Bacon_runs

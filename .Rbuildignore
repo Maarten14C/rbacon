@@ -8,3 +8,5 @@
 ^\.DS_Store$
 inst/dev/*.Rmd
 inst/dev/*.html
+^ci$
+
