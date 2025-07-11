@@ -1,22 +1,22 @@
-# add var(posterior)/var(prior) (or as precision=1/var) as a learning ratio. And (prior.mean-posterior.mean) / sd(prior) as z measure of difference posterior/prior. Also write this to a file _summary.txt in the core's folder.
+# add var(posterior)/var(prior) (or as precision=1/var) as a learning ratio. And (prior.mean-posterior.mean) / sd(prior) as z measure of difference posterior/prior. 
 # var for gamma = mn^2/shape, for beta it's var = [mn × (1 − mn)] / (s + 1)
+
+# write information on MCMC (drift, IAT, ESS), model fit and 'learning' (prior/posterior mean/var, learning) to a file _summary.txt in the core's folder.
 
 # MCMC, beside ESS also report IAT. ESS = N/IAT. IAT describes after how many its an independent sample is found, ESS describes how many of those are present in the entire remaining chain. 
 
 # Bacon(hiatus.depths=25, hiatus.max=100); hiatus.max is not obeyed
 
-# check doi:10.1016/j.quageo.2016.01.001 as example of using strat to inform age-depth model
+# Check if we can/should return to using a gamma distribution instead of a uniform one for the hiatus
 
+# check doi:10.1016/j.quageo.2016.01.001 as example of using strat to inform age-depth model
+# make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths
 
 # check if we should add testthat folder, check that rplum runs as expected, check vignette
 
 # make flux ghostplot more efficient by filling a grid (using cut?)
 
 # in the inst/dev/ folder, there is now a testBaconplots.Rmd file which automates plotting and checking many functions. There is also a file render-plots.yml which can be used to test many plots on a range of github systems (ubuntu, fedora and windows). Produced html files can be downloaded and checked locally. To do this, the file has to be placed in .github/workflows/.
-
-# Check if we can/should return to using a gamma distribution instead of a uniform one for the hiatus
-
-# make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths
 
 # do: check rplum bugs w youngest.age (is the bug in rbacon or in rplum?) and w larger-than-previous error sizes
 
@@ -286,7 +286,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   }
   if(!is.na(hiatus.depths[1])) {
     hiatus.depths <- sort(unique(hiatus.depths))
-    if(length(acc.mean) == 1) # why not for boundary?
+    if(length(acc.mean) == 1) 
       acc.mean <- rep(acc.mean, length(hiatus.depths)+1)
   }
 

@@ -283,9 +283,9 @@ model.dates.overlap <- function(set=get('info'), talk=TRUE, roundby=c()) {
     list(x = dens$x, y = dens$y)
   })
 
-  overl <- mapply(function(date, modelled) {
-    rice::overlap(list(date, cbind(modelled$x, modelled$y)),
-      talk = FALSE, visualise = FALSE)
+  overl <- 100*mapply(function(date, modelled) {
+    rice::coverage(cbind(modelled$x, modelled$y), date, 
+      visualise = FALSE)
   }, dates, model.ages)
 
   if(talk) {
@@ -296,12 +296,60 @@ model.dates.overlap <- function(set=get('info'), talk=TRUE, roundby=c()) {
       max.overlap <- cbind(round(overl[max.overlap], roundby), depths[max.overlap])
       mean.overlap <- round(mean(overl), roundby)
 
-      message("Average overlap between model and dates: ", mean.overlap, "%, from ",
+      message("Average coverage (% of model covered by each date) ", mean.overlap, "%, from ",
         min.overlap[1], "% at ", min.overlap[2], " ", set$unit, " to ",
         max.overlap[1], "% at ", max.overlap[2], set$unit)
   }
 
   return(cbind(depths, overl))
+}
+
+
+
+model.Pb.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE) {
+  depths <- set$dets[,4]
+  dates <- 1:length(depths)
+  
+  A_overlap <- c()
+  for(i in dates) {
+    Aseq <- set$Ai$x[[i]]
+    A_modelled_probs <- set$Ai$y[[i]]
+    A_measured_probs <- dnorm(Aseq, set$dets[i,2], set$dets[i,3]) # Plum assumes a normal dist for A, not rbacon's default student-t
+    A_overlap[i] <- rice::hpd.overlap(cbind(Aseq, A_modelled_probs), cbind(Aseq, A_measured_probs), prob=prob)
+  }
+  
+  mean_A_overlap <- 100*sum(A_overlap)/length(A_overlap)
+  
+  if(verbose)
+    message(round(mean_A_overlap, decimals), "% (", sum(A_overlap), "/", length(A_overlap), 
+      ") of the modelled and measured Pb values overlap (", 100*set$prob, "% hpd ranges)")
+  
+  invisible(round(mean_A_overlap, decimals))
+}
+
+
+
+model.dates.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE) {
+  depths <- set$dets[,4]
+  dates <- 1:length(depths)
+
+  get.modelages <- function(i) {
+    depth.age <- density(Bacon.Age.d(depths[i], set), na.rm=TRUE)
+    cbind(depth.age$x, depth.age$y/sum(depth.age$y))
+  }
+    		
+  # for each dated depth, check if any of its date's hpds fall within any of the model's hpds
+  this.overlap <- function(i) 
+    rice::hpd.overlap(get.modelages(i), set$calib$probs[[i]], prob=prob) 
+
+  # proportion of dates that overlap with the model - at hpd level
+  inorout <- sapply(dates, this.overlap)
+  frac.in <- length(which(inorout==TRUE)) / length(depths)
+  
+  if(verbose) 
+    message(if(frac.in < .80) "Warning! Only ", round(100*frac.in, decimals), "% of the dates (", length(which(inorout==TRUE)), "/", length(depths), ") overlap with the age-depth model (", 100*set$prob, "% hpd ranges)")
+  
+  invisible(round(frac.in, decimals+2))
 }
 
 
@@ -314,7 +362,6 @@ overlap.intervals <- function(set=get('info'), digits=0, verbose=TRUE) {
   these <- top:bottom
   inside <- rep(1, length(these))
   for(i in these) {
-
     daterng <- set$calib$probs[[i]]
     daterng <- cbind(cumsum(daterng[,2])/sum(daterng[,2]), daterng[,1])
     daterng <- approx(daterng[,1], daterng[,2], c((1-set$prob)/2, 1-(1-set$prob)/2))$y
@@ -328,4 +375,106 @@ overlap.intervals <- function(set=get('info'), digits=0, verbose=TRUE) {
   inside <- 100*sum(inside)/length(these)
   if(verbose) 
     message(if(inside < 80) "Warning! Only ", round(inside, digits), "% of the dates overlap with the age-depth model (", 100*set$prob, "% ranges)")
+  invisible(inside)
 }
+
+
+
+learning <- function(set=get('info'), decimals=2, talk=TRUE) {
+
+  # accumulation rate
+  prioracc.mean <- set$acc.mean # can be multiple entries	
+  prioracc.shape <- set$acc.shape # can be multiple entries
+  prioracc.sd <- sqrt(prioracc.mean^2 / prioracc.shape)
+  if(is.na(set$hiatus.depths[1])) { # deal with multiple acc subsets
+    postacc.mean <- set$post.acc[1]
+    postacc.shape <- set$post.acc[2]
+  } else {
+      postacc.mean <- set$post.acc[,1]
+      postacc.shape <- set$post.acc[,2]	
+  }
+  
+  prioracc.precision <- 1 / (prioracc.mean^2 / prioracc.shape)
+  postacc.precision <- 1 / (postacc.mean^2 / postacc.shape)
+  acc.learned <- sqrt(postacc.precision / prioracc.precision)
+  acc.z <- (postacc.mean - prioracc.mean) / prioracc.sd
+  
+  acc.text <- paste0("Accumulation learning ratio (prec(posterior)/prec(prior)): ",
+    paste(round(acc.learned, decimals), collapse = ", "), 
+    "; z-difference: ",
+    round(acc.z, decimals), collapse = ", ")
+    
+  # memory	
+  priormem.mean <- set$mem.mean
+  priormem.strength <- set$mem.strength
+  priormem.sd <- sqrt(abs(priormem.mean * (1 - priormem.mean)) / (priormem.strength + 1))
+  priormem.precision <- 1 / priormem.sd
+  postmem.mean <- set$post.mem[1]
+  postmem.strength <- set$post.mem[2]
+  postmem.sd <- sqrt(abs(postmem.mean * (1 - postmem.mean)) / (postmem.strength + 1))
+  postmem.precision <- 1/postmem.sd
+  mem.learned <- sqrt(postmem.precision / priormem.precision)
+  mem.z <- (postmem.mean - priormem.mean) / priormem.sd
+  
+  mem.text <- paste0("Memory learning ratio: ",
+    paste(round(mem.learned, decimals), collapse = ", "), 
+    "; z-difference: ",
+    round(mem.z, decimals), collapse = ", ")
+  
+  # same for hiatus (if present)? Not with uniform/unbounded prior
+  
+  if(set$isplum) {
+    # influx, phi
+    priorphi.mean <- set$phi.mean
+    priorphi.shape <- set$phi.shape
+    priorphi.sd <- sqrt(priorphi.mean^2 / priorphi.shape) 
+    postphi.mean <- set$post.phi[1]
+    postphi.shape <- set$post.phi[2]	
+   
+    priorphi.precision <- 1 / (priorphi.mean^2 / priorphi.shape)
+    postphi.precision <- 1 / (postphi.mean^2 / postphi.shape)
+    phi.learned <- sqrt(postphi.precision / priorphi.precision)
+    phi.z <- (postphi.mean - priorphi.mean) / priorphi.sd
+  
+    phi.text <- paste0("Influx learning ratio: ",
+      paste(round(phi.learned, decimals), collapse = ", "), 
+      "; z-difference: ",
+      round(phi.z, decimals), collapse = ", ")
+  
+    # supported, sup
+    priorsup.mean <- set$s.mean
+    priorsup.shape <- set$s.shape
+    priorsup.sd <- sqrt(priorsup.mean^2 / priorsup.shape) 
+    postsup.mean <- set$post.supp[1]
+    postsup.shape <- set$post.supp[2]	
+
+    priorsup.precision <- 1 / (priorsup.mean^2 / priorsup.shape)
+    postsup.precision <- 1 / (postsup.mean^2 / postsup.shape)
+    sup.learned <- sqrt(postsup.precision / priorsup.precision)
+    sup.z <- (postsup.mean - priorsup.mean) / priorsup.sd
+
+    sup.text <- paste0("Supported learning ratio: ",
+      paste(round(sup.learned, decimals), collapse = ", "), 
+      "; z-difference: ",
+      round(sup.z, decimals), collapse = ", ")	
+  }	
+
+  if(talk)
+    if(set$isplum) {
+      message(acc.text)
+      message(mem.text)
+      message(phi.text)
+      message(sup.text)	  	  
+    } else {
+        message(acc.text)
+        message(mem.text)		
+      }
+  
+  if(set$isplum)
+	txt <- c(acc.text, mem.text, phi.text, sup.text) else
+      txt <- c(acc.text, mem.text)  
+  invisible(txt)	  
+}
+
+
+

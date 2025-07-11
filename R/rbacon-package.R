@@ -12,7 +12,7 @@
 #' @importFrom Rcpp evalCpp
 #' @importFrom coda as.mcmc gelman.diag mcmc.list effectiveSize geweke.diag
 #' @importFrom data.table fread fwrite
-#' @importFrom rice draw.dates F14CtoC14 pMCtoC14 BCADtocalBP calBPtoBCAD
+#' @importFrom rice draw.dates F14CtoC14 pMCtoC14 BCADtocalBP calBPtoBCAD hpd.overlap
 #' @importFrom rintcal ccurve mix.ccurves new.ccdir
 #' @useDynLib rbacon, .registration=TRUE
 #' @name rbacon

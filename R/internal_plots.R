@@ -65,7 +65,7 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
 #     z <- z[nrow(z):1,]
 
   cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))
-	
+
   if(rotate.axes)
     image(age.seq, d.seq, t(z), col=cols, add=TRUE, rev.y=rev.d, rev.x=rev.age, useRaster=use.raster) else
       image(d.seq, age.seq, z, col=cols, add=TRUE, rev.x=rev.d, rev.y=rev.age, useRaster=use.raster)
@@ -228,32 +228,64 @@ PlotPhiPrior <- function(s, mn, set=get('info'), depth.unit=depth.unit, age.unit
 
 
 # plot the posterior (and prior) of the accumulation rate
-PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main="", depth.unit=set$depth.unit, age.unit=set$age.unit, ylab="Frequency", xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, acc.xlim=c(), acc.ylim=c(), acc.lab=c(), line.col=3, line.width=2, text.col=2, hist.col=grey(0.8), hist.border=grey(0.4)) {
-  hi <- 2:(set$K-1)
-  if(!is.na(set$hiatus.depths)[1])
-    for(i in set$hiatus.depths)
-      hi <- hi[-max(which(set$elbows < i))]
-  post <- c()
-  for(i in hi)
-    post <- c(post, set$output[[i]])
-  post.mn <- mean(post)
-  post.shape <- post.mn^2 / var(post)
-  post <- density(post, from=0)
-  post <- cbind(c(0, post$x, max(post$x)), c(0, post$y, 0))
+PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main="", depth.unit=set$depth.unit, age.unit=set$age.unit, ylab="Frequency", xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, acc.xlim=c(), acc.ylim=c(), acc.lab=c(), line.col=3, line.width=2, text.col=2, hist.col=rgb(0,0,0,0.2), hist.border=grey(0.4)) {
+  hi.full <- 2:(set$K - 1) # the accrate columns of the MCMC output (.out file)
+  
+  if(!is.na(set$hiatus.depths[1])) { # deal with any hiatuses/boundaries
+    split.pos <- sapply(set$hiatus.depths, function(d) max(which(set$elbows < d)))
+    split.at <- sort(split.pos)
+    segments <- split(hi.full, cut(seq_along(hi.full), breaks = c(0, split.at, length(hi.full)), labels = FALSE))
+  } else
+      segments <- list(hi.full)
+
+  accseq <- c()
+  xpol <- c()
+  post.mn <- numeric()
+  post.shape <- numeric()
+  post.sd <- numeric()
+  post <- c() 
+
+  if(is.na(set$hiatus.depths[1])) {
+    post.all <- unlist(set$output[,hi.full])
+    accseq <- seq(min(post.all), max(post.all), length=500) 
+    xpol <- c(min(post.all), accseq, max(post.all))
+    post.mn[1] <- mean(post.all)
+    post.shape[1] <- post.mn[1]^2 / var(post.all)
+    post.sd[1] <- sd(post.all)
+    post.dens <- density(post.all, from=min(xpol), to=max(xpol), n=500)$y
+    post <- cbind(xpol, c(0, post.dens, 0)) # single polygon
+  } else {
+	out.rng <- range(unlist(set$output[,unlist(segments)]))  
+    accseq <- seq(min(out.rng), max(out.rng), length=500)
+    xpol <- c(min(out.rng), accseq, max(out.rng))
+    post <- xpol  # first column
+    for(i in seq_along(segments)) {
+      this.post <- unlist(set$output[,segments[[i]]])
+      post.mn[i] <- mean(this.post)
+      post.shape[i] <- post.mn[i]^2 / var(this.post)
+      post.sd[i] <- sd(this.post)
+      this.dens <- density(this.post, from=min(accseq), to=max(accseq), n=500)$y
+      post <- cbind(post, c(0, this.dens, 0))  # add new polygon column
+    }
+  }
+
   maxprior <- dgamma((s-1)/(s/mn), s, s/mn)
   if(is.infinite(max(maxprior)))
     max.y <- max(post[,2]) else
-      max.y <- max(maxprior, post[,2])
+      max.y <- max(maxprior, post[,-1])
   if(length(acc.xlim) == 0)
-    acc.xlim <- range(0, post[,1], 2*mn)
+    acc.xlim <- range(c(0, accseq, xpol, 2*mn))
   if(length(acc.ylim) == 0)
     acc.ylim <- c(0, 1.05*max.y)
   if(length(acc.lab) == 0)
     acc.lab <- paste0("Acc. rate (", age.unit, "/", depth.unit, ")")
   plot(0, type="n", xlim=acc.xlim, xlab=acc.lab, ylim=acc.ylim, ylab="", xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
-  polygon(post, col=hist.col, border=hist.border)
+  if(is.na(set$hiatus.depths[1]))
+    polygon(post, col=hist.col, border=hist.border) else
+      for(i in 1:(ncol(post)-1))
+        polygon(cbind(post[,1], post[,i+1]), col=hist.col, border=hist.border)  
   PlotAccPrior(s, mn, add=TRUE, xlim=acc.xlim, xlab="", ylab=ylab, main=main, csize=prior.size, line.col=line.col, line.width=line.width, text.col=text.col)
-  invisible(c(post.mn, post.shape))
+  invisible(cbind(post.mn, post.shape))
 }
 
 

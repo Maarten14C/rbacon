@@ -1,14 +1,16 @@
 # rbacon 3.6.0
-* after a run, besides reporting the percentage of dates that overlap with the age-depth model (by default at 95% ranges), the percentage overlap between the distributions of the dates and that of the age-depth model is reported. For Plum, the overlap between the measured and modelled Pb-210 values is reported.
 * If a depth above/smaller than d.min is provided in 'Bacon.hist', this now fails with a more informative error message. 
 * `accrate.depth` and related functions now deal better with slumps.
 * upon invoking a slump, `accrate.depth` no longer reports NAs for the lowermost sections of the piece-wise age-depth model.
+* If boundaries or hiatuses are set, the acc.rate panel of the `agedepth` function now shows the posteriors of the multiple sections separately.
+* when calculating what proportion of the dates fit within the age-depth model, this is now done by checking for each date if any of its hpd intervals fall within any of the model's hpds (default 95\% confidence ranges).
+* now using `rice` and `rintcal` versions 1.3.0.
 
 # rbacon 3.5.2
-* removed the ageranges example to avoid the CRAN NOTE about a slow example
+* removed the ageranges example to avoid the CRAN NOTE about a slow example.
 
 # rbacon 3.5.1
-* reduced the runtime of the ageranges examples to avoid the CRAN NOTE
+* reduced the runtime of the ageranges examples to avoid the CRAN NOTE.
 
 # rbacon 3.5.0
 * accrate.age.ghost and accrate.depth.ghost can now be run without adding the variable `info` to the session, e.g. as in: 'mycore <- Bacon(save.info=FALSE, ask=FALSE); layout(1); accrate.depth.ghost(set=mycore)'.

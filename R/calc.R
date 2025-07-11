@@ -320,6 +320,7 @@ hiatus.slopes <- function(set=get('info'), hiatus.option=1) {
 #' @param med.col Colour of the median. Defaults to \code{med.col="green"}.
 #' @param mean.col Colour of the mean. Defaults to \code{mn.col="red"}.
 #' @param verbose Provide feedback on what is happening (default \code{verbose=TRUE}).
+#' @param progress Show a progress bar (default \code{progress=TRUE}).
 #' @param save.info A variable called `info' with relevant information about the run (e.g., core name, priors, settings, ages, output) can be saved into the working directory. Note that this will overwrite any existing variable with the same name - as an alternative, one could run, e.g., \code{myvar <- Bacon()}, followed by supplying the variable \code{myvar} in any subsequent commands.
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A local variable called `hists', and a plot with the histogram and the age ranges, median and mean, or just the age ranges, medians and means if more than one depth \code{d} is given.
@@ -331,7 +332,7 @@ hiatus.slopes <- function(set=get('info'), hiatus.option=1) {
 #'   Bacon.hist(20:30)
 #' }
 #' @export
-Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c(), hist.lab="Frequency", calc.range=TRUE, hist.lim=c(), draw=TRUE, prob=set$prob, hist.col=grey(0.5), hist.border=grey(.2), range.col="blue", med.col="green", mean.col="red", verbose=TRUE, save.info=set$save.info) {
+Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c(), hist.lab="Frequency", calc.range=TRUE, hist.lim=c(), draw=TRUE, prob=set$prob, hist.col=grey(0.5), hist.border=grey(.2), range.col="blue", med.col="green", mean.col="red", verbose=TRUE, progress=TRUE, save.info=set$save.info) {
   outfile <- paste0(set$prefix, ".out")
   if(length(set$output) == 0 || length(set$Tr) == 0) {
     set <- Bacon.AnaOut(outfile, set, MCMC.resample=FALSE)
@@ -346,14 +347,16 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
 	  
   hist3 <- function(d, BCAD) {
     hsts <- list(); maxhist <- 0; minhist <- 1
-    pb <- txtProgressBar(min=0, max=max(1,length(d)-1), style = 3)
+	if(progress)
+      pb <- txtProgressBar(min=0, max=max(1,length(d)-1), style = 3)
     for(i in 1:length(d)) {
-      if(length(d) > 1) {
-        if(length(d) < 500) # progress bar slows things down much if i is large
-          setTxtProgressBar(pb, i) else
-            if(i %% 10 == 0)
-              setTxtProgressBar(pb, i)
-      }
+	  if(progress)
+	    if(length(d) > 1) {
+          if(length(d) < 500) # progress bar slows things down much if i is large
+            setTxtProgressBar(pb, i) else
+              if(i %% 10 == 0)
+                setTxtProgressBar(pb, i)
+        }
       ages <- Bacon.Age.d(d[i], set, BCAD=BCAD)
       if(length(ages[!is.na(ages)]) > 0) { # added !is.na(ages) 21 April 21
         hst <- density(ages)
