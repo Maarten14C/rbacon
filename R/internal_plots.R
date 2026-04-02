@@ -19,13 +19,15 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
     d.seq <- squeeze(d.seq, accordion[1], accordion[2])
 
   if(use.cpp) {
+	hists <- tryCatch({  
     if(is.na(set$hiatus.depths[1]))
-      hists <- depths_agegrid(d.seq, out=as.matrix(set$output), elbows=info$elbows, hist_n=age.res, min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95) else
-        hists <- depths_agegrid_hiatus(d.seq, out=as.matrix(set$output), elbows=info$elbows,
+      depths_agegrid(d.seq, out=as.matrix(set$output), elbows=info$elbows, hist_n=age.res, min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95) else
+        depths_agegrid_hiatus(d.seq, out=as.matrix(set$output), elbows=info$elbows,
           hiatus_depths=set$hiatus.depths, slopes_above=set$slope.above, slopes_below=set$slope.below, elbow_above_hiatus=set$elbow.above, elbow_below_hiatus=set$elbow.below,
           hist_n=age.res, min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95)
-    z <- as.matrix(hists$density)
-
+    z <- as.matrix(hists$density)}, 
+	error = function(e) {warning("C++ problem, please run again using use.cpp=FALSE"); return(NULL)}, interrupt = function(e) {stop("Operation interrupted by user")})
+	
     # z needs a bit more manipulation, e.g. check that max=1, dark, cutoff, is.na
   } else {
 
