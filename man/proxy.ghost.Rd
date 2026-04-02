@@ -7,9 +7,11 @@
 proxy.ghost(
   proxy = 1,
   proxy.lab = NULL,
-  proxy.res = 250,
-  age.res = 200,
+  proxy.res = 200,
+  age.res = 500,
   yr.res = age.res,
+  zero.col = "white",
+  max.col = "black",
   rgb.scale = c(0, 0, 0),
   rgb.res = 100,
   set = get("info"),
@@ -35,7 +37,8 @@ proxy.ghost(
   age.lab = ifelse(BCAD, "BC/AD", "cal yr BP"),
   yr.lab = age.lab,
   verbose = TRUE,
-  add = FALSE
+  add = FALSE,
+  use.cpp = F
 )
 }
 \arguments{
@@ -48,6 +51,10 @@ proxy.ghost(
 \item{age.res}{Resolution or amount of greyscale pixels to cover the age scale of the age-model plot. Default \code{age.res=250} as a compromise between image quality and calculation speed. If the output looks very pixel-like (e.g., when choosing to plot only part of the record using age.lim), set this option to higher values.}
 
 \item{yr.res}{Deprecated - use age.res instead}
+
+\item{zero.col}{The colour where the ghost is 0. Defaults to \code{zero.col="white"}, which together with \code{max.col="black"} results in a greyscale. More creative colour gradients can be implemented by checking the 600+ colours in \code{colours()}.}
+
+\item{max.col}{The colour where the ghost is at its maximum. Defaults to \code{max.col="black"}, which together with \code{zero.col="white"} results in a greyscale. More creative colour gradients can be implemented by checking the 600+ colours in \code{colours()}.}
 
 \item{rgb.scale}{The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}).}
 
@@ -100,6 +107,8 @@ proxy.ghost(
 \item{verbose}{Provide feedback on what is happening (default \code{verbose=TRUE}).}
 
 \item{add}{Add to an existing graph (default \code{add=FALSE}).}
+
+\item{use.cpp}{To speed things up, optionally a c++ function can be used to calculate the histograms behind the ghostplot. Defaults to \code{use.cpp=TRUE}.}
 }
 \value{
 A grey-scale graph of the proxy against calendar age.

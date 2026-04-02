@@ -1,28 +1,36 @@
-# add var(posterior)/var(prior) (or as precision=1/var) as a learning ratio. And (prior.mean-posterior.mean) / sd(prior) as z measure of difference posterior/prior. 
-# var for gamma = mn^2/shape, for beta it's var = [mn × (1 − mn)] / (s + 1)
+# check rounding of reported min/max and mean age ranges, in terminal
 
-# write information on MCMC (drift, IAT, ESS), model fit and 'learning' (prior/posterior mean/var, learning) to a file _summary.txt in the core's folder.
 
-# MCMC, beside ESS also report IAT. ESS = N/IAT. IAT describes after how many its an independent sample is found, ESS describes how many of those are present in the entire remaining chain. 
+# check if slump works together w hiatus/boundaries
+# Bacon(use.cpp=F, hiatus.depths=23, slump=c(5, 12)) runs but "Error in density.default(ages) : 'x' contains missing values" (one section has both a slump and a hiatus) but Bacon(hiatus.depths=23, slump=c(5, 9)) runs fine
+# even Bacon.Age.d goes wrong in the current rbacon when slump & hiatus - released rbacon does this correctly
+# in more recent rbacon, info$slope.below defaults to 20, but it varies in the released one
 
-# Bacon(hiatus.depths=25, hiatus.max=100); hiatus.max is not obeyed
 
-# Check if we can/should return to using a gamma distribution instead of a uniform one for the hiatus
+# model.dates.overlap: overlap is no longer a rice function, so this has to be rethought.
 
-# check doi:10.1016/j.quageo.2016.01.001 as example of using strat to inform age-depth model
-# make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths
+# since a section containing a hiatus is modelled internally using a hiatus jump only, so, not adding the section's acc.rate as well, we now provide the hiatus.mean in the .bacon file as hiatus.mean+(acc.mean*set$thick) (i.e. the slope will be modelled to include the accumulation over the entire section as well as the hiatus jump itself). Note: we're not combining acc.shape and hiatus.shape.
 
-# check if we should add testthat folder, check that rplum runs as expected, check vignette
+# agemodel.it doesn't deal with hiatus/boundary. Should it though?
 
-# make flux ghostplot more efficient by filling a grid (using cut?)
+# check for " and spaces/tabs in .csv files (especially headers) and remove them (perhaps optionally)
 
-# in the inst/dev/ folder, there is now a testBaconplots.Rmd file which automates plotting and checking many functions. There is also a file render-plots.yml which can be used to test many plots on a range of github systems (ubuntu, fedora and windows). Produced html files can be downloaded and checked locally. To do this, the file has to be placed in .github/workflows/.
+# c++ for age.ranges and agedepth.ghost?
+
 
 # do: check rplum bugs w youngest.age (is the bug in rbacon or in rplum?) and w larger-than-previous error sizes
 
+# check doi:10.1016/j.quageo.2016.01.001 as example of using strat to inform age-depth model
+# make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths. Should work in a new core directoy. And then, how to find the original depths? Needs a smoothing function as well.
+
+# check if we should add testthat folder (probably not, use files within ci folder instead), check that rplum runs as expected, check vignette
+
+# in the inst/dev/ folder, there is now a testBaconplots.Rmd file which automates plotting and checking many functions. There is also a file render-plots.yml which can be used to test many plots on a range of github systems (ubuntu, fedora and windows). Produced html files can be downloaded and checked locally. To do this, the file has to be placed in .github/workflows/.
+
+
 # replacing the plotting of the calibrated distributions by rice's functions doesn't seem to speed up anything, so keeping the original method in place for now.
 
-# for future versions: add function to estimate best thick value, check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), produce proxy.ghost graph with proxy uncertainties?, check/adapt behaviour of AgesOfEvents around hiatuses, if hiatus or boundary plot acc.posts of the individual sections?, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac; use normalizePath or other R-based solutions)
+# for future versions: add function to estimate best thick value, check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), produce proxy.ghost graph with proxy uncertainties?, check/adapt behaviour of AgesOfEvents around hiatuses, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac; use normalizePath or other R-based solutions)
 
 # read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum. Currently done using utils::getFromNamespace which is basically a way to allow :::
 
@@ -37,7 +45,7 @@
 #' the accumulation rate (in years/cm; so more correctly, sedimentation times) for each of these sections.
 #' Combined with an estimated starting date for the first section, these accumulation rates then form the age-depth model.
 #' The accumulation rates are constrained by prior information on the accumulation rate (\code{acc.mean, acc.shape}) and its
-#' variability between neighbouring depths, or "memory" (\code{mem.mean, mem.strength}). Hiatuses can be introduced as well, also constrained by prior information (\code{hiatus.max}).
+#' variability between neighbouring depths, or "memory" (\code{mem.mean, mem.strength}). Hiatuses can be introduced as well, also constrained by prior information (\code{hiatus.mean, hiatus.shape}).
 #'
 #' Although Bacon works with any kind of absolute dates (e.g., OSL, tephra or other dates on a calendar scale),
 #' it is often used to age-model 14C-dated sequences. Radiocarbon dates should be calibrated using either IntCal20
@@ -99,10 +107,12 @@
 #' @param mem.mean The prior for the memory is a beta distribution, which looks much like the gamma distribution but
 #' its values are always between 0 (no assumed memory) and 1 (100\% memory). Its default settings of \code{mem.mean=0.5}
 #' allow for a large range of posterior memory values. Please note that the default memory prior has been updated from rbacon version 2.5.1. on, to repair a bug. 
-#' @param boundary The assumed depths of any boundary, which divides sections of different accumulation rate regimes (e.g., as indicated by major change in the stratigraphy). No hiatus is assumed between these sections, and memory is reset crossing the boundary. Different accumulation priors can be set for the sections above and below the boundary, e.g., \code{acc.mean=c(5, 20)}. See also \code{hiatus.depths}, \code{mem.mean}, \code{acc.mean} and \code{acc.shape}. Setting many boundaries might not work, and having more than one boundary per model section (see \code{'thick'}) might not work either.
+#' @param boundary The assumed depths of any boundary, which divides sections of different accumulation rate regimes (e.g., as indicated by major change in the stratigraphy). No hiatus is assumed between these sections, and memory is reset crossing the boundary. Different accumulation priors can be set for the sections above and below the boundary, e.g., \code{acc.mean=c(5, 20)}. See also \code{hiatus.depths}, \code{mem.mean}, \code{acc.mean} and \code{acc.shape}. Setting many boundaries might not work, and the maximum numbers of boundaries per model section (see \code{'thick'}) is 1.
 #' @param hiatus.depths The assumed depths for any hiatus should be provided as, e.g.,
-#' \code{hiatus.depths=20} for one at 20cm depth, and \code{hiatus.depths=c(20,40)} for two hiatuses at 20 and 40 cm depth.
-#' @param hiatus.max The prior for the maximum length of the hiatus. Hiatus length is a uniform distribution, with equal probabilities between 0 and \code{hiatus.max} yr (or whatever other \code{age.unit} is chosen).
+#' \code{hiatus.depths=20} for one at 20 cm depth, and \code{hiatus.depths=c(20,40)} for two hiatuses at 20 and 40 cm depth.
+#' @param hiatus.mean The prior for the mean of the hiatus gamma prior. Defaults to 100 and should be >0. 
+#' @param hiatus.shape The prior for the shape of the hiatus gamma prior. Set to 0.5 (default) to favour short time gaps but enable larger ones. Set to 1 for an exponential prior distribution, and to >1 for a distribution that peaks around hiatus.mean. 
+#' @param hiatus.max The hiatus prior used to be a uniform distribution with hiatus.max as its limits. Please use hiatus.mean and hiatus.shape instead. Will be deprecated.
 #' @param add Add a value to the maximum hiatus length if a boundary is chosen. Defaults to 100 yr (or whatever other age unit is chosen). Can be adapted if Bacon complains that the parameters are out of support.
 #' @param after Sets a short section above and below hiatus.depths within which to calculate ages. For internal calculations - do not change.
 #' @param cc Calibration curve for C-14 dates: \code{cc=1} for IntCal20 (northern hemisphere terrestrial), \code{cc=2} for Marine20 (marine),
@@ -115,6 +125,7 @@
 #' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages. \code{0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}
 #' @param F14C Radiocarbon ages can be provided as F14C values. If doing so, please indicate here which dates were entered as F14C (e.g., if the first 4 dates are in F14C, write \code{F14C=1:4}). The F14C values in your .csv file will then be replaced by their corresponding C14 ages.
 #' @param pMC Radiocarbon ages can be provided as pMC values. If doing so, please indicate here which dates were entered as pMC (e.g., if the first 4 dates are in pMC, write \code{pMC=1:4}). The pMC values in your .csv file will then be replaced by their corresponding C14 ages.
+#' @param hot.stop Stop with a warning if provided F14C or pMC values (see above) are negative or above 3 resp. 300. Defaults to \code{hot.stop=TRUE}.
 #' @param delta.R Mean of core-wide age offsets (e.g., regional marine offsets).
 #' @param delta.STD Error of core-wide age offsets (e.g., regional marine offsets).
 #' @param t.a The dates are treated using the t distribution (Christen and Perez 2009) by default (\code{normal=FALSE}).
@@ -153,6 +164,7 @@
 #' @param oldest.age Maximum age limit for Bacon runs, default at 1,000,000 cal BP. To set plot limits, use \code{age.max} instead.
 #' @param cutoff Avoid plotting very low probabilities of date distributions (default \code{cutoff=0.001}).
 #' @param plot.pdf Produce a pdf file of the age-depth plot. Defaults to \code{plot.pdf=TRUE} after a Bacon run.
+#' @param cairo Use cairo-based pdf plots if available (on Mac OS). Defaults to FALSE since using 'cairo_pdf()' causes problems for some Mac users.
 #' @param dark Darkness of the greyscale age-depth model. The darkest grey value is \code{dark=1} by default.
 #' Lower values will result in lighter grey but values >1 are not allowed.
 #' @param date.res Date distributions are plotted using \code{date.res=100} segments by default.
@@ -164,6 +176,7 @@
 #' @param younger.than an option to provide younger-than ages, for example a historical pollen marker. If there are younger-than dates, they tell us that the core should be younger than a certain age at that depth. For example, if the 7th and 8th dates in the core's .csv file are younger.than dates, use as \code{younger.than=c(7,8)}. The MCMC run could be problematic if the younger.than ages do not fit with the other information.
 #' @param save.elbowages If you want to have a file with the MCMC-derived ages for all the age-depth model's elbows, set \code{save.elbowages=TRUE} and a file with the ages will be saved in the core's folder, starting with the core name, followed by its number of sections, d.min, and section thickness, and ending in "_elbowages.txt".
 #' @param verbose Provide feedback on what is happening (default \code{verbose=TRUE}).
+#' @param use.cpp Whether or not to use a cpp function to calculate the ages. Defaults to TRUE, but can be set to FALSE (much slower but less experimental)
 #' @param ... options for the age-depth graph. See \link{agedepth} and \link{calib.plot}
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return An age-depth model graph, its age estimates, and a summary.
@@ -193,9 +206,11 @@
 #' Journal of Ecology 77: 1-23.
 #'
 #' @export
-Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=10, mem.mean=0.5, boundary=NA, hiatus.depths=NA, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", cc.dir=c(), postbomb=0, F14C=c(), pMC=c(), delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), remove=FALSE, BCAD=FALSE, ssize=4000, th0=c(), burnin=min(500, ssize), youngest.age=c(), oldest.age=c(), MinAge=c(), MaxAge=c(), cutoff=.01, plot.pdf=TRUE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, save.info=TRUE, older.than=c(), younger.than=c(), save.elbowages=FALSE, verbose=TRUE, ...) {
+Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=10, mem.mean=0.5, boundary=NA, hiatus.depths=NA, hiatus.mean=100, hiatus.shape=0.5, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", cc.dir=c(), postbomb=0, F14C=c(), pMC=c(), hot.stop=TRUE, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), remove=FALSE, BCAD=FALSE, ssize=4000, th0=c(), burnin=min(500, ssize), youngest.age=c(), oldest.age=c(), MinAge=c(), MaxAge=c(), cutoff=.01, plot.pdf=TRUE, cairo=FALSE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, save.info=TRUE, older.than=c(), younger.than=c(), save.elbowages=FALSE, verbose=TRUE, use.cpp=FALSE, ...) {
   # Check coredir and if required, copy example files into core directory
   coredir <- assign_coredir(coredir, core, ask, isPlum=FALSE)
+  csv.file <- paste0(coredir, core, "/", core, ".csv")
+
   if(core == "MSB2K" || core == "RLGH3") {
     if(!dir.exists(file.path(coredir, core))) {
       dir.create(file.path(coredir, core), showWarnings = FALSE, recursive = TRUE)
@@ -216,7 +231,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   # give feedback about calibration curves used
   if(ncol(dets) > 4 && length(cc) > 0) {
     cc.csv <- unique(dets[,5])
-	if(verbose) {
+    if(verbose) {
       if(length(cc.csv) == 1) {
         if(cc.csv != cc)
           message(" Using calibration curve specified within the .csv file,", cc.csv, "\n")
@@ -230,24 +245,26 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
 
   # Oct 2024
   if(length(F14C) > 0) {
-	if(min(dets[F14C,2]) < 0 || max(dets[F14C,2]) > 3) 
-      stop("The F14C values cannot be negative and are unlikely to be >3. Are you sure these values are in F14C?")		
+    if(hot.stop)
+      if(min(dets[F14C,2]) < 0 || max(dets[F14C,2]) > 3)
+        stop("The F14C values cannot be negative and are unlikely to be >3. Are you sure these values are in F14C?")
     asC14 <- F14CtoC14(dets[F14C,2], dets[F14C,3])
-	dets[F14C,2] <- asC14[,1]
-	dets[F14C,3] <- asC14[,2]
-    csv.file <- paste0(coredir, core, "/", core, ".csv")
-	fastwrite(as.data.frame(dets), csv.file, sep=sep, dec=dec, row.names=FALSE, quote=FALSE) 
-	message(paste("replaced F14C values with C14 ages in", csv.file))  
+    dets[F14C,2] <- asC14[,1]
+    dets[F14C,3] <- asC14[,2]
+    #csv.file <- paste0(coredir, core, "/", core, ".csv")
+    fastwrite(as.data.frame(dets), csv.file, sep=sep, dec=dec, row.names=FALSE, quote=FALSE)
+    message(paste("replaced F14C values with C14 ages in", csv.file))
   }
   if(length(pMC) > 0) {
-	if(min(dets[pMC,2]) < 0 || max(dets[pMC,2]) > 300) 
-      stop("The pMC values cannot be negative and are unlikely to be >300. Are you sure these values are in pMC?")		
+    if(hot.stop)
+      if(min(dets[pMC,2]) < 0 || max(dets[pMC,2]) > 300)
+        stop("The pMC values cannot be negative and are unlikely to be >300. Are you sure these values are in pMC?")
     asC14 <- pMCtoC14(dets[pMC,2], dets[pMC,3])
-	dets[pMC,2] <- asC14[,1]
-	dets[pMC,3] <- asC14[,2]
-    csv.file <- paste0(coredir, core, "/", core, ".csv")
-	fastwrite(as.data.frame(dets), csv.file, sep=sep, dec=dec, row.names=FALSE, quote=FALSE) 
-	message(paste("replaced pMC values with C14 ages in", csv.file))  
+    dets[pMC,2] <- asC14[,1]
+    dets[pMC,3] <- asC14[,2]
+    #csv.file <- paste0(coredir, core, "/", core, ".csv")
+    fastwrite(as.data.frame(dets), csv.file, sep=sep, dec=dec, row.names=FALSE, quote=FALSE)
+    message(paste("replaced pMC values with C14 ages in", csv.file))
   }
 
   if(suggest) { # adapt prior for mean accumulation rate?
@@ -282,7 +299,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   if(!is.na(boundary[1])) {
     boundary <- sort(unique(boundary)) 
     if(length(acc.mean) == 1) # August 2024
-      acc.mean <- rep(acc.mean, length(boundary)+1)	
+      acc.mean <- rep(acc.mean, length(boundary)+1)
   }
   if(!is.na(hiatus.depths[1])) {
     hiatus.depths <- sort(unique(hiatus.depths))
@@ -296,8 +313,8 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
 #  if(length(MaxAge) == 0)
 #    MaxAge <- max(1e6, round(dets[,2] + (5*dets[,3])))
 
-  info <- Bacon.settings(core=core, coredir=coredir, dets=dets, thick=thick, remember=remember, d.min=d.min, d.max=d.max, d.by=d.by, depths.file=depths.file, slump=slump, acc.mean=acc.mean, acc.shape=acc.shape, mem.mean=mem.mean, mem.strength=mem.strength, boundary=boundary, hiatus.depths=hiatus.depths, hiatus.max=hiatus.max, BCAD=BCAD, cc=cc, postbomb=postbomb, cc1=cc1, cc2=cc2, cc3=cc3, cc4=cc4, depth.unit=depth.unit, normal=normal, t.a=t.a, t.b=t.b, delta.R=delta.R, delta.STD=delta.STD, prob=prob, defaults=defaults, runname=runname, ssize=ssize, dark=dark, youngest.age=youngest.age, oldest.age=oldest.age, cutoff=cutoff, age.res=age.res, after=after, age.unit=age.unit)
-  
+  info <- Bacon.settings(core=core, coredir=coredir, dets=dets, thick=thick, remember=remember, d.min=d.min, d.max=d.max, d.by=d.by, depths.file=depths.file, slump=slump, acc.mean=acc.mean, acc.shape=acc.shape, mem.mean=mem.mean, mem.strength=mem.strength, boundary=boundary, hiatus.depths=hiatus.depths, hiatus.mean=hiatus.mean, hiatus.shape=hiatus.shape, BCAD=BCAD, cc=cc, postbomb=postbomb, cc1=cc1, cc2=cc2, cc3=cc3, cc4=cc4, depth.unit=depth.unit, normal=normal, t.a=t.a, t.b=t.b, delta.R=delta.R, delta.STD=delta.STD, prob=prob, defaults=defaults, runname=runname, ssize=ssize, dark=dark, youngest.age=youngest.age, oldest.age=oldest.age, cutoff=cutoff, age.res=age.res, after=after, age.unit=age.unit)
+
   # optionally, make the info variable available in the working environment (default, but will overwrite any existing variable with the name 'info')
   info$save.info <- save.info
   if(save.info) 
@@ -345,7 +362,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   }
 
   if(length(th0) == 0) # provide two ball-park/initial age estimates
-    info$th0 <- round(rnorm(2, max(youngest.age, dets[1,2]), dets[1,3]))
+    info$th0 <- round(rnorm(2, max(youngest.age, dets[1,2]), dets[1,3]^2))
   info$th0[info$th0 < info$youngest.age] <- info$youngest.age # otherwise twalk will not start
 
   ### assign depths
@@ -366,7 +383,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     info$d.max <- max(depths)
 
   info$elbows <- seq(floor(info$d.min), ceiling(info$d.max), by=thick)
-  if(add.bottom)  # new October 2020
+  if(add.bottom) # new October 2020
     info$elbows <- c(info$elbows, max(info$elbows)+thick) # new October 2020
   info$K <- length(info$elbows)
   info$cK <- info$d.min+(info$thick*info$K) # the maximum depth to be used by the bacon model
@@ -407,10 +424,10 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
       message(" Setting thick to ", sugg, "\n")
       thick <- sugg
       info$thick <- thick #CHANGED: if the answer is "yes", the global thick value is not updated
-      info$elbows <- seq(floor(info$d.min), ceiling(info$d.max), by=thick)
+      info$elbows <- seq(floor(min(info$elbows)), ceiling(max(info$elbows)), by=thick) # was floor(info$d.min) ...
 
       if(length(info$slump) > 0) # why here, and not a few lines later?
-        info$elbows <- seq(floor(info$d.min), toslump(ceiling(info$d.max), info$slump, remove=remove), by=thick)
+        info$elbows <- seq(floor(min(info$elbows, info$d.min)), toslump(ceiling(max(info$elbows, info$d.max)), info$slump, remove=remove), by=thick)
       info$K <- length(info$elbows)
       info$cK <- info$d.min+(info$thick*info$K) # the maximum depth to be used by the bacon model
     }
@@ -422,8 +439,8 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     slump <- matrix(sort(slump), ncol=2, byrow=TRUE)
     info$slump <- slump
 
-    slumpdmax <- toslump(ceiling(info$d.max), slump, remove=remove)
-    info$elbows <- seq(floor(info$d.min), slumpdmax, by=thick)
+    slumpdmax <- toslump(ceiling(max(info$elbows, info$d.max)), slump, remove=remove)
+    info$elbows <- seq(floor(min(info$elbows, info$d.min)), slumpdmax, by=thick)
     info$K <- length(info$elbows)
     info$cK <- info$d.min+(info$thick*info$K) # the maximum depth to be used by the bacon model
 
@@ -446,8 +463,8 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     file.create(outfile)
   
   ### if the dates file has been modified after the outfile, suggest to clean up 
-  if(file.mtime(outfile) < file.mtime(paste0(info$coredir, core, "/", core, ".csv")))
-    message("Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed?, then please run Bacon.cleanup()")
+#  if(file.mtime(outfile) < file.mtime(csv.file))
+#    message("Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed, then please run Bacon.cleanup()")
 
   ### store values (again) for future manipulations
   if(BCAD)
@@ -458,7 +475,9 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     info$hiatus.depths <- boundary
     if(length(add) == 0)
       add <- max(1, 1.5*max(info$acc.mean)) # then add a short (max)hiatus, large enough not to crash Bacon but not affect the chronology much. Needs more work
-    info$hiatus.max <- add
+    info$hiatus.mean <- add/10 # OK?
+    info$hiatus.shape <- .1 # much prefer gaps close to 0 years.
+#    info$hiatus.max <- add
   }
   if(save.info)
     assign_to_global("info", info)
@@ -474,10 +493,10 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     on.exit(par(oldpar))
     PlotAccPrior(info$acc.shape, info$acc.mean, depth.unit=depth.unit, age.unit=age.unit)
     PlotMemPrior(info$mem.strength, info$mem.mean, thick, info)
-
     if(!is.na(info$hiatus.depths)[1])
       if(is.na(info$boundary)[1])
-        PlotHiatusPrior(info$hiatus.max, info$hiatus.depths)
+        PlotHiatusPrior(info$hiatus.mean, info$hiatus.shape, hiatus=info$hiatus.depths)
+
     calib.plot(info, BCAD=BCAD)
     legend("topleft", core, bty="n", cex=1.5)
   }
@@ -489,18 +508,21 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     bacon(txt, as.character(outfile), ssize+burnin, cc.dir)
     info <- scissors(burnin, info, save.info=save.info)
     output <- info$output # tmp
-    info <- agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=TRUE, age.unit=age.unit, depth.unit=depth.unit, save.info=save.info, ssize=ssize, ...)
+    info <- agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=TRUE, age.unit=age.unit, depth.unit=depth.unit, save.info=save.info, ssize=ssize, use.cpp=use.cpp, ...)
     info$output <- output
     #    cat(mean(info$Tr)) # this is to check how hists and info get saved
 
     if(plot.pdf)
       if(dev.interactive())
         export.pdf(paste0(info$prefix, ".pdf")) else {
-          if(capabilities("cairo"))
-            cairo_pdf(filename=paste0(info$prefix, ".pdf")) else 
-              pdf(file=paste0(info$prefix, ".pdf"))
-            agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=FALSE, age.unit=age.unit, depth.unit=depth.unit, save.info=FALSE, ...)
-            dev.off()
+          pdf.fl <- paste0(info$prefix, ".pdf")
+          if(capabilities("aqua")) # macOS
+            grDevices::quartz(file=pdf.fl, type="pdf") else 
+              if(cairo && capabilities("cairo")) # linux
+                cairo_pdf(filename=pdf.fl) else 
+                  pdf(file=pdf.fl)
+          agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=FALSE, age.unit=age.unit, depth.unit=depth.unit, save.info=FALSE, ...)
+          dev.off()
         }
      return(info)
   }

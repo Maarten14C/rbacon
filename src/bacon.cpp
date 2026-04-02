@@ -96,11 +96,11 @@ int bacon( std::string inputfile1, std::string outputfile1, int ssize, std::stri
   } else if (blurt < 0.7) {
       Rprintf("Awk, that does look lovely, so it does, like!\n");
   } else if(blurt < 0.75) {
-      Rprintf("\"Knowledge is power\" — Francis Bacon (AD 1597)\n");	  	
+      Rprintf("\"Knowledge is power\" — Francis Bacon (AD 1597)\n");
   } else if(blurt < 0.8) {
-      Rprintf("Buen provecho!\n");	
+      Rprintf("Buen provecho!\n");
   } else if(blurt < 0.85) {
-      Rprintf("Eet smakelijk!\n");			    	
+      Rprintf("Eet smakelijk!\n");
   } else if (blurt < 0.9) {
      Rprintf("That bacon would go well in a soda, so it would!\n");
   } else if (blurt < 0.95) {
@@ -109,7 +109,6 @@ int bacon( std::string inputfile1, std::string outputfile1, int ssize, std::stri
      Rprintf("Remember, never pour grease down the drain!\n");
   }
   
-  													
 //  printf("bacon: suggested burn in= %d\n", All.Dim() * EVERY_MULT * BURN_IN_MULT);
  // printf(FAREWELL);
 

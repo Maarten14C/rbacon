@@ -14,7 +14,10 @@ ageranges(
   prob = 0.95,
   d.by = 1,
   roundby = 1,
-  show.progress = TRUE
+  show.progress = TRUE,
+  verbose = TRUE,
+  use.cpp = F,
+  age.bins = 1
 )
 }
 \arguments{
@@ -37,6 +40,12 @@ ageranges(
 \item{roundby}{Rounding for the age estimates. Defaults to 1 decimal.}
 
 \item{show.progress}{Show a progress bar. Defaults to TRUE.}
+
+\item{verbose}{Inform the user of what is happening. Defaults to TRUE.}
+
+\item{use.cpp}{Whether or not to use a cpp function to calculate the ages. Defaults to TRUE, but can be set to FALSE (much slower but less experimental)}
+
+\item{age.bins}{Size of the age bins (in years) if use.cpp=TRUE. Defaults to every 1 year.}
 }
 \value{
 The minimum and maximum of the probability range (default 2.5% of both sides), median and mean ages for a depth or series of depths.

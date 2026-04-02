@@ -12,7 +12,10 @@ accrate.age.ghost(
   age.res = 400,
   acc.res = 200,
   cutoff = 0.001,
+  zero.col = "white",
+  max.col = "black",
   dark = 1,
+  darkest = 1,
   rgb.scale = c(0, 0, 0),
   rgb.res = 100,
   prob = 0.95,
@@ -55,7 +58,13 @@ accrate.age.ghost(
 
 \item{cutoff}{Point below which colours will no longer be printed. Default \code{cutoff=0.001}.}
 
-\item{dark}{The darkest grey value is dark=1 by default; lower values will result in lighter grey but values >1 are not advised.}
+\item{zero.col}{The colour where the ghost is 0. Defaults to \code{zero.col="white"}, which together with \code{max.col="black"} results in a greyscale. More creative colour gradients can be implemented by checking the 600+ colours in \code{colours()}.}
+
+\item{max.col}{The colour where the ghost is at its maximum. Defaults to \code{max.col="black"}, which together with \code{zero.col="white"} results in a greyscale. More creative colour gradients can be implemented by checking the 600+ colours in \code{colours()}.}
+
+\item{dark}{The value beyond which any higher values will be clipped. Set to 1 by default. This can be set to lower values if for example only a very small area in the plot obtains the darkest values - then lowering the `dark` value will darker a larger area.}
+
+\item{darkest}{The darkest grey value is darkest=1 by default; lower values will result in lighter maximum colours; values >1 are not advised.}
 
 \item{rgb.scale}{The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}).}
 

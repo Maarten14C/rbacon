@@ -25,31 +25,31 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
     stop("core's data not yet in memory. Please run agedepth first\n", call.=FALSE)
 
   hiatus.depths <- set$hiatus.depths
+  elbows <- set$elbows
   if(length(set$slump) > 0) {
-   d <- toslump(d, set$slump, remove=na.rm)
-   if(!is.na(hiatus.depths[1]))
-     hiatus.depths <- set$slumphiatus
+    d <- toslump(d, set$slump, remove=na.rm) # commenting this causes ranges to be calculated correctly, but not the greyscales
+    #elbows <- toslump(d, set$slump, remove=na.rm)
+    if(!is.na(hiatus.depths[1]))
+      hiatus.depths <- set$slumphiatus 
   }
 
   ages <- numeric(nrow(its)) # to sort R-base problem with c() and loops
   if(!is.na(d))
-    if(d >= min(set$elbows)) { # we cannot calculate ages of depths above the top depth; was > d.min before Feb 2021
-      topages <- as.vector(its[,1]) # ages for the core top
+    if(d >= min(elbows)) { # we cannot calculate ages of depths above the top depth; was > d.min before Feb 2021
       maxd <- max(which(set$elbows <= d)) # find the relevant sections
-      accs <- as.matrix(its[,1+(1:maxd)]) # the accumulation rates xi for each relevant section
-      cumaccs <- cbind(0, t(apply(accs, 1, cumsum))) # cumulative accumulation
-      ages <- topages + (set$thick * cumaccs[,maxd]) + # topages + xi * dC + ...
-	   ((d-set$elbows[maxd]) * accs[,maxd]) # ... remaining bit of lowest section
+      acc <- as.matrix(its[,1+(1:maxd)]) # the accumulation rates xi for each relevant section
+      cumacc <- cbind(0, t(apply(acc, 1, cumsum))) # cumulative accumulation
+      ages <- its[,1] + (set$thick * cumacc[,maxd]) + # topages + xi * dC + ...
+        ((d-elbows[maxd]) * acc[,maxd]) # ... remaining bit of lowest section
 
-      # now using a uniform jump, not gamma
       if(!is.na(hiatus.depths[1]))
         for(i in 1:length(hiatus.depths)) {
-          above <- max(which(set$elbows < hiatus.depths[i]), 1)[1]
+          above <- max(which(elbows < hiatus.depths[i]), 1)[1]
           below <- above + 1
-          if(d > set$elbows[above] && d <= set$elbows[below]) { # adapt ages for sections with hiatus
-            if(d > hiatus.depths[i]) # April 2020, changed snippets below from [[i]]] to [,i]
-              ages <- set$elbow.below[,i] - (set$slope.below[,i] * (set$elbows[below] - d)) else
-                ages <- set$elbow.above[,i] + (set$slope.above[,i] * (d - set$elbows[above]))
+          if(d > elbows[above] && d <= elbows[below]) { # adapt ages for sections with hiatus
+            if(d > hiatus.depths[i]) 
+              ages <- set$elbow.below[,i] - (set$slope.below[,i] * (elbows[below] - d)) else
+                ages <- set$elbow.above[,i] + (set$slope.above[,i] * (d - elbows[above]))
             }
         }
     } else
@@ -58,10 +58,10 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
    if(na.rm)
      ages <- ages[!is.na(ages)]  
 
-    if(BCAD)
-      ages <- calBPtoBCAD(ages)
-	
-    return(c(ages))
+   if(BCAD)
+     ages <- calBPtoBCAD(ages)
+
+    return(unname(ages)) # unname so that only the values are returned, not also names/entry numbers
 }
 
 
@@ -93,7 +93,7 @@ Bacon.d.Age <- function(age, set=get("info"), BCAD=set$BCAD, its=set$output, na.
     age <- BCADtocalBP(age)
   if(length(age) > 1) 
     stop("Bacon.d.Age can handle one age at a time only", call. = FALSE)
-  if(length(its) == 0 ) 
+  if(length(its) == 0) 
     stop("core's data not yet in memory. Please run agedepth first\n", call. = FALSE)
 
   # create elbow ages
@@ -103,196 +103,181 @@ Bacon.d.Age <- function(age, set=get("info"), BCAD=set$BCAD, its=set$output, na.
   cumaccs <- set$thick * cbind(0, t(apply(accs, 1, cumsum))) # cumulative accumulation
   elbow.ages <- topages + cumaccs
 
-  if ( age <= min(elbow.ages) || age > max(elbow.ages) ) 
+  if(age <= min(elbow.ages) || age > max(elbow.ages)) 
     message(" Warning, age outside the core's age range!\n")
 
-  # prepare slump
+  # prepare for any slumps
   hiatus.depths <- set$hiatus.depths
   if(length(set$slump) > 0) {
-    diff.slumps <- apply(set$slump,1,diff,na.rm=T)  # vector containing the difference of each slump
-    if ( !is.na(hiatus.depths[1]) ) 
+    diff.slumps <- apply(set$slump, 1, diff, na.rm=TRUE) # vector containing the difference of each slump
+    if(!is.na(hiatus.depths[1])) 
       hiatus.depths <- set$slumphiatus
   }
     
-    # prepare hiatus
-    hiatus.check <- rep(0,ncol(elbow.ages)) # vector containing the information for each elbow whether there is a hiatus (1) or no hiatus (0)
-    if ( !is.na(hiatus.depths[1]) ){ 
-        # if there is no slump
-        if ( length(set$slump) == 0 ) 
-            hiatus.depths <- set$hiatus.depths
-        # where are the hiatuses
-        for ( i in 1:length(hiatus.depths) ) {
-            hiatus.check[ min(which(elbows > hiatus.depths[i])) ] <- 1
-        }
-    }
+  # prepare hiatus
+  hiatus.check <- rep(0, ncol(elbow.ages)) # vector containing the information for each elbow whether there is a hiatus (1) or no hiatus (0)
+  if(!is.na(hiatus.depths[1])) {
+    # if there is no slump
+    if(length(set$slump) == 0) 
+      hiatus.depths <- set$hiatus.depths
+    # where are the hiatuses
+    for(i in 1:length(hiatus.depths)) 
+      hiatus.check[min(which(elbows > hiatus.depths[i]))] <- 1
+  }
 
-    # intersections which are below the last elbow
-    these.bottom <- which( elbow.ages[, ncol(elbow.ages)] < age ) 
+  # intersections which are below the last elbow
+  these.bottom <- which(elbow.ages[, ncol(elbow.ages)] < age) 
     
-    # summary of the depths corresponding to the chosen age
-    depths <- rep(NA,nrow(its))
-    for ( i in 2:ncol(elbow.ages) ){
-        # consideration of hiatuses
-        if ( hiatus.check[i] == 1 ){ 
-            for ( j in 1:length(hiatus.depths) ) {
-                above <- max(which(elbows < hiatus.depths[j]), 1)[1]
-                below <- above + 1
-                # two age ranges for one hiatus (below/above) with the adapted slopes (could be included in the info list)
-                ages.above <- set$elbow.above[,j] + (set$slope.above[,j] * (hiatus.depths[j] - elbows[above]))
-                ages.below <- set$elbow.below[,j] - (set$slope.below[,j] * (elbows[below] - hiatus.depths[j]))
-                # intersections below and above
-                these.above <- (elbow.ages[, above] < age) * (ages.above > age) 
-                these.below <- (ages.below < age) * (elbow.ages[, below] > age) 
-                # find the depths which correspond to the intersections below and above the hiatus
-                if ( sum(these.above, na.rm=T) > 0 ){
-                    # slopes above hiatus
-                    accs.above <- (1/set$slope.above[,j])[which(these.above==1)]
-                    # age difference with the last age range above the hiatus
-                    age.diff.above <- age - elbow.ages[which(these.above==1), above]
-                    # depths: last depth above hiatus depth + slopes * age difference
-                    depths[which(these.above==1)] <- elbows[above] + accs.above * age.diff.above
-                }
-                if ( sum(these.below, na.rm=T) > 0 ){
-                    # slopes below hiatus
-                    accs.below <- (1/set$slope.below[,j])[which(these.below==1)]
-                    # age difference with the lower hiatus age range 
-                    age.diff.below  <- age - ages.below[which(these.below==1)]
-                    # depths: hiatus depth + slopes * age difference 
-                    depths[which(these.below==1)] <- hiatus.depths[j] + accs.below * age.diff.below
-                }
-            }
-        } else {
-            # consideration of the cases without hiatuses
-            
-            # find the correct intersections
-            these <- (elbow.ages[, i - 1] < age) * (elbow.ages[, i] > age)
-
-            # find the depths which correspond to these intersections
-            if ( sum(these, na.rm=T) > 0 ){ 
-                # which slopes
-                accs <- 1/set$output[which(these == 1), i]
-                # difference between the age and the elbow ages found
-                age.diff <- age - elbow.ages[which(these == 1), i - 1]
-                # depths: elbow depth + slopes *  age difference
-                depths[which(these==1)] <- elbows[i-1] + accs * age.diff
-            }
-            
-            # find these intersections which are below the last elbow
-            if( length(these.bottom)  > 0 & i == ncol(elbow.ages) ){
-                # slopes below last elbow
-                accs.bottom <- 1/set$output[these.bottom, i]
-                # difference between the age and the last elbow ages found
-                age.diff.bottom <-  age - elbow.ages[these.bottom, i ]
-                # depth: last elbow + slopes *  age difference 
-                depths[these.bottom] <- elbows[i-1] + accs.bottom * age.diff.bottom
-            }
-        }  
-    }
-    
-    # Query: remove NA entries if some entries are not NA (happens for some hiatuses).
-    # In these cases the depth vector does not have the same length for different age.
-    # In cases where the age entered is younger than min(elbow.ages), each entry in depth is NA and is returned as such.
-    if( !all(is.na(depths)) & na.rm ) depths <- depths[!is.na(depths)]
- 
-    # consideration of slumps
-    if ( length(set$slump) > 0 ) {
-        for( j in 1:nrow(set$slump) ){
-            # which depths are below the slump
-            these.below.slump <- (depths >= set$slump[j,1]) 
-            below.slump <- sum(these.below.slump, na.rm = T)
-            if ( below.slump > 0 ){
-                # shift the found depths with the slump depths above
-                these.shift <- which(these.below.slump==1)
-                depths[these.shift] <- depths[these.shift] + diff.slumps[j]  
-            }
+  # summary of the depths corresponding to the chosen age
+  depths <- rep(NA, nrow(its))
+  for(i in 2:ncol(elbow.ages)) {
+    # consideration of hiatuses
+    if(hiatus.check[i] == 1) { 
+      for(j in 1:length(hiatus.depths)) {
+        above <- max(which(elbows < hiatus.depths[j]), 1)[1]
+        below <- above + 1
+        # two age ranges for one hiatus (below/above) with the adapted slopes (could be included in the info list)
+        ages.above <- set$elbow.above[,j] + (set$slope.above[,j] * (hiatus.depths[j] - elbows[above]))
+        ages.below <- set$elbow.below[,j] - (set$slope.below[,j] * (elbows[below] - hiatus.depths[j]))
+        # intersections below and above
+        these.above <- (elbow.ages[,above] < age) * (ages.above > age) 
+        these.below <- (ages.below < age) * (elbow.ages[,below] > age) 
+        # find the depths which correspond to the intersections below and above the hiatus
+        if(sum(these.above, na.rm=T) > 0) {
+          # slopes above hiatus
+          accs.above <- (1/set$slope.above[,j])[which(these.above==1)]
+          # age difference with the last age range above the hiatus
+          age.diff.above <- age - elbow.ages[which(these.above==1), above]
+          # depths: last depth above hiatus depth + slopes * age difference
+          depths[which(these.above==1)] <- elbows[above] + accs.above * age.diff.above
         }
+        if(sum(these.below, na.rm=T) > 0) {
+          # slopes below hiatus
+          accs.below <- (1/set$slope.below[,j])[which(these.below==1)]
+          # age difference with the lower hiatus age range 
+          age.diff.below  <- age - ages.below[which(these.below==1)]
+          # depths: hiatus depth + slopes * age difference 
+          depths[which(these.below==1)] <- hiatus.depths[j] + accs.below * age.diff.below
+        }
+      }
+    } else {
+      # consideration of the cases without hiatuses
+            
+      # find the correct intersections
+      these <- (elbow.ages[, i - 1] < age) * (elbow.ages[, i] > age)
+
+      # find the depths which correspond to these intersections
+      if(sum(these, na.rm=T) > 0) { 
+        # which slopes
+        accs <- 1/set$output[which(these == 1), i]
+        # difference between the age and the elbow ages found
+        age.diff <- age - elbow.ages[which(these == 1), i - 1]
+        # depths: elbow depth + slopes *  age difference
+        depths[which(these==1)] <- elbows[i-1] + accs * age.diff
+      }
+            
+      # find these intersections which are below the last elbow
+      if(length(these.bottom) > 0 & i == ncol(elbow.ages)) {
+        # slopes below last elbow
+        accs.bottom <- 1/set$output[these.bottom, i]
+        # difference between the age and the last elbow ages found
+        age.diff.bottom <-  age - elbow.ages[these.bottom, i ]
+        # depth: last elbow + slopes *  age difference 
+        depths[these.bottom] <- elbows[i-1] + accs.bottom * age.diff.bottom
+      }
+    }  
+  }
+    
+  # Query: remove NA entries if some entries are not NA (happens for some hiatuses).
+  # In these cases the depth vector does not have the same length for different age.
+  # In cases where the age entered is younger than min(elbow.ages), each entry in depth is NA and is returned as such.
+  if(!all(is.na(depths)) & na.rm) 
+    depths <- depths[!is.na(depths)]
+  # consideration of slumps
+  if(length(set$slump) > 0) {
+    for(j in 1:nrow(set$slump)) {
+      # which depths are below the slump
+      these.below.slump <- (depths >= set$slump[j,1]) 
+      below.slump <- sum(these.below.slump, na.rm = T)
+      if(below.slump > 0) {
+        # shift the found depths with the slump depths above
+        these.shift <- which(these.below.slump==1)
+        depths[these.shift] <- depths[these.shift] + diff.slumps[j]  
+      }
     }
- 
-    # output
-    return(depths)
+  } 
+  return(depths)
 }
 
 
 
-# First get ages and slopes of c's just above and below hiatus.
-# then calculate slope.below and slope.above as extrapolations from the sections below resp. above (option 1, default), no adapting of slopes (option 0),
-# or as w-weighted mix of prior and accrates, resp. prior only (option 2).
-# then check if these slopes work (no reversals). Those with reversals revert to the original slopes.
-# check approach for boundaries. check that elbows in correct order, then set slopes to either ages.below or ages.above???
-hiatus.slopes <- function(set=get('info'), hiatus.option=1) {
+# Find the ages t of the elbows of the section that contains the hiatus h_i, t_{k} for the elbow c_k just above the hiatus, and t_{k+1} for the elbow c_{k+1} just below it.
+# Find the starting age t_s of the hiatus by taking the age of c_{k+1} and the slope x_{k+1} of the section below it, and extrapolating to the depth of hiatus_i. Do the same for the ending age by extrapolating from the slope above the section with the hiatus.
+# Now that we know the length of the hiatus (if it's not a boundary), calculate the end age of the hiatus as t_e = t_s + l_i.
+# Extrapolate from this end age to the top elbow's age, t_k.
+# report the corresponding slopes x.
+# for boundaries, the hiatus length is 0, so we find t_s and extrapolate to t_k.
+hiatus.slopes <- function(set=get('info')) {
   elbows <- set$elbows
-  hiatus.depths <- set$hiatus.depths
-  if(length(set$slump) > 0)
-    hiatus.depths <- set$slumphiatus
+  hiatus.depths <- if(length(set$slump) > 0) 
+    set$slumphiatus else set$hiatus.depths
+  h <- length(hiatus.depths) # number of hiatuses
+  ishiatus <- is.na(set$boundary[1])
 
-  its <- cbind(set$output)
-  w <- its[,ncol(its)]^(1/set$thick)
-  fillvals <- array(NA, dim=c(nrow(its), length(hiatus.depths))) # 17 Apr 2020
-#  set$slope.below <- numeric(nrow(its))  # 17 Apr 2020
-#  set$slope.above <- numeric(nrow(its))  # 17 Apr 2020
-  set$slope.below <- fillvals  # 17 Apr 2020
-  set$slope.above <- fillvals  # 17 Apr 2020
-  set$elbow.below <- fillvals # 17 Apr 2020
-  set$elbow.above <- fillvals # 17 Apr 2020
-  set$above <- numeric(1)
-  topages <- as.vector(its[,1]) # ages for the core top
-  accs <- as.matrix(its[,1+(1:set$K)]) # the accumulation rates xi for each section
-  cumaccs <- set$thick * cbind(0, t(apply(accs, 1, cumsum))) # cumulative accumulation
-  elbow.ages <- topages + cumaccs
+  its <- as.matrix(set$output)
+  n <- nrow(its) # number of iterations
+  
+  set$slope.below <- matrix(NA_real_, nrow=n, ncol=h)
+  set$slope.above <- matrix(NA_real_, nrow=n, ncol=h)
+  set$elbow.below <- matrix(NA_real_, nrow=n, ncol=h)
+  set$elbow.above <- matrix(NA_real_, nrow=n, ncol=h)
+  if(ishiatus) {
+    set$hiatus.start <- matrix(NA_real_, nrow=n, ncol=h)
+    set$hiatus.end <- matrix(NA_real_, nrow=n, ncol=h)
+  }
+  
+  accs <- its[,1+(1:set$K)] # the accumulation rates (actually sedimentation times) xi for each section
+  elbow.ages <- its[,1] + set$thick * cbind(0, t(apply(accs, 1, cumsum))) # cumulative accumulation at elbows, starting at 0
+  hiatus.section <- findInterval(hiatus.depths, elbows) # finds which section(s) overlap(s) the hiatus depth(s)
 
-  for(i in 1:length(hiatus.depths)) {
-    above <- max(which(elbows < hiatus.depths[i]), 1) ### is this the correct one?
-      elbow.below <- elbow.ages[,above+1]
-      elbow.above <- elbow.ages[,above]
-      orig.slope <- accs[,above]
+  for(i in 1:h) {
+    k <- hiatus.section[i]
+    elbow.below <- elbow.ages[,k+1]
+    elbow.above <- elbow.ages[,k]
+    slope.below <- accs[,k+1]
+    slope.above <- accs[,k-1]
+    slope.orig <- accs[,k]
 
-    if(hiatus.option == 0) { # then do nothing
-      slope.below <- orig.slope
-      slope.above <- orig.slope
-    }
-    if(hiatus.option == 1) { # then extrapolate slopes above/below section w hiatus
-      slope.below <- its[,above+2]
-      slope.above <- its[,above]
-    }
-    if(hiatus.option == 2) { # then w-weighted for below, and prior-only for above
-      slope.below <- w*set$output[,above+2] + (1-w)*set$acc.mean[i+1]
-      slope.above <- rep(set$acc.mean[i], nrow(its))
-    }
-
-    # now calculate the ages at the hiatus/boundary, coming from below and from above
-    ages.above <- elbow.above + (slope.above * (hiatus.depths[i] - elbows[above]))
-    ages.below <- elbow.below - (slope.below * (elbows[above+1] - hiatus.depths[i]))
-
-    if(!is.na(set$boundary[1])) { # then set the boundary's elbow at ages.below for both sections
-      if(length(set$slumpboundary) > 0)
-        boundary <- set$slumpboundary else
-          boundary <- set$boundary
-      ages.boundary <- elbow.below - (slope.below * (elbows[above+1] - set$boundary[i]))
-      slope.above <- (ages.boundary - elbow.above) / (set$boundary[i] - elbows[above])
-      slope.below <- (ages.below - ages.boundary) / (elbows[above+1] - set$boundary[i])
-    }
-
-    # for sections with reversals, use the original slopes
-    reversed <- c(which(elbow.above > ages.above),
-      which(ages.above > ages.below),
-      which(ages.below > elbow.below),
-      which(slope.below < 0), which(slope.above < 0))
-   if(length(reversed) > 0) {
-     slope.above[reversed] <- orig.slope[reversed]
-     slope.below[reversed] <- orig.slope[reversed]
-   }
+    if(ishiatus) { # extrapolate using the slopes of the surrounding sections
+      hiatus.start <- elbow.below - slope.below*(elbows[k+1] - hiatus.depths[i])
+      hiatus.end <- elbow.above + slope.above*(hiatus.depths[i] - elbows[k])
+      hiatus.duration <- hiatus.start - hiatus.end
+      ok <- !is.na(hiatus.duration) & hiatus.duration >= 0
+      slope.below[ok] <- (elbow.below[ok] - hiatus.start[ok]) / (elbows[k+1] - hiatus.depths[i])
+      slope.above[ok] <- (hiatus.end[ok] - elbow.above[ok]) / (hiatus.depths[i] - elbows[k])
+      slope.above[!ok] <- slope.orig[!ok]
+      slope.below[!ok] <- slope.orig[!ok]
+      hiatus.duration[!ok] <- 0
+    } else { # it's a boundary, and we interpolate to and from hiatus.end
+        boundary.age <- elbow.below - slope.below * (elbows[k+1] - set$boundary[i])
+        ok <- boundary.age >= elbow.above & boundary.age <= elbow.below
+        slope.above[ok] <- (boundary.age[ok] - elbow.above[ok]) /
+          (set$boundary[i] - elbows[k])
+        slope.below[ok] <- (elbow.below[ok] - boundary.age[ok]) /
+          (elbows[k+1] - set$boundary[i])
+        slope.above[!ok] <- slope.orig[!ok]
+        slope.below[!ok] <- slope.orig[!ok]
+      }
 
     # store the updated information
-    # set$elbow.below[[i]] <- elbow.below # commented Apr 2020
-    # set$elbow.above[[i]] <- elbow.above
-    # set$slope.below[[i]] <- slope.below
-    # set$slope.above[[i]] <- slope.above
-    set$elbow.below[,i] <- elbow.below # new April 2020
-    set$elbow.above[,i] <- elbow.above # new 
-    set$slope.below[,i] <- slope.below # new
-    set$slope.above[,i] <- slope.above # new
-    
-    set$above <- above
+    set$elbow.below[,i] <- elbow.below
+    set$elbow.above[,i] <- elbow.above
+    set$slope.below[,i] <- slope.below
+    set$slope.above[,i] <- slope.above
+    if(ishiatus) {
+      set$hiatus.start[,i] <- hiatus.start
+      set$hiatus.end[,i] <- hiatus.end
+    }
   }
   return(set)
 }
@@ -323,7 +308,7 @@ hiatus.slopes <- function(set=get('info'), hiatus.option=1) {
 #' @param progress Show a progress bar (default \code{progress=TRUE}).
 #' @param save.info A variable called `info' with relevant information about the run (e.g., core name, priors, settings, ages, output) can be saved into the working directory. Note that this will overwrite any existing variable with the same name - as an alternative, one could run, e.g., \code{myvar <- Bacon()}, followed by supplying the variable \code{myvar} in any subsequent commands.
 #' @author Maarten Blaauw, J. Andres Christen
-#' @return A local variable called `hists', and a plot with the histogram and the age ranges, median and mean, or just the age ranges, medians and means if more than one depth \code{d} is given.
+#' @return A variable called `hists', and a plot with the histogram and the age ranges, median and mean, or just the age ranges, medians and means if more than one depth \code{d} is given.
 #' @examples
 #' \dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
@@ -337,27 +322,29 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
   if(length(set$output) == 0 || length(set$Tr) == 0) {
     set <- Bacon.AnaOut(outfile, set, MCMC.resample=FALSE)
     if(save.info)
-      assign_to_global("set", set) # should that be 'info'?
+      assign_to_global("info", set)
   }
   
   if(min(d) < min(set$elbows)) {
     these.d <- d[which(d < min(set$elbows))]
     stop("depth(s) ", paste(these.d, collapse=", "), " lie above the top/minimum depth (", min(set$elbows), " ", set$unit, "). Adjust d.min?")
   }
-	  
+
   hist3 <- function(d, BCAD) {
     hsts <- list(); maxhist <- 0; minhist <- 1
-	if(progress)
+    if(progress && verbose)
       pb <- txtProgressBar(min=0, max=max(1,length(d)-1), style = 3)
     for(i in 1:length(d)) {
-	  if(progress)
-	    if(length(d) > 1) {
-          if(length(d) < 500) # progress bar slows things down much if i is large
+      if(progress && verbose)
+        if(length(d) > 1) {
+          if(length(d) < 500) # progress bar slows things down much when i is large
             setTxtProgressBar(pb, i) else
               if(i %% 10 == 0)
                 setTxtProgressBar(pb, i)
         }
+
       ages <- Bacon.Age.d(d[i], set, BCAD=BCAD)
+
       if(length(ages[!is.na(ages)]) > 0) { # added !is.na(ages) 21 April 21
         hst <- density(ages)
         th0 <- min(hst$x)
@@ -372,6 +359,7 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
     }
     return(hsts)
   }
+
   hists <- hist3(d, BCAD)
   if(save.info)
     assign_to_global("hists", hists)
@@ -416,8 +404,8 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
 
 
 
-# to calculate age ranges. We're now using (documented) save.ages instead
-Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
+# to calculate age ranges. We're now using (documented) ageranges instead
+Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob, verbose=TRUE) {
   outfile <- paste0(set$prefix, ".out")
   if(length(set$output) == 0 || length(set$Tr) == 0) {
     set <- Bacon.AnaOut(outfile, set, MCMC.resample=FALSE)
@@ -436,11 +424,12 @@ Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob) {
       rng[i,4] <- mean(ages)
     }
     if(length(d) > 1) {
-      if(length(d) < 500) # progress bar slows things down when i is large
-        setTxtProgressBar(pb, i) else
-          if(i %% 10 == 0)
-            setTxtProgressBar(pb, i)
-    }
+      if(verbose)
+        if(length(d) < 500) # progress bar slows things down when i is large
+          setTxtProgressBar(pb, i) else
+            if(i %% 10 == 0)
+              setTxtProgressBar(pb, i)
+      }
   }
   return(rng)
 }

@@ -201,13 +201,14 @@ Baconvergence <- function(core="MSB2K", runs=5, suggest=FALSE, verbose=TRUE, ...
 #' of the fit of the iterations shows no strange features such as sudden systematic drops or rises).
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param ssize Number of MCMC iterations.
+#' @param talk Whether or not to provide feedback. Defaults to TRUE.
 #' @return The 'ess' and 'z' scores, together with an evaluation of the values.
 #' @examples
 #'   \donttest{
 #'     Bacon(ssize=100, coredir=tempfile()) # check the reported warnings
 #'   }
 #' @export
-MCMC.diagnostics <- function(set=get("info"), ssize=nrow(set$output)) {
+MCMC.diagnostics <- function(set=get("info"), ssize=nrow(set$output), talk=TRUE) {
   energy <- coda::as.mcmc(set$Us)
   ess <- coda::effectiveSize(energy)
   z <- abs(coda::geweke.diag(energy)$z)
@@ -219,21 +220,23 @@ MCMC.diagnostics <- function(set=get("info"), ssize=nrow(set$output)) {
     invisible(NA)
   } else {
 
-    if(ess < 10)
-      message("Warning, the MCMC run has a very high autocorrelation (effective sample size=", round(ess,2), ", <100. So,", ssize.warn) else
-      if(ess < 100)
-        message("Warning, poor MCMC mixing (effective sample size=", round(ess,2), ", <100) -" , ssize.warn) else
-        if(ess < 200)
-          message("MCMC mixing (effective sample size=", round(ess,2),  ", <200) could be better -", ssize.warn) else
-          if(ess < 1000)
-            message("Good MCMC mixing (effective sample size=", round(ess,2), ", >200)") else
-              message("Excellent MCMC mixing (effective sample size=", round(ess,2), ", >1000)")
+	if(talk) {
+      if(ess < 10)
+        message("Warning, the MCMC run has a very high autocorrelation (effective sample size=", round(ess,2), ", <100. So,", ssize.warn) else
+        if(ess < 100)
+          message("Warning, poor MCMC mixing (effective sample size=", round(ess,2), ", <100) -" , ssize.warn) else
+          if(ess < 200)
+            message("MCMC mixing (effective sample size=", round(ess,2),  ", <200) could be better -", ssize.warn) else
+            if(ess < 1000)
+              message("Good MCMC mixing (effective sample size=", round(ess,2), ", >200)") else
+                message("Excellent MCMC mixing (effective sample size=", round(ess,2), ", >1000)")
 
-    if(z < 1.96) # <1 sd
-       message("No sign of MCMC drift (z=", round(z,2), ", <1.96), OK") else
-       if(z < 2.58) # <2 sd
-         message("Warning, there's a hint of MCMC drift (z=", round(z,2), ", >1.96),", ssize.warn) else
-           message("Warning, non-stationary MCMC (z=", round(z,2), ", >2.58),", ssize.warn)
+      if(z < 1.96) # <1 sd
+         message("No sign of MCMC drift (z=", round(z,2), ", <1.96), OK") else
+         if(z < 2.58) # <2 sd
+           message("Warning, there's a hint of MCMC drift (z=", round(z,2), ", >1.96),", ssize.warn) else
+             message("Warning, non-stationary MCMC (z=", round(z,2), ", >2.58),", ssize.warn)
+    }
 
     diag <- c(ess, z)
     names(diag) <- c("effective sample size (ess)", "z")		  
@@ -285,7 +288,7 @@ model.dates.overlap <- function(set=get('info'), talk=TRUE, roundby=c()) {
 
   overl <- 100*mapply(function(date, modelled) {
     rice::coverage(cbind(modelled$x, modelled$y), date, 
-      visualise = FALSE)
+      visualise = FALSE) # coverage is no longer a rice function
   }, dates, model.ages)
 
   if(talk) {
@@ -320,24 +323,31 @@ model.Pb.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE) {
   
   mean_A_overlap <- 100*sum(A_overlap)/length(A_overlap)
   
-  if(verbose)
-    message(round(mean_A_overlap, decimals), "% (", sum(A_overlap), "/", length(A_overlap), 
-      ") of the modelled and measured Pb values overlap (", 100*set$prob, "% hpd ranges)")
+  string <- paste0(round(mean_A_overlap, decimals), 
+    "% (", sum(A_overlap), "/", length(A_overlap), 
+    ") of the modelled and measured Pb values overlap (",
+    100*set$prob, "% hpd ranges)")
   
-  invisible(round(mean_A_overlap, decimals))
+  if(verbose)
+    message(string)
+  
+  invisible(c(round(mean_A_overlap, decimals), string))
 }
 
 
 
 model.dates.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE) {
   depths <- set$dets[,4]
+  if(length(set$slump) > 0)
+    depths <- toslump(depths, set$slump, remove=FALSE)
   dates <- 1:length(depths)
 
   get.modelages <- function(i) {
+    thisdepth <<- depths[i]
     depth.age <- density(Bacon.Age.d(depths[i], set), na.rm=TRUE)
     cbind(depth.age$x, depth.age$y/sum(depth.age$y))
   }
-    		
+
   # for each dated depth, check if any of its date's hpds fall within any of the model's hpds
   this.overlap <- function(i) 
     rice::hpd.overlap(get.modelages(i), set$calib$probs[[i]], prob=prob) 
@@ -346,10 +356,12 @@ model.dates.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE
   inorout <- sapply(dates, this.overlap)
   frac.in <- length(which(inorout==TRUE)) / length(depths)
   
-  if(verbose) 
-    message(if(frac.in < .80) "Warning! Only ", round(100*frac.in, decimals), "% of the dates (", length(which(inorout==TRUE)), "/", length(depths), ") overlap with the age-depth model (", 100*set$prob, "% hpd ranges)")
+  string <- paste0(if(frac.in < .80) "Warning! Only ", round(100*frac.in, decimals), "% of the dates (", length(which(inorout==TRUE)), "/", length(depths), ") overlap with the age-depth model (", 100*set$prob, "% hpd ranges)")
   
-  invisible(round(frac.in, decimals+2))
+  if(verbose) 
+    message(string)
+  
+  invisible(c(round(frac.in, decimals+2), string))
 }
 
 
@@ -381,17 +393,41 @@ overlap.intervals <- function(set=get('info'), digits=0, verbose=TRUE) {
 
 
 learning <- function(set=get('info'), decimals=2, talk=TRUE) {
-
   # accumulation rate
   prioracc.mean <- set$acc.mean # can be multiple entries	
   prioracc.shape <- set$acc.shape # can be multiple entries
   prioracc.sd <- sqrt(prioracc.mean^2 / prioracc.shape)
-  if(is.na(set$hiatus.depths[1])) { # deal with multiple acc subsets
+
+  if(is.na(set$hiatus.depths[1])) { # can also be a boundary
     postacc.mean <- set$post.acc[1]
     postacc.shape <- set$post.acc[2]
+    hiatus.text <- ""
   } else {
       postacc.mean <- set$post.acc[,1]
-      postacc.shape <- set$post.acc[,2]	
+      postacc.shape <- set$post.acc[,2]
+
+      if(is.na(set$boundary[1])) {
+        if(length(set$hiatus.depths) == 1) {
+          posthiatus.mean <- set$post.hiatus[1]
+          posthiatus.shape <- set$post.hiatus[2]
+        } else {
+            posthiatus.mean <- set$post.hiatus[,1]
+            posthiatus.shape <- set$post.hiatus[,2]
+          }
+        priorhiatus.mean <- set$hiatus.mean
+        priorhiatus.shape <- set$hiatus.shape
+        priorhiatus.sd <- sqrt(priorhiatus.mean^2 / priorhiatus.shape)
+
+        priorhiatus.precision <- 1 / (priorhiatus.mean^2 / priorhiatus.shape^2)
+        posthiatus.precision <- 1 / (posthiatus.mean^2 / posthiatus.shape^2)
+        hiatus.learned <- sqrt(posthiatus.precision / priorhiatus.precision)
+        hiatus.z <- (posthiatus.mean - set$hiatus.mean) / priorhiatus.sd
+
+        hiatus.text <- paste0("Hiatus learning ratio: ",
+          paste(round(hiatus.learned, decimals), collapse = " & "), 
+          "; z-difference: ",
+          paste(round(hiatus.z, decimals), collapse = " & "))
+      }
   }
   
   prioracc.precision <- 1 / (prioracc.mean^2 / prioracc.shape)
@@ -399,10 +435,10 @@ learning <- function(set=get('info'), decimals=2, talk=TRUE) {
   acc.learned <- sqrt(postacc.precision / prioracc.precision)
   acc.z <- (postacc.mean - prioracc.mean) / prioracc.sd
   
-  acc.text <- paste0("Accumulation learning ratio (prec(posterior)/prec(prior)): ",
-    paste(round(acc.learned, decimals), collapse = ", "), 
+  acc.text <- paste0("Accumulation learning ratio: ",
+    paste(round(acc.learned, decimals), collapse = " & "), 
     "; z-difference: ",
-    round(acc.z, decimals), collapse = ", ")
+    paste(round(acc.z, decimals), collapse = " & "))
     
   # memory	
   priormem.mean <- set$mem.mean
@@ -457,24 +493,76 @@ learning <- function(set=get('info'), decimals=2, talk=TRUE) {
       paste(round(sup.learned, decimals), collapse = ", "), 
       "; z-difference: ",
       round(sup.z, decimals), collapse = ", ")	
-  }	
+  }
 
-  if(talk)
+  if(talk) {
+    message(acc.text)
+    message(mem.text)
+    if(length(set$hiatus.depths) > 0)
+      if(is.na(set$boundary[1]))
+        message(hiatus.text)
     if(set$isplum) {
-      message(acc.text)
-      message(mem.text)
       message(phi.text)
-      message(sup.text)	  	  
-    } else {
-        message(acc.text)
-        message(mem.text)		
-      }
-  
+      message(sup.text)
+    }
+  }
+
+  txt <- c(acc.text, mem.text)  
+  if(length(set$hiatus.depths[!is.na(set$hiatus.depths)]) > 0)
+    if(is.na(set$boundary[1]))
+      txt <- c(txt, hiatus.text)
   if(set$isplum)
-	txt <- c(acc.text, mem.text, phi.text, sup.text) else
-      txt <- c(acc.text, mem.text)  
-  invisible(txt)	  
+    txt <- c(txt, phi.text, sup.text)
+
+  invisible(txt)
 }
 
 
 
+# internal function to write a summary file to the core's directory. Contains information about how the run went, how well the model fits the dates, and how the prior and posterior distributions compare. 
+summarise.run <- function(set=get("info"), roundby=roundby, overlap.hpds=overlap.hpds, learn) {
+  post.acc <- round(set$post.acc, roundby)
+  post.mem <- round(set$post.mem, roundby)
+  if(set$isplum) {
+    post.phi <- round(set$post.phi, roundby)
+    post.supp <- round(set$post.supp, roundby)
+  }
+  
+  string <- paste0("MCMC diagnostics:\n  effective sample size (ESS) ", 
+    round(set$MCMCdiagnostics[1], roundby), "\n  integrated autocorrelation time (IAT) ", 
+    round(set$ssize/set$MCMCdiagnostics[1], roundby), "\n  MCMC drift (z) ",
+    round(set$MCMCdiagnostics[2], roundby), "\n\n",
+    overlap.hpds,
+
+    "\n\nAccumulation rate (", 
+    set$age.unit, "/", set$depth.unit,  "):\n  prior(s): mean ",
+    ifelse(length(post.acc)==1, set$acc.mean, paste(set$acc.mean, collapse = " & ")),
+    ", shape ",
+    ifelse(length(post.acc)==1, set$acc.shape, paste(set$acc.shape, collapse = " & ")),
+    "\n  posterior(s): mean ",
+    ifelse(length(post.acc)==1, post.acc[1], paste(post.acc[,1], collapse = " & ")),
+    ", shape ",
+        ifelse(length(post.acc)==1, post.acc[2], paste(post.acc[,2], collapse = " & ")),
+    "\n  ", learn[1],
+
+    "\n\nMemory (between 0 and 1):\n  prior: mean ", set$mem.mean, ", strength ", set$mem.strength,
+    "\n  posterior: mean ", post.mem[1], ", strength ", post.mem[2],
+    "\n  ", learn[2],
+
+    if(set$isplum) {
+      paste("\n\nFlux (phi):\n  prior: mean ", set$phi.mean, ", shape ", set$phi.strength, 
+      "\n  posterior: mean ", post.phi[1], ", strength ", post.mem[2],
+      "\n  ", learn[3],
+
+      "\n\nSupported:\n  prior: mean ", set$s.mean, ", shape ", set$s.strength, 
+      "\n  posterior: mean ", post.supp[1], ", shape ", post.supp[2],
+      "\n  ", learn[4])
+    },
+
+        "\n\nDetails:\n  better MCMC runs have higher ESS (aim for >200 or >500), lower IAT, and lower z (aim for <1.96=2sd))",
+        "\n  learning ratio = precision(posterior) / precision(prior), where precision = 1/sdev. Values >1 indicate that we've learned about the parameter in question\n  z-difference shows by how much the posterior mean has changed relative to the prior's mean and variance (e.g., an absolute z value >1 indicate >1 sdev difference)"
+      )
+    
+      fl <- paste0(set$prefix, "_summary.txt")
+      writeLines(string, fl)
+    }

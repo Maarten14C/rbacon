@@ -64,6 +64,7 @@ Bacon(
   MaxAge = c(),
   cutoff = 0.01,
   plot.pdf = TRUE,
+  cairo = TRUE,
   dark = 1,
   date.res = 100,
   age.res = 200,
@@ -74,6 +75,7 @@ Bacon(
   younger.than = c(),
   save.elbowages = FALSE,
   verbose = TRUE,
+  use.cpp = TRUE,
   ...
 )
 }
@@ -127,10 +129,10 @@ but its values are always between 0 (no assumed memory) and 1 (100\% memory). It
 its values are always between 0 (no assumed memory) and 1 (100\% memory). Its default settings of \code{mem.mean=0.5}
 allow for a large range of posterior memory values. Please note that the default memory prior has been updated from rbacon version 2.5.1. on, to repair a bug.}
 
-\item{boundary}{The assumed depths of any boundary, which divides sections of different accumulation rate regimes (e.g., as indicated by major change in the stratigraphy). No hiatus is assumed between these sections, and memory is reset crossing the boundary. Different accumulation priors can be set for the sections above and below the boundary, e.g., \code{acc.mean=c(5, 20)}. See also \code{hiatus.depths}, \code{mem.mean}, \code{acc.mean} and \code{acc.shape}. Setting many boundaries might not work, and having more than one boundary per model section (see \code{'thick'}) might not work either.}
+\item{boundary}{The assumed depths of any boundary, which divides sections of different accumulation rate regimes (e.g., as indicated by major change in the stratigraphy). No hiatus is assumed between these sections, and memory is reset crossing the boundary. Different accumulation priors can be set for the sections above and below the boundary, e.g., \code{acc.mean=c(5, 20)}. See also \code{hiatus.depths}, \code{mem.mean}, \code{acc.mean} and \code{acc.shape}. Setting many boundaries might not work, and the maximum numbers of boundaries per model section (see \code{'thick'}) is 1.}
 
 \item{hiatus.depths}{The assumed depths for any hiatus should be provided as, e.g.,
-\code{hiatus.depths=20} for one at 20cm depth, and \code{hiatus.depths=c(20,40)} for two hiatuses at 20 and 40 cm depth.}
+\code{hiatus.depths=20} for one at 20 cm depth, and \code{hiatus.depths=c(20,40)} for two hiatuses at 20 and 40 cm depth.}
 
 \item{hiatus.max}{The prior for the maximum length of the hiatus. Hiatus length is a uniform distribution, with equal probabilities between 0 and \code{hiatus.max} yr (or whatever other \code{age.unit} is chosen).}
 
@@ -222,6 +224,8 @@ try running your core again with \code{remember=FALSE}, or, start cleanly by typ
 
 \item{plot.pdf}{Produce a pdf file of the age-depth plot. Defaults to \code{plot.pdf=TRUE} after a Bacon run.}
 
+\item{cairo}{Use cairo-based pdf plots if available (on Mac OS). Defaults to TRUE.}
+
 \item{dark}{Darkness of the greyscale age-depth model. The darkest grey value is \code{dark=1} by default.
 Lower values will result in lighter grey but values >1 are not allowed.}
 
@@ -242,6 +246,8 @@ Lower values will result in lighter grey but values >1 are not allowed.}
 \item{save.elbowages}{If you want to have a file with the MCMC-derived ages for all the age-depth model's elbows, set \code{save.elbowages=TRUE} and a file with the ages will be saved in the core's folder, starting with the core name, followed by its number of sections, d.min, and section thickness, and ending in "_elbowages.txt".}
 
 \item{verbose}{Provide feedback on what is happening (default \code{verbose=TRUE}).}
+
+\item{use.cpp}{Whether or not to use a cpp function to calculate the ages. Defaults to TRUE, but can be set to FALSE (much slower but less experimental)}
 
 \item{...}{options for the age-depth graph. See \link{agedepth} and \link{calib.plot}}
 }

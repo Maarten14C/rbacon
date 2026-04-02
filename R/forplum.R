@@ -187,7 +187,9 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
 		ages <- rev(ages)
       z <- matrix(Ai$y[[i]]/hght, nrow=1)
       d_slice <- c(depths[i]-thickness[i], depths[i])
-      modelled_col <- pbmodelled.col(seq(0, 1-max(z), length=50))
+	  
+	  # keeping rgb approach with alpha here, since the bluescales overlap with agedepth.ghost
+      modelled_col <- pbmodelled.col(seq(0, 1-max(z), length=50)) 
 	  
 	  # we're not using ghost.mirror, because of BC/AD axis reversal issues
       if(rotate.axes) {

@@ -3,7 +3,7 @@
 #################### user-invisible plot functions ####################
 
 # to plot greyscale/ghost graphs of the age-depth model
-agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, accordion=c(), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), rgb.scale=c(0,0,0), cutoff=0.001, age.lim, use.raster=FALSE, flip.d=FALSE, flip.age=FALSE) {
+agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, accordion=c(), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), from.col=NA, to.col="black", col.res=256, rgb.scale=c(0,0,0), cutoff=0.001, age.lim, use.raster=FALSE, flip.d=FALSE, flip.age=FALSE, verbose=TRUE, grid=FALSE, use.cpp=TRUE) {
   if(length(dseq) == 0)
     d.seq <- seq(d.min, d.max, length=d.res)
   d.lim <- range(d.seq)
@@ -18,33 +18,42 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
  if(length(accordion) == 2) # but will not work with image since constant bins required
     d.seq <- squeeze(d.seq, accordion[1], accordion[2])
 
-  hists <- Bacon.hist(d.seq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE, save.info=FALSE)
+  if(use.cpp) {
+    if(is.na(set$hiatus.depths[1]))
+      hists <- depths_agegrid(d.seq, out=as.matrix(set$output), elbows=info$elbows, hist_n=age.res, min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95) else
+        hists <- depths_agegrid_hiatus(d.seq, out=as.matrix(set$output), elbows=info$elbows,
+          hiatus_depths=set$hiatus.depths, slopes_above=set$slope.above, slopes_below=set$slope.below, elbow_above_hiatus=set$elbow.above, elbow_below_hiatus=set$elbow.below,
+          hist_n=age.res, min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95)
+    z <- as.matrix(hists$density)
 
-  z <- array(0, dim=c(age.res, length(d.seq))) # ages in rows, depths in columns
-  for(i in 1:length(hists)) { # was length(dseq)
-  if(length(hists[[i]]) < 7)
-      ages <- sort(unlist(hists[[i]])) else {
-       if(length(hists[[i]]$th0) == 0) # can't calculate ages beyond upper depths
-         ages <- NA else
-           ages <- seq(hists[[i]]$th0, hists[[i]]$th1, length=hists[[i]]$n)
-       if(length(ages[!is.na(ages)]) > 0)
-        z[,i] <- approx(ages, hists[[i]]$counts, age.seq, rule=2)$y
-     }
+    # z needs a bit more manipulation, e.g. check that max=1, dark, cutoff, is.na
+  } else {
+
+    hists <- Bacon.hist(d.seq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE, save.info=FALSE, verbose=verbose)
+
+    z <- array(0, dim=c(age.res, length(d.seq))) # ages in rows, depths in columns
+    for(i in 1:length(hists)) { # was length(dseq)
+    if(length(hists[[i]]) < 7)
+        ages <- sort(unlist(hists[[i]])) else {
+         if(length(hists[[i]]$th0) == 0) # can't calculate ages beyond upper depths
+           ages <- NA else
+             ages <- seq(hists[[i]]$th0, hists[[i]]$th1, length=hists[[i]]$n)
+         if(length(ages[!is.na(ages)]) > 0)
+          z[,i] <- approx(ages, hists[[i]]$counts, age.seq, rule=2)$y
+       }
+    }
+
+    z <- t(z)
+    minmax <- hists[[length(hists)]]$min
+    maxmax <- hists[[length(hists)]]$max
+    z <- z/maxmax # normalise to the height of most precise age estimate
+    if(length(dark) == 0)
+      dark <- 10 * minmax/maxmax
+    z[z > dark] <- dark
+    z <- z/max(z) # May 2021
+    z[z<cutoff] <- NA # do not plot pixels with probs very close to 0
+    z[is.na(z)] <- 0
   }
-  #z <- z[nrow(z):1,] # images are drawn as bitmaps from bottom left up
-  z <- t(z)
-  minmax <- hists[[length(hists)]]$min
-  maxmax <- hists[[length(hists)]]$max
-  z <- z/maxmax # normalise to the height of most precise age estimate
-  if(length(dark) == 0)
-    dark <- 10 * minmax/maxmax
-  z[z > dark] <- dark
-  z <- z/max(z) # May 2021
-  z[z<cutoff] <- NA # do not plot pixels with probs very close to 0
-  z[is.na(z)] <- 0
-#  if(deviceIsQuartz()) 
-#    if(use.raster)
-#      z <- z[,ncol(z):1] 
   
   if(flip.d)
     z <- z[nrow(z):1,] 
@@ -54,17 +63,9 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
   if(length(accordion) == 2)
     d.seq <- stretch(d.seq, accordion[1], accordion[2]) # careful now!
   
-#  if(rev.d) {
-  #  d.seq <- rev(d.seq)
-#  }
-#  if(rev.age)
-#    age.seq <- rev(age.seq)
-#  if(BCAD)
-#     z <- z[nrow(z):1,]
-#  if(rotate.axes)
-#     z <- z[nrow(z):1,]
-
-  cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))
+  if(is.na(to.col))
+    cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res)) else
+      cols <- col.scales(col.res, zero.colour=from.col, max.colour=to.col)
 
   if(rotate.axes)
     image(age.seq, d.seq, t(z), col=cols, add=TRUE, rev.y=rev.d, rev.x=rev.age, useRaster=use.raster) else
@@ -78,6 +79,31 @@ deviceIsQuartz <- function() {
   .Platform$OS.type == "unix" &&
     grepl("darwin", R.version$platform) &&
     names(dev.cur()) == "quartz"
+}
+
+
+
+# make scales for a range of colour schemes, avoiding alpha
+col.scales <- function(n, zero.colour="white", max.colour="black", space="Lab", dark=1, darkest=1) {
+  is.colour <- function(col) 
+    grepl("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", col) || tolower(col) %in% colours()  
+  if(!is.colour(zero.colour))
+    stop("Cannot find zero.colour: ", zero.colour, call.=FALSE)
+  if(!is.colour(max.colour))
+    stop("Cannot find colour: ", max.colour, call.=FALSE)
+  if(!is.numeric(dark) || dark <= 0 || dark > 1)
+    stop("'dark' must be between 0 and 1")
+  if(!is.numeric(darkest) || darkest <= 0 || darkest > 1)
+    stop("'darkest' must be between 0 and 1")
+  
+  ramp <- colorRampPalette(c(zero.colour, max.colour), space=space)
+
+  paint <- function(x) {
+     x <- pmin(x, dark) # clip any value > dark
+     x <- darkest * (x / dark) # renormalise dark to darkest (default = 1)
+     ramp(n)[ ceiling(x * (n - 1)) + 1 ] # return colours
+   }
+   paint(seq(0, 1, length.out = n))
 }
 
 
@@ -126,11 +152,13 @@ PlotLogPost <- function(set, from=0, to=set$Tr, xaxs="i", yaxs="i", panel.size=.
 }
 
 
+
 # plot the prior for the accumulation rate
 PlotAccPrior <- function(s, mn, set=get('info'), depth.unit=depth.unit, age.unit=age.unit, main="", xlim=c(0, 3*max(mn)), xlab=c(), ylab="Density", add=FALSE, legend=TRUE, csize=.9, line.col=3, line.width=2, text.col=2) {
   o <- order(s, decreasing=TRUE)
 #  priors <- unique(cbind(s[o],mn[o])[,1:2])
   priors <- cbind(unique(s[o]), unique(mn[o]))[,1:2]
+  acc.priors <<- priors
   x <- 0
   if(length(xlab) == 0)
     xlab <- paste0("Acc. rate (", noquote(age.unit), "/", noquote(depth.unit), ")")
@@ -182,14 +210,25 @@ PlotMemPrior <- function(s, mn, thick, set=get('info'), xlab="Memory (ratio)", y
 
 
 # plot the prior for the hiatus length
-PlotHiatusPrior <- function(mx=set$hiatus.max, hiatus=set$hiatus.depths, set=get('info'), xlab=paste0("Hiatus size (", set$age.unit, ")"), ylab="Density", main="", xlim=c(0, 1.1*max(mx)), add=FALSE, legend=TRUE, csize=.9, line.col=3, line.width=2, text.col=2) {
-  if(add)
-    lines(c(0, 0, mx, mx), c(0, 1/mx, 1/mx, 0), col=line.col, lwd=line.width) else
-      plot(c(0, 0, mx, mx), c(0, 1/mx, 1/mx, 0), xlab=xlab, ylab=ylab, xlim=xlim, type="l", col=line.col, lwd=line.width)
+PlotHiatusPrior <- function(mn=set$hiatus.mean, s=set$hiatus.shape, hiatus=set$hiatus.depths, set=get('info'), xlab=paste0("Hiatus size (", set$age.unit, ")"), ylab="Density", main="", xlim=c(0, 3*max(mn)), add=FALSE, legend=TRUE, csize=.9, line.col=3, line.width=2, text.col=2) {
+  o <- order(s, decreasing=TRUE)
+  priors <- cbind(unique(s[o]), unique(mn[o]))[,1:2]
+  x <- 0
+  if(length(xlab) == 0)
+    xlab <- paste0("Hiatus size (", noquote(age.unit), "/", noquote(depth.unit), ")")
 
-  txt <- paste("hiatus.max: ", toString(mx))
-  if(legend)
-    legend("topleft", txt, bty="n", cex=csize, text.col=text.col, xjust=0)
+  if(length(priors) == 2) {
+    curve(dgamma(x, s, s/mn), col=line.col, lwd=line.width, from=0, to=max(xlim), xlim=xlim, xlab=xlab, ylab=ylab, add=add)
+    txt <- paste("hiatus.shape: ", priors[1], "\nhiatus.mean: ", priors[2])
+    } else {
+      priors <- priors[order(priors[,1]*priors[,2]),]
+      curve(dgamma(x, priors[1,1], priors[1,1]/priors[1,2]), col=line.col, lwd=line.width, from=0, xlim=xlim, xlab=xlab, ylab=ylab, add=add)
+      for(i in 2:nrow(priors))
+        curve(dgamma(x, priors[i,1], priors[i,1]/priors[i,2]), col=line.col, lwd=line.width, from=0, xlim=xlim, xlab=xlab, ylab=ylab, add=if(i==1) add else TRUE)
+      txt <- paste("hiatus.shape: ", toString(priors[,1]), "\nhiatus.mean: ", toString(priors[,2]))
+    }
+    if(legend)
+      legend("topleft", txt, bty="n", cex=csize, text.col=text.col, xjust=1)
 }
 
 
@@ -317,20 +356,15 @@ PlotMemPost <- function(set=get('info'), corenam, K, main="", s=set$mem.strength
 
 
 # plot the posterior (and prior) of the hiatus
-PlotHiatusPost <- function(set=get('info'), mx=set$hiatus.max, main="", xlab=paste0("Hiatus size (", set$age.unit, ")"), ylab="Frequency", after=set$after, xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, hiatus.xlim=c(), hiatus.ylim=c(), line.col=3, line.width=2, text.col=2, hist.col=grey(0.8), hist.border=grey(0.4)) {
-  gaps <- c()
-  for(i in set$hiatus.depths) {
-    below <- Bacon.Age.d(i+after, set)
-    above <- Bacon.Age.d(i-after, set)
-    gaps <- c(gaps, below - above)
-  }
-  
+PlotHiatusPost <- function(set=get('info'), mn=set$hiatus.mean, main="", xlab=paste0("Hiatus size (", set$age.unit, ")"), ylab="Frequency", after=set$after, xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, hiatus.xlim=c(), hiatus.ylim=c(), line.col=3, line.width=2, text.col=2, hist.col=grey(0.8), hist.border=grey(0.4)) {
+  gaps <- set$hiatus.start - set$hiatus.end
   post.mn <- mean(gaps)
   post.shape <- post.mn^2 / var(gaps)
+  raw.gaps <- gaps
   
   if(length(hiatus.xlim) == 0)
-    hiatus.xlim <- c(0, 1.1*(max(mx, gaps)))
-  max.y <- 1.1/mx
+    hiatus.xlim <- c(0, 1.1*(max(3*mn, gaps)))
+  max.y <- 1.1/mn
   if(length(gaps) > 1) {
     gaps <- density(gaps, from=0)
     max.y <- max(max.y, gaps$y)
@@ -342,8 +376,8 @@ PlotHiatusPost <- function(set=get('info'), mx=set$hiatus.max, main="", xlab=pas
     polygon(cbind(c(min(gaps$x), gaps$x, max(gaps$x)), c(0,gaps$y,0)),
     col=hist.col, border=hist.border)
 
-  PlotHiatusPrior(add=TRUE, xlab="", ylab=ylab, main=main, csize=prior.size, line.col=line.col, line.width=line.width, text.col=text.col)
-  invisible(c(post.mn, post.shape))
+  PlotHiatusPrior(add=TRUE, xlab="", ylab=ylab, main=main, xlim=hiatus.xlim, csize=prior.size, line.col=line.col, line.width=line.width, text.col=text.col)
+  invisible(list(post.mn=post.mn, post.shape=post.shape, gaps=raw.gaps))
 }
 
 

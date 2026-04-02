@@ -9,6 +9,8 @@
 #' @param proxy.res Greyscale pixels are calculated for \code{proxy.res=250} proxy values by default, as a compromise between image quality and calculation speed. If the output looks very pixel-like (e.g., when choosing to plot only part of the record using proxy.lim), set this option to higher values.
 #' @param age.res Resolution or amount of greyscale pixels to cover the age scale of the age-model plot. Default \code{age.res=250} as a compromise between image quality and calculation speed. If the output looks very pixel-like (e.g., when choosing to plot only part of the record using age.lim), set this option to higher values.
 #' @param yr.res Deprecated - use age.res instead
+#' @param zero.col The colour where the ghost is 0. Defaults to \code{zero.col="white"}, which together with \code{max.col="black"} results in a greyscale. More creative colour gradients can be implemented by checking the 600+ colours in \code{colours()}.
+#' @param max.col The colour where the ghost is at its maximum. Defaults to \code{max.col="black"}, which together with \code{zero.col="white"} results in a greyscale. More creative colour gradients can be implemented by checking the 600+ colours in \code{colours()}.
 #' @param rgb.scale The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}). 
 #' @param rgb.res Resolution of the colour spectrum depicting the age-depth model. Default \code{rgb.res=100}.
 #' @param set Detailed information of the current run, stored within this session's memory as variable info.
@@ -35,6 +37,7 @@
 #' @param yr.lab Deprecated - use age.lab instead
 #' @param verbose Provide feedback on what is happening (default \code{verbose=TRUE}).
 #' @param add Add to an existing graph (default \code{add=FALSE}).
+#' @param use.cpp To speed things up, optionally a c++ function can be used to calculate the histograms behind the ghostplot. Defaults to \code{use.cpp=TRUE}.
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A grey-scale graph of the proxy against calendar age.
 #' @examples
@@ -44,7 +47,7 @@
 #'   proxy.ghost()
 #' }
 #' @export
-proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.res=age.res, rgb.scale=c(0,0,0), rgb.res=100, set=get('info'), cutoff=0.001, dark=1, darkest=1, rotate.axes=FALSE, rev.proxy=FALSE, rev.age=FALSE, yr.rev=rev.age, plot.mean=FALSE, mean.col="red", age.lim=NULL, yr.lim=age.lim, proxy.lim=NULL, sep=",", xaxs="i", yaxs="i", xaxt="s", yaxt="s", bty="l", BCAD=set$BCAD, age.lab=ifelse(BCAD, "BC/AD", "cal yr BP"), yr.lab=age.lab, verbose=TRUE, add=FALSE) {
+proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=200, age.res=500, yr.res=age.res, zero.col="white", max.col="black", rgb.scale=c(0,0,0), rgb.res=100, set=get('info'), cutoff=0.001, dark=1, darkest=1, rotate.axes=FALSE, rev.proxy=FALSE, rev.age=FALSE, yr.rev=rev.age, plot.mean=FALSE, mean.col="red", age.lim=NULL, yr.lim=age.lim, proxy.lim=NULL, sep=",", xaxs="i", yaxs="i", xaxt="s", yaxt="s", bty="l", BCAD=set$BCAD, age.lab=ifelse(BCAD, "BC/AD", "cal yr BP"), yr.lab=age.lab, verbose=TRUE, add=FALSE, use.cpp=F) {
   if(length(set$Tr)==0)
     stop("please first run agedepth()", call.=FALSE)
   proxies <- read.csv(paste0(set$coredir, set$core, "/", set$core, "_proxies.csv"), header=TRUE, sep=sep)
@@ -58,30 +61,50 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.
   if(length(unique(proxy[,2])) == 1)
     stop("this proxy's values remain constant throughout the core, and cannot be proxy-ghosted!", call.=FALSE)
   proxyseq <- seq(min(proxy[,2]), max(proxy[,2]), length=proxy.res)
-#  out <- list(yrseq=c(), binned=c(), maxs=c())
-  ds <- NULL
+
+  depths <- NULL
   d.length <- array(1, dim=c(proxy.res, 2))
 
   for(i in 1:proxy.res) {
     tmp  <- .DepthsOfScore(proxyseq[i], proxy)
-    ds <- c(ds, tmp)
+    depths <- c(depths, tmp)
     if(i > 1)
       d.length[i,1] <- d.length[(i-1),2]+1
     d.length[i,2] <- d.length[i,1]+length(tmp)-1
     if(length(tmp) == 0)
       d.length[i,] <- d.length[i-1,]
   }
-  if(verbose)
-    message("Calculating histograms")
 
-  hists <- Bacon.hist(ds, set, calc.range=FALSE) # BCAD always FALSE
-  message("\n")
+  if(use.cpp) {
+    agerange <- extendrange(set$ranges[,-1], f=.2)
 
-  age.min <- c()
-  age.max <- c()
-  for(i in 1:length(hists)) {
-    age.min <- min(age.min, hists[[i]]$th0)
-    age.max <- max(age.max, hists[[i]]$th1)
+    res <- DepthstoAges(depths, as.matrix(set$output), dmin=set$d.min, section_len=set$thick, hist_n=age.res, n_rows=set$Tr, n_sections = set$K, min_age = min(agerange), max_age = max(agerange))
+    
+    hists <- lapply(1:length(depths), function(i) {
+      list(th0=res$breaks[1],
+        th1=res$breaks[length(res$breaks)],
+        counts=res$density[i,],
+        n=ncol(res$density))
+    })
+    
+      age.min <- c()
+      age.max <- c()
+      for(i in 1:length(hists)) {
+        age.min <- min(age.min, res$breaks[which(res$density[i,] > 0)])
+        age.max <- max(age.max, res$breaks[which(res$density[i,] > 0)])
+      }	
+	
+    } else {
+      if(verbose)
+        message("Calculating histograms")
+      hists <- Bacon.hist(depths, set, calc.range=FALSE, progress=verbose) # BCAD always FALSE
+      message("")
+	  age.min <- c()
+	  age.max <- c()
+	  for(i in 1:length(hists)) {
+	    age.min <- min(age.min, hists[[i]]$th0)
+	    age.max <- max(age.max, hists[[i]]$th1)
+	  }
   }
   age.seq <- seq(age.min, age.max, length=age.res)
 
@@ -120,7 +143,10 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=250, age.res=200, yr.
     proxy.lim <- range(proxyseq)
   if(rev.proxy)
     proxy.lim <- rev(proxy.lim)
-  col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0, darkest, length=rgb.res))
+  
+  if(is.na(max.col))
+    col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0, darkest, length=rgb.res)) else
+  col <- col.scales(rgb.res, zero.col, max.col, dark=dark, darkest=darkest)
   if(rotate.axes) {
     if(!add)
 	  plot(0, type="n", xlim=proxy.lim, ylim=age.lim, ylab=age.lab, xlab=proxy.lab, xaxs=xaxs, yaxs=yaxs, xaxt=xaxt, yaxt=yaxt) 

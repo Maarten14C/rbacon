@@ -28,7 +28,8 @@ agedepth(
   age.max = c(),
   yr.max = age.max,
   hiatus.option = 1,
-  dark = c(),
+  dark = 1,
+  darkest = 1,
   prob = set$prob,
   rounded = c(),
   d.res = 400,
@@ -73,6 +74,8 @@ agedepth(
   MCMC.resample = TRUE,
   hiatus.col = grey(0.5),
   hiatus.lty = "12",
+  from.col = "white",
+  to.col = "black",
   rgb.scale = c(0, 0, 0),
   rgb.res = 100,
   slump.col = grey(0.8),
@@ -101,8 +104,8 @@ agedepth(
   xaxs = "r",
   yaxs = "i",
   MCMC.col = grey(0.4),
-  post.col = grey(0.8),
-  post.border = grey(0.4),
+  post.col = rgb(0, 0, 0, 0.2),
+  post.border = rgb(0, 0, 0, 0.4),
   prior.col = 3,
   prior.lwd = 2,
   prior.fontcol = 2,
@@ -131,7 +134,9 @@ agedepth(
   verbose = TRUE,
   roundby = 2,
   save.info = set$save.info,
-  ssize = 4000
+  write.summary = TRUE,
+  ssize = 4000,
+  use.cpp = TRUE
 )
 }
 \arguments{
@@ -184,7 +189,9 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{hiatus.option}{How to calculate accumulation rates and ages for sections with hiatuses. Either extrapolate from surrounding sections (default, \code{hiatus.option=1}), use a w-weighted mix between the prior and posterior values for depths below the hiatus and prior information only for above the hiatus (\code{hiatus.option=2}), or use the originally calculated slopes (\code{hiatus.option=0}).}
 
-\item{dark}{Darkness of the greyscale age-depth model. By default, the darkest grey value is calculated as 10 times the height of the lowest-precision age estimate \code{dark=c()}. Lower values will result in lighter grey but values >1 are not allowed.}
+\item{dark}{The value beyond which any higher values will be clipped. Set to 1 by default. This can be set to lower values if for example only a very small area in the plot obtains the darkest values - then lowering the `dark` value will darker a larger area.}
+
+\item{darkest}{The darkest grey value is darkest=1 by default; lower values will result in lighter maximum colours; values >1 are not advised.}
 
 \item{prob}{Confidence interval to report (between 0 and 1, default 0.95 or 95\%).}
 
@@ -274,9 +281,13 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{hiatus.lty}{The line type of the depths of any hiatuses. Default \code{hiatus.lty=12}.}
 
-\item{rgb.scale}{The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}).}
+\item{from.col}{Starting colour of the gradient for the ghost plot of the age-depth model. Defaults to \code{from.col="white"}.}
 
-\item{rgb.res}{Resolution of the colour spectrum depicting the age-depth model. Default \code{rgb.res=100}.}
+\item{to.col}{Colour of the gradient for the ghost plot of the age-depth model. Defaults to a greyscale, \code{to.col="black"}.}
+
+\item{rgb.scale}{As alternative to 'from.col' and 'to.col', rgb.scale can be used to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}).}
+
+\item{rgb.res}{Resolution of the colour spectrum depicting the age-depth model, if using 'rgb.scale'. Default \code{rgb.res=100}.}
 
 \item{slump.col}{Colour of slumps. Defaults to \code{slump.col=grey(0.8)}.}
 
@@ -390,7 +401,11 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{save.info}{By default, a variable called `info' with relevant information about the run (e.g., core name, priors, settings, ages, output) is saved into the working directory. Note that this will overwrite any existing variable with the same name - as an alternative, one could run, e.g., \code{myvar <- Bacon()}, followed by supplying the variable \code{myvar} in any subsequent commands.}
 
+\item{write.summary}{Whether or not to write a file to the core's folder, which summarizes the run (MCMC, model fit, priors, posteriors, learning).}
+
 \item{ssize}{Number of MCMC iterations to use.}
+
+\item{use.cpp}{Whether or not to use a cpp function to calculate the ages. Defaults to TRUE, but can be set to FALSE (much slower but less experimental)}
 }
 \value{
 A plot of the age-depth model, and estimated ages incl. confidence ranges for each depth.

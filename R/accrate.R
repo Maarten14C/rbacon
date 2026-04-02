@@ -29,7 +29,7 @@
 #' @export
 accrate.depth <- function(d, set=get('info'), cmyr=FALSE, na.rm=FALSE, inversion.threshold=1e-6) {
   if(length(set$slump) > 0) 
-	d <- toslump(d, set$slump, remove=na.rm)
+    d <- toslump(d, set$slump, remove=na.rm)
 
   accs.elbows <- set$output[,2:(set$K+1)]
   if(!is.na(d) && all(!is.na(set$elbows)) && min(set$elbows) <= d && d <= max(set$elbows))
@@ -216,8 +216,11 @@ accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, na.rm=TRUE, pro
 #' @param d.lab Label for the depth axis.
 #' @param cmyr Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm. Axis limits are difficult to calculate when \code{cmyr=TRUE}, so a manual adaptation of \code{acc.lim} might be a good idea.
 #' @param acc.lab Axis label for the accumulation rate.
-#' @param dark The darkest grey value is dark=1 by default; lower values will result in lighter grey but values >1 are not advised.
+#' @param dark The value beyond which any higher values will be clipped. Set to 1 by default. This can be set to lower values if for example only a very small area in the plot obtains the darkest values - then lowering the `dark` value will darker a larger area.
+#' @param darkest The darkest grey value is darkest=1 by default; lower values will result in lighter maximum colours; values >1 are not advised.
 #' @param cutoff Point below which colours will no longer be printed. Default \code{cutoff=0.001}.
+#' @param zero.col The colour where the ghost is 0. Defaults to \code{zero.col="white"}, which together with \code{max.col="black"} results in a greyscale. More creative colour gradients can be implemented by checking the 600+ colours in \code{colours()}.
+#' @param max.col The colour where the ghost is at its maximum. Defaults to \code{max.col="black"}, which together with \code{zero.col="white"} results in a greyscale. More creative colour gradients can be implemented by checking the 600+ colours in \code{colours()}.
 #' @param rgb.scale The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}). 
 #' @param rgb.res Resolution of the colour spectrum depicting the age-depth model. Default \code{rgb.res=100}.
 #' @param prob Probability ranges. Defaults to \code{prob=0.95}.
@@ -250,7 +253,7 @@ accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, na.rm=TRUE, pro
 #'   head(tmp)
 #' }
 #' @export
-accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, cutoff=0.001, rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE, xaxs="r", yaxs="r", bty="l", remove.laststep=TRUE, use.raster=FALSE, flip.acc=FALSE) {
+accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, darkest=.8, cutoff=0.001, zero.col="white", max.col="black", rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE, xaxs="r", yaxs="r", bty="l", remove.laststep=TRUE, use.raster=FALSE, flip.acc=FALSE) {
 
   max.acc <- 0; max.dens <- 0
   acc <- list(); min.rng <- numeric(length(d)); max.rng <- numeric(length(d)); mean.rng <- numeric(length(d)); median.rng <- numeric(length(d))
@@ -294,19 +297,20 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
   if(rev.acc)
     acc.lim <- rev(acc.lim)
 
+  if(is.na(max.col))
+    col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(accs$y[!is.na(accs$y)]), 0, length=rgb.res)) else
+      col <- col.scales(rgb.res, zero.colour=zero.col, max.colour=max.col, dark=dark, darkest=darkest)
+
   if(rotate.axes) {
     plot(0, type="n", xlab=acc.lab, ylab=d.lab, ylim=d.lim, xlim=acc.lim, bty="n", xaxs=xaxs, yaxs=yaxs)
     for(i in 2:length(d)) {
       accs <- acc[[i-1]]
-      if(flip.acc)
-        z <- 1-t(rev(accs$y)) else
-          z <- 1-t(accs$y)
+      z <- if (flip.acc) t(rev(accs$y)) else t(accs$y)
       if(deviceIsQuartz()) 
         if(use.raster)
           if(rev.acc)
             z <- t(rev(z))
 
-      col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(accs$y[!is.na(accs$y)]), 0, length=rgb.res))
       image(accs$x, d[c(i - 1, i)], t(z), add=TRUE, col=col, useRaster=use.raster)
     }
     if(plot.range)
@@ -332,13 +336,11 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
       plot(0, type="n", xlab=d.lab, ylab=acc.lab, xlim=d.lim, ylim=acc.lim, bty="n", xaxs=xaxs, yaxs=yaxs)
       for(i in 2:length(d)) {
         accs <- acc[[i-1]]
-       if(flip.acc)
-         z <- 1-t(rev(accs$y)) else
-           z <- 1-t(accs$y)
+       z <- if (flip.acc) t(rev(accs$y)) else t(accs$y)
        if(deviceIsQuartz()) 
          if(use.raster)
            z <- t(z[length(z):1])
-        col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(accs$y[!is.na(accs$y)]), 0, length=rgb.res))
+
         image(d[c(i - 1, i)], accs$x, z, add=TRUE, col=col, useRaster=use.raster)
     }
 
@@ -379,7 +381,10 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' @param age.res Resolution or amount of greyscale pixels to cover the age scale of the plot. Default \code{age.res=400}.
 #' @param acc.res Resolution or amount of greyscale pixels to cover the accumulation rate scale plot. Default \code{age.res=400}.
 #' @param cutoff Point below which colours will no longer be printed. Default \code{cutoff=0.001}.
-#' @param dark The darkest grey value is dark=1 by default; lower values will result in lighter grey but values >1 are not advised.
+#' @param zero.col The colour where the ghost is 0. Defaults to \code{zero.col="white"}, which together with \code{max.col="black"} results in a greyscale. More creative colour gradients can be implemented by checking the 600+ colours in \code{colours()}.
+#' @param max.col The colour where the ghost is at its maximum. Defaults to \code{max.col="black"}, which together with \code{zero.col="white"} results in a greyscale. More creative colour gradients can be implemented by checking the 600+ colours in \code{colours()}.
+#' @param dark The value beyond which any higher values will be clipped. Set to 1 by default. This can be set to lower values if for example only a very small area in the plot obtains the darkest values - then lowering the `dark` value will darker a larger area.
+#' @param darkest The darkest grey value is darkest=1 by default; lower values will result in lighter maximum colours; values >1 are not advised.
 #' @param rgb.scale The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}). 
 #' @param rgb.res Resolution of the colour spectrum depicting the age-depth model. Default \code{rgb.res=100}.
 #' @param prob Probability ranges. Defaults to \code{prob=0.95}.
@@ -416,7 +421,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #'   head(tmp)
 #' }
 #' @export
-accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FALSE, age.res=400, acc.res=200, cutoff=.001, dark=1, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, use.raster=FALSE, flip.acc=FALSE, flip.age=FALSE, xaxs="i", yaxs="i", bty="l") {
+accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FALSE, age.res=400, acc.res=200, cutoff=.001, zero.col="white", max.col="black", dark=1, darkest=1, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, use.raster=FALSE, flip.acc=FALSE, flip.age=FALSE, xaxs="i", yaxs="i", bty="l") {
   if(length(age.lim) == 0) 
      age.lim <- extendrange(set$ranges[,5]) # just the mean ages, not the extremes
   if(set$BCAD) # was set$BCAD
@@ -456,7 +461,6 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
   
   stored <- cbind(age.seq, acc.rng[,1], acc.rng[,2], acc.median, acc.mean)
   colnames(stored) <- c("ages", "min.rng", "max.rng", "median", "mean")
-  stored <<- stored
   z <- t(z) # when using image to draw the greyscales, it will rotate z
   if(flip.acc)
     z <- z[,ncol(z):1] 
@@ -484,7 +488,9 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
 #  if(BCAD)
 #     z <- z[nrow(z):1,]
 
-  cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))	
+  if(is.na(max.col))
+    cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))	else
+  cols <- col.scales(rgb.res, zero.colour=zero.col, max.colour=max.col, dark=dark, darkest=darkest)
 
   if(length(age.lab) == 0)
     if(BCAD)
@@ -548,43 +554,40 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
 #' flux values for the first proxy in the .csv file. Instead of using a _flux.csv file, a flux variable can also be defined
 #'  within the R session (consisting of depths and their proxy concentrations in two columns). Then provide the name of this variable, e.g.: \code{flux.age.ghost(flux=flux1)}.
 #' See Bacon_runs/MSB2K/MSB2K_flux.csv for an example.
-#' @param proxy Which proxy to use (counting from the column number in the .csv file after the depths column).
-#' @param age.lim Minimum and maximum calendar age ranges, calculated automatically by default (\code{age.lim=c()}).
-#' @param yr.lim Deprecated - use age.lim instead
-#' @param age.res Resolution or amount of greyscale pixels to cover the age scale of the plot. Default \code{age.res=200}.
-#' @param yr.res Deprecated - use age.res instead
+#' @param column Which proxy to use (counting from the column number in the .csv file after the depths column).
+#' @param flux Instead of using a file, the data can also be provided as a variable. The first column should be the depths, and the variable 'column' should indicate which column (after the depth column) contains the proxy of interest.
 #' @param set Detailed information of the current run, stored within this session's memory as variable info.
-#' @param flux Define a flux variable within the R session (consisting of depths and their proxy concentrations in two columns) and provide the name of this variable, e.g.:
-#' \code{flux.age.ghost(flux=flux1)}. If left empty (\code{flux=c()}), a flux file is expected (see \code{proxy}).
-#' @param plot.range Plot curves that indicate a probability range, at resolution of yr.res.
-#' @param prob Probability range, defaults to \code{prob=0.8} (10 \% at each side).
-#' @param range.col Red seems nice.
-#' @param range.lty Line type of the confidence ranges.
-#' @param flux.lim Limits of the flux axes.
-#' @param flux.lab Axis labels. Defaults to \code{flux.lab="flux"}.
-#' @param plot.mean Plot the mean fluxes.
-#' @param mean.col Red seems nice.
-#' @param mean.lty Line type of the means.
-#' @param plot.median Plot the median fluxes.
-#' @param median.col Blue seems nice.
-#' @param median.lty Line type of the medians.
-#' @param upper Maximum flux rates to plot. Defaults to the upper 99\%; \code{upper=0.99}.
-#' @param rgb.scale The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}). 
-#' @param rgb.res Resolution of the colour spectrum depicting the age-depth model. Default \code{rgb.res=100}.
-#' @param dark The darkest grey value is \code{dark=1} by default; lower values will result in lighter grey but \code{values >1} are not allowed.
-#' @param cutoff Point below which colours will no longer be printed. Default \code{cutoff=0.001}.
-#' @param BCAD The calendar scale of graphs and age output-files is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
 #' @param age.lab The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}).
-#' @param yr.lab Deprecated - use age.lab instead
+#' @param age.lim Minimum and maximum calendar age ranges, calculated automatically by default (\code{age.lim=c()}).
+#' @param age.rev The direction of the age axis can be reversed using \code{age.rev=TRUE}.
+#' @param age.res Resolution or amount of greyscale pixels to cover the age scale of the plot. Default \code{age.res=500}.
+#' @param age.compress Since the bottom and top edges of age-models often show weird flux behaviour, the top and bottom half are shaved off by default (1\%, \code{age.compress=-0.01}).
+#' @param flux.lim Limits of the flux axes.
+#' @param flux.rev The flux axis can be reversed with \code{flux.rev=TRUE}.
+#' @param flux.lab Axis labels. Defaults to \code{flux.lab="flux"}.
+#' @param flux.res Resolution or amount of greyscale pixels to cover the flux scale of the plot. Default \code{flux.res=500}.
+#' @param BCAD The calendar scale of graphs and age output-files is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
+#' @param clip.prob Since some iterations show very high flux values, it is useful to clip the top values. Defaults to \code{clip.prob=0.975}.
+#' @param plot.range Plot curves that indicate a probability range.
+#' @param prob Probability for the flux ranges; defaults to \code{prob=0.95}.
+#' @param range.col Grey seems nice (default \code{range.col=grey(0.5)}).
+#' @param range.lty Line type of the flux ranges. Defaults to dashed, \code{range.lty=2}.
+#' @param plot.mean Plot the mean fluxes. Default TRUE.
+#' @param mean.col Red seems nice.
+#' @param mean.lty Line type of the means. Defaults to dashed, \code{range.lty=2}.
+#' @param plot.median Plot the median fluxes. Default TRUE
+#' @param median.col Blue seems nice.
+#' @param median.lty Line type of the medians. Defaults to dashed, \code{range.lty=2}.
+#' @param flux.cols Colour of the flux ghost graph. Defaults to greyscales, \code{flux.cols=gray.colors(256, start=darkest, end=0)}.
+#' @param dark Any (normalised) flux value above this threshold is set to the threshold; default is \code{dark=0.9}.
+#' @param darkest The darkest value. Set to 1 for the darkest colour to be black if using a greyscale.
 #' @param rotate.axes The default of plotting calendar year on the horizontal axis and fluxes on the vertical one can be changed with \code{rotate.axes=TRUE}.
-#' @param rev.flux The flux axis can be reversed with \code{rev.flux=TRUE}.
-#' @param rev.age The direction of the age axis can be reversed using \code{rev.age=TRUE}.
-#' @param rev.yr Deprecated - use rev.age instead
-#' @param use.raster Rasters can be aligned or not in the underlying image function. By default, we use \code{use.raster=FALSE}. This takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. Therefore, \code{use.raster=TRUE} would be preferable, however on some devices this causes greyscales to 'flip'. If this is the case, use 'flip.flux=TRUE' or 'flip.age=TRUE'.
-#' @param flip.flux When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.acc=TRUE} solves this. 
-#' @param flip.age When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.age=TRUE} solves this. 
+#' @param use.raster Rasters can be aligned or not in the underlying image function. By default, we use \code{use.raster=FALSE}. This takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing.
+#' @param xaxs Limits of the horizontal axis. By default does not extend, \code{xaxs="i"}.
+#' @param yaxs Limits of the vertical axis. By default does not extend, \code{yaxs="i"}.
+#' @param bty Type of box to plot around the graph. Defaults to L-shaped, \code{bty="l"}.
 #' @author Maarten Blaauw, J. Andres Christen
-#' @return A plot of flux rates.
+#' @return A plot of flux rates, and the underlying greyscales, means, medians and ranges (invisibly).
 #' @examples
 #' \dontrun{
 #'   Bacon(run=FALSE, coredir=tempfile())
@@ -592,182 +595,100 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
 #'   flux.age.ghost(1)
 #' }
 #' @export
-flux.age.ghost <- function(proxy=1, age.lim=c(), yr.lim=age.lim, age.res=400, yr.res=age.res, set=get('info'), flux=c(), plot.range=TRUE, prob=.8, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, flux.lim=c(), flux.lab=expression("flux (g cm"^-1*" yr"^-1*")"), upper=.95, rgb.scale=c(0,0,0), rgb.res=100, dark=set$dark, cutoff=0.001, BCAD=set$BCAD, age.lab=c(), yr.lab=age.lab, rotate.axes=FALSE, rev.flux=FALSE, rev.age=FALSE, rev.yr=rev.age, use.raster=FALSE, flip.age=FALSE, flip.flux=FALSE) {
-  if(length(flux) == 0) { # then read a .csv file, expecting data in columns with headers
-    flux <- read.csv(paste0(set$coredir, set$core, "/", set$core, "_flux.csv"))
-    flux <- cbind(flux[,1], flux[,1+proxy])
-      isNA <- is.na(flux[,2])
-      flux <- flux[!isNA,]
+flux.age.ghost <- function(column=1, flux=c(), set=get("info"), age.lab=c(), age.lim=c(), age.rev=FALSE, age.res=500, age.compress=-0.01, flux.lim=c(), flux.rev=FALSE, flux.lab="flux (proxy/yr)", flux.res=500, BCAD=set$BCAD, prob=0.95, clip.prob = 0.975, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, flux.cols=col.scales(256, "white", "black", darkest=darkest), dark=.9, darkest=1, rotate.axes=FALSE, use.raster=FALSE, xaxs="i", yaxs="i", bty="l") {
+  if(is.null(flux)) {
+    pf <- read.csv(file.path(set$coredir, set$core, paste0(set$core, "_flux.csv")))
+    depths <- pf[,1]
+    if(!is.numeric(column) || column < 1 || column > ncol(pf) - 1)
+      stop("column out of range")
+    proxy  <- pf[,column+1]
+  } else { # then we assume that flux is provided as columns
+     depths <- flux[,1]
+	 proxy <- flux[,column+1]  	
   }
-  if(length(age.lim) == 0) {
-    min.age <- min(set$ranges[,2])
-    max.age <- max(set$ranges[,3])
-    age.lim <- c(min.age, max.age)
-  } else {
-      min.age <- min(age.lim)
-      max.age <- max(age.lim)
+  D <- length(depths) # number of depth and proxy slices
+
+  if(is.null(age.lim))
+    age.lim <- extendrange(set$ranges[,2:3], f=age.compress) # remove the top/bottom ends, as they often show strange fluxes
+  if(age.rev)
+	age.lim <- rev(age.lim)  
+  age.breaks <- seq(min(age.lim), max(age.lim), length.out=age.res+1)
+  age.mids <- 0.5 * (age.breaks[-1] + age.breaks[-length(age.breaks)])
+  
+  ages.matrix <- sapply(depths, Bacon.Age.d) # ages of depths d
+  acc.matrix <- vapply(depths,
+    function(d) accrate.depth(d, set=set), numeric(set$Tr)) # accs of d
+  flux.matrix <- sweep(acc.matrix, 2, proxy, FUN = function(a, p) p / a) # g / yr/cm
+
+  flux.on.age <- t(apply( # left half of matrix contains the ages, right half fluxes
+    cbind(ages.matrix, flux.matrix), 1,
+      function(row) approx(row[1:D], row[(D + 1):(2 * D)],
+      xout=age.mids, rule=1, yleft=NA, yright=NA)$y
+  ))
+
+  flux.upper <- quantile(flux.on.age, clip.prob, na.rm=TRUE) # remove very high flux values
+  flux.on.age[] <- pmin(flux.on.age, flux.upper) # retain the values on the limit
+  flux.breaks <- seq(0, flux.upper, length.out=flux.res+1) # make a grid
+  flux.mids <- 0.5 * (flux.breaks[-1] + flux.breaks[-length(flux.breaks)])
+  fluxes <- matrix(0, nrow=flux.res, ncol=age.res) # flux × age
+
+  for(j in seq_len(age.res)) {
+    colj <- na.omit(flux.on.age[,j])
+    if(length(colj) > 2) {
+      d <- density(colj, from=0, to=flux.upper, n=flux.res)
+      fluxes[,j] <- d$y / sum(d$y) # normalise each column
     }
-cat(1)
-  age.seq <- seq(min(min.age, max.age), max(min.age, max.age), length=age.res)
-
-  pb <- txtProgressBar(min=0, max=max(1,length(age.seq)-1), style = 3)
-  fluxes <- array(NA, dim=c(nrow(set$output), length(age.seq)))
-  for(i in 1:nrow(set$output)) {
-    setTxtProgressBar(pb, i)
-    ages <- as.numeric(set$output[i,1:(ncol(set$output)-1)]) # 1st step to calculate ages for each set$elbows
-    ages <- c(ages[1], ages[1]+set$thick * cumsum(ages[2:length(ages)])) # now calculate the ages for each set$elbows
-    ages.d <- approx(ages, c(set$elbows, max(set$elbows)+set$thick), age.seq, rule=1)$y # find the depth belonging to each age.seq, NA if none
-    ages.i <- floor(approx(ages, (length(set$elbows):0)+1, age.seq, rule=2)$y) # find the column belonging to each age.seq
-    flux.d <- approx(flux[,1], flux[,2], ages.d, rule=1)$y # interpolate flux (in depth) to depths belonging to each age.seq
-    fluxes[i,] <- flux.d / as.numeric(set$output[i,(1+ages.i)]) # (amount / cm^3) / (yr/cm) = amount * cm-2 * yr-1
-    fluxes[is.na(fluxes)] <- 0
   }
 
-  message("") # print newline
-  if(length(flux.lim) == 0)
-    flux.lim <- c(0, quantile(fluxes[!is.na(fluxes)], upper))
-  if(rev.flux)
-    flux.lim <- rev(flux.lim) 
-  max.dens <- 0
+  fluxes <- fluxes / max(fluxes) # greyscale between 0 and 1
+  fluxes[fluxes>dark] <- dark # if only a very small spot is the darkest, then increase dark
+  fluxes <- fluxes / max(fluxes) # normalise again, so that black=black
 
-  for(i in 1:length(age.seq)) {
-    tmp <- fluxes[!is.na(fluxes[,i]),i] # all fluxes that fall at the required age.seq age
-    if(length(tmp) > 0)
-      max.dens <- max(max.dens, density(tmp, from=0, to=max(flux.lim))$y)
-  }
+  mean.flux <- colMeans(flux.on.age, na.rm=TRUE)
+  median.flux <- apply(flux.on.age, 2, median, na.rm=TRUE)
+  prob.edges <- c(((1-prob)/2), 1 - ((1-prob)/2))
+  rng.flux <- t(apply(flux.on.age, 2, quantile, probs=prob.edges, na.rm=TRUE))
 
-  if(length(age.lim) == 0)
-    age.lim <- range(age.seq)
-  if(rev.age)
-    age.lim <- rev(age.lim)
   if(length(age.lab) == 0)
-    age.lab <- ifelse(BCAD, "BC/AD", "cal BP")
-  if(rotate.axes)
-    plot(0, type="n", ylim=age.lim, ylab=age.lab, xlim=flux.lim, xlab=flux.lab, yaxt="n") else
-      plot(0, type="n", xlim=age.lim, xlab=age.lab, ylim=flux.lim, ylab=flux.lab, xaxt="n")
-  if(BCAD && !set$BCAD) {
-    if(rotate.axes)
-      axis(2, pretty(age.lim), labels=calBPtoBCAD(pretty(age.lim))) else
-        axis(1, pretty(age.lim), labels=calBPtoBCAD(pretty(age.lim)))
-  } else
-      ifelse(rotate.axes, axis(2), axis(1))
+	age.lab <- ifelse(BCAD, "BC/AD", "cal BP")
+  if(length(flux.lab) == 0)
+	 flux.lab <- "flux (proxy/yr)"
+  if(length(flux.lim) == 0)
+    flux.lim <- c(0, clip.prob*flux.upper)
+  if(flux.rev)
+    flux.lim <- rev(flux.lim)
+  
+  if(rotate.axes) {
+    plot(0, type = "n", xaxs=xaxs, yaxs=yaxs, bty=bty, 
+      ylim=age.lim, ylab=age.lab, xlim=flux.lim, xlab=flux.lab)
+    image(flux.mids, age.mids, t(t(fluxes)), add=TRUE,
+      useRaster=use.raster, col=flux.cols)
 
-  min.rng <- numeric(length(age.seq)); max.rng <- numeric(length(age.seq)); mean.rng <- numeric(length(age.seq)); median.rng <- numeric(length(age.seq))
-  for(i in 2:length(age.seq)) {
-    setTxtProgressBar(pb, i)  
-    tmp <- fluxes[!is.na(fluxes[,i]),i] # all fluxes that fall at the required age.seq age
-    rng <- quantile(tmp, c((1-prob)/2, 1-((1-prob)/2)))
-    min.rng[i] <- rng[1]
-    max.rng[i] <- rng[2]
-    mean.rng[i] <- mean(tmp)
-    median.rng[i] <- median(tmp)
-    if(length(tmp[tmp>=0]) > 2) {
-      flux.hist <- density(tmp, from=0, to=max(flux.lim))
-      x <- flux.hist$x
-      z <- flux.hist$y - min(flux.hist$y) # no negative fluxes
-      z <- z / (dark*max.dens) # normalise
-      z[z > 1] <- 1 # no values > 1
-      z[z < cutoff] <- NA # do not plot very small/light greyscale values
-      z <- z[length(z):1]
-
-      if(rev.flux)
-        z <- rev(z)
-
-      col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3],
-        seq(0, max(z[!is.na(z)]), length=rgb.res))
-      age.rng <- age.seq[c(i-1,i)]
-
-      if(rotate.axes)
-        image(flux.hist$x, age.seq[c(i-1, i)], matrix(flux.hist$y), add=TRUE, col=col, useRaster=use.raster) else
-          image(age.seq[c(i-1, i)], flux.hist$x, t(matrix(flux.hist$y)), add=TRUE, col=col, useRaster=use.raster)	  
-    }
-  }
-
-  message("")
-
-  if(plot.range)
-    if(rotate.axes) {
-      lines(min.rng, age.seq, col=range.col, lty=range.lty)
-      lines(max.rng, age.seq, col=range.col, lty=range.lty)
+    if(plot.mean)
+      lines(mean.flux, age.mids, col=mean.col, lty=2)
+    if(plot.median)
+      lines(median.flux, age.mids, col=median.col, lty=2)
+    if(plot.range) {
+      lines(rng.flux[,1], age.mids, col=range.col, lty=range.lty)
+      lines(rng.flux[,2], age.mids, col=range.col, lty=range.lty)
+    }	
   } else {
-      lines(age.seq, min.rng, col=range.col, lty=range.lty)
-      lines(age.seq, max.rng, col=range.col, lty=range.lty)
+    plot(0, type = "n", xaxs=xaxs, yaxs=yaxs, bty=bty, 
+      xlim=age.lim, xlab=age.lab, ylim=flux.lim, ylab=flux.lab)
+    image(age.mids, flux.mids, t(fluxes), add=TRUE,
+      useRaster=use.raster, col=flux.cols)
+
+    if(plot.mean)
+      lines(age.mids, mean.flux, col=mean.col, lty=2)
+    if(plot.median)
+      lines(age.mids, median.flux, col=median.col, lty=2)
+    if(plot.range) {
+      lines(age.mids, rng.flux[,1], col=range.col, lty=range.lty)
+      lines(age.mids, rng.flux[,2], col=range.col, lty=range.lty)
     }
-  if(plot.mean)
-    if(rotate.axes)
-      lines(mean.rng, age.seq, col=mean.col, lty=mean.lty) else
-       lines(age.seq, mean.rng, col=mean.col, lty=mean.lty)
-  if(plot.median)
-    if(rotate.axes)
-      lines(median.rng, age.seq, col=median.col, lty=median.lty) else
-       lines(age.seq, median.rng, col=median.col, lty=median.lty)
-}
-
-
-
-flux.age.ghost.v2 <- function(set=get("info"), flux=c(), d = 1, prob = 0.95, ...) {
-    if(length(flux) == 0) { # then read a .csv file, expecting data in columns with headers
-    flux <- read.csv(paste0(set$coredir, set$core, "/", set$core, "_flux.csv"))
-    flux <- cbind(flux[,1], flux[,2])
-      isNA <- is.na(flux[,2])
-      flux <- flux[!isNA,]
   }
-  if (ncol(flux) != 2) stop("flux should have 2 columns")
-
-  # Set up
-  n.itr <- nrow(set$output)
-  n.depths <- ncol(set$output) - 1
-  depth.seq <- seq(d, by = d, length.out = n.depths)
-  age.mat <- t(apply(set$output, 1, function(row) {
-    cumsum(c(row[1], row[2:(n.depths+1)] * set$thick))
-  }))
-
-  # Age sequence across the full MCMC ensemble
-  age.seq <- seq(min(age.mat, na.rm = TRUE), max(age.mat, na.rm = TRUE), by = d)
-
-  # Interpolation function for flux (in depth space)
-  flux_fun <- approxfun(flux[,1], flux[,2], rule = 2)  # depth → flux
-
-  # Pre-allocate
-  fluxes <- matrix(NA_real_, nrow = n.itr, ncol = length(age.seq))
-
-  for (i in 1:n.itr) {
-    ages <- age.mat[i, ]
-    acc.rates <- 1 / as.numeric(set$output[i, 2:(n.depths+1)])  # inverse of years/cm
-    elbows <- set$elbows
-
-    # Interpolate: age → depth for this iteration
-    depth_at_age <- approx(ages, elbows, xout = age.seq, rule = 1)$y
-
-    # Remove ages outside this iteration’s model range
-    valid <- !is.na(depth_at_age)
-
-    # Flux at depth
-    flux_vals <- rep(NA_real_, length(age.seq))
-    flux_vals[valid] <- flux_fun(depth_at_age[valid])
-
-    # Acc rate at depth
-    acc_vals <- rep(NA_real_, length(age.seq))
-    acc_vals[valid] <- approx(elbows, acc.rates, xout = depth_at_age[valid], rule = 1)$y
-
-    # Flux per yr = flux / accrate
-    fluxes[i, valid] <- flux_vals[valid] / acc_vals[valid]
-  }
-
-  # Summarise across iterations
-  lower <- apply(fluxes, 2, quantile, probs = (1 - prob) / 2, na.rm = TRUE)
-  upper <- apply(fluxes, 2, quantile, probs = 1 - (1 - prob) / 2, na.rm = TRUE)
-  mean.flux <- colMeans(fluxes, na.rm = TRUE)
-  median.flux <- apply(fluxes, 2, median, na.rm = TRUE)
-
-  # Plot
-  plot(age.seq, mean.flux, type = "n", ylim = range(c(lower, upper), na.rm = TRUE),
-       xlab = "calendar years", ylab = "flux per year", ...)
-
-  polygon(c(age.seq, rev(age.seq)), c(lower, rev(upper)), col = "grey", border = NA)
-  lines(age.seq, mean.flux, col = "red")
-  lines(age.seq, median.flux, col = "blue")
-
-  invisible(list(age.seq = age.seq, mean = mean.flux, median = median.flux,
-                 lower = lower, upper = upper))
+  
+  invisible(list(age=age.mids, flux=flux.mids, prob=t(fluxes), 
+    medians=cbind(age.mids, median.flux), means=cbind(age.mids, mean.flux), 
+	ranges=cbind(age.mids, rng.flux)))
 }

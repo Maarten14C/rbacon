@@ -25,7 +25,8 @@
 #' @param age.max Maximum age of the age-depth plot.
 #' @param yr.max Deprecated - use age.min instead.
 #' @param hiatus.option How to calculate accumulation rates and ages for sections with hiatuses. Either extrapolate from surrounding sections (default, \code{hiatus.option=1}), use a w-weighted mix between the prior and posterior values for depths below the hiatus and prior information only for above the hiatus (\code{hiatus.option=2}), or use the originally calculated slopes (\code{hiatus.option=0}).
-#' @param dark Darkness of the greyscale age-depth model. By default, the darkest grey value is calculated as 10 times the height of the lowest-precision age estimate \code{dark=c()}. Lower values will result in lighter grey but values >1 are not allowed.
+#' @param dark The value beyond which any higher values will be clipped. Set to 1 by default. This can be set to lower values if for example only a very small area in the plot obtains the darkest values - then lowering the `dark` value will darker a larger area.
+#' @param darkest The darkest grey value is darkest=1 by default; lower values will result in lighter maximum colours; values >1 are not advised.
 #' @param prob Confidence interval to report (between 0 and 1, default 0.95 or 95\%).
 #' @param rounded Rounding of years. Default is to round to single years (1 digit for plum models).
 #' @param d.res Resolution or amount of greyscale pixels to cover the depth scale of the age-model plot. Default \code{d.res=200}.
@@ -73,8 +74,10 @@
 #' @param MCMC.resample After the MCMC run, if there are more MCMC iterations than requested, only the last 'ssize' iterations will be retained. Defaults to TRUE.
 #' @param hiatus.col The colour of the depths of any hiatuses. Default \code{hiatus.col=grey(0.5)}.
 #' @param hiatus.lty The line type of the depths of any hiatuses. Default \code{hiatus.lty=12}.
-#' @param rgb.scale The function to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}). 
-#' @param rgb.res Resolution of the colour spectrum depicting the age-depth model. Default \code{rgb.res=100}.
+#' @param from.col Starting colour of the gradient for the ghost plot of the age-depth model. Defaults to \code{from.col="white"}.
+#' @param to.col Colour of the gradient for the ghost plot of the age-depth model. Defaults to a greyscale, \code{to.col="black"}.
+#' @param rgb.scale As alternative to 'from.col' and 'to.col', rgb.scale can be used to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}). 
+#' @param rgb.res Resolution of the colour spectrum depicting the age-depth model, if using 'rgb.scale'. Default \code{rgb.res=100}.
 #' @param slump.col Colour of slumps. Defaults to \code{slump.col=grey(0.8)}.
 #' @param normalise.dists By default, the distributions of more precise dates will cover less time and will thus peak higher than less precise dates. This can be avoided by specifying \code{normalise.dists=FALSE}.
 #' @param same.heights Plot the distributions of the dates all at the same maximum height (default \code{same.height=FALSE}).
@@ -133,6 +136,8 @@
 #' @param save.info By default, a variable called `info' with relevant information about the run (e.g., core name, priors, settings, ages, output) is saved into the working directory. Note that this will overwrite any existing variable with the same name - as an alternative, one could run, e.g., \code{myvar <- Bacon()}, followed by supplying the variable \code{myvar} in any subsequent commands.
 #' @param write.summary Whether or not to write a file to the core's folder, which summarizes the run (MCMC, model fit, priors, posteriors, learning).
 #' @param ssize Number of MCMC iterations to use.
+#' @param use.cpp Whether or not to use a cpp function to calculate the ages. Defaults to TRUE, but can be set to FALSE (much slower but less experimental)
+
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A plot of the age-depth model, and estimated ages incl. confidence ranges for each depth.
 #' @examples
@@ -141,13 +146,13 @@
 #'   agedepth()
 #' }
 #' @export
-agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), mem.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, accordion=c(), plotatthesedepths=c(), age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=c(), prob=set$prob, rounded=c(), d.res=400, age.res=400, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, use.raster=FALSE, flip.age=FALSE, flip.d=FALSE, maxcalc=500, height=1, calheight=1, ex=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, range.col=grey(.5), range.lty="12", range.lwd=1, mn.col="red", mn.lty="12", mn.lwd=1, med.col=NA, med.lty="12", med.lwd=1, C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pb.background=.5, pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), supp.col=rgb(.5,0,.5,.5), remove.tail=TRUE, MCMC.resample=TRUE, hiatus.col=grey(0.5), hiatus.lty="12", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, plot.labels=FALSE, labels=c(), label.age=1, label.size=0.8, label.col="black", label.offset=c(0,0), label.adj=c(0.5,0), label.rot=0, after=set$after, bty="l", mar.left=c(3,3,1,.5), mar.middle=c(3,0,1,.5), mar.right=c(3,0,1,.5), mar.main=c(3,3,1,1), righthand=3, mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", MCMC.col=grey(.4), post.col=rgb(0,0,0,.2), post.border=rgb(0,0,0,.4), prior.col=3, prior.lwd=2, prior.fontcol=2, prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, mainpanel.tickfontsize=1, mainpanel.labelfontsize=1, acc.xlim=c(), acc.ylim=c(), mem.xlim=c(), mem.ylim=c(), hiatus.xlim=c(), hiatus.ylim=c(), phi.xlim=c(), phi.ylim=c(), supp.xlim=c(), supp.ylim=c(), xaxt="s", yaxt="s", plot.pb=TRUE, pb.lty=1, plot.pdf=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE, roundby=2, save.info=set$save.info, write.summary=TRUE, ssize=4e3) {
+agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), mem.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, accordion=c(), plotatthesedepths=c(), age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=1, darkest=1, prob=set$prob, rounded=c(), d.res=400, age.res=400, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, use.raster=FALSE, flip.age=FALSE, flip.d=FALSE, maxcalc=500, height=1, calheight=1, ex=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, range.col=grey(.5), range.lty="12", range.lwd=1, mn.col="red", mn.lty="12", mn.lwd=1, med.col=NA, med.lty="12", med.lwd=1, C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pb.background=.5, pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), supp.col=rgb(.5,0,.5,.5), remove.tail=TRUE, MCMC.resample=TRUE, hiatus.col=grey(0.5), hiatus.lty="12", from.col="white", to.col="black", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, plot.labels=FALSE, labels=c(), label.age=1, label.size=0.8, label.col="black", label.offset=c(0,0), label.adj=c(0.5,0), label.rot=0, after=set$after, bty="l", mar.left=c(3,3,1,.5), mar.middle=c(3,0,1,.5), mar.right=c(3,0,1,.5), mar.main=c(3,3,1,1), righthand=3, mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", MCMC.col=grey(.4), post.col=rgb(0,0,0,.2), post.border=rgb(0,0,0,.4), prior.col=3, prior.lwd=2, prior.fontcol=2, prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, mainpanel.tickfontsize=1, mainpanel.labelfontsize=1, acc.xlim=c(), acc.ylim=c(), mem.xlim=c(), mem.ylim=c(), hiatus.xlim=c(), hiatus.ylim=c(), phi.xlim=c(), phi.ylim=c(), supp.xlim=c(), supp.ylim=c(), xaxt="s", yaxt="s", plot.pb=TRUE, pb.lty=1, plot.pdf=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE, roundby=2, save.info=set$save.info, write.summary=TRUE, ssize=4e3, use.cpp=FALSE) {
 # Load the output, if it exists
   outp <- paste0(set$prefix, ".out")
   if(file.exists(outp))
     set <- Bacon.AnaOut(outp, set, MCMC.resample)
   
-  set$MCMCdiagnostics <- MCMC.diagnostics(set, ssize)
+  set$MCMCdiagnostics <- MCMC.diagnostics(set, ssize, talk=verbose)
 
   # Plum-specific
   if(set$isplum) {
@@ -166,9 +171,10 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   }
 
   #set$BCAD <- BCAD # tmp May 2021
-  # Adapt ages of sections which contain hiatuses
+  # Adapt ages of sections which contain boundaries or hiatuses
   if(!is.na(set$hiatus.depths[1]))
-    set <- hiatus.slopes(set, hiatus.option)
+    set <- hiatus.slopes(set)
+
   if(save.info)
     assign_to_global("info", set)
 
@@ -189,8 +195,12 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     set$post.acc <- PlotAccPost(set, depth.unit=depth.unit, age.unit=age.unit, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, acc.xlim=acc.xlim, acc.ylim=acc.ylim, acc.lab=acc.lab, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=post.col, hist.border=post.border)
     set$post.mem <- PlotMemPost(set, set$core, set$K, "", set$mem.strength, set$mem.mean, ds=1, thick=set$thick, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, mem.xlim=mem.xlim, mem.ylim=mem.ylim, mem.lab=mem.lab, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=post.col, hist.border=post.border)
     if(!is.na(set$hiatus.depths[1]))
-      if(is.na(set$boundary[1]))
-         set$post.hiatus <- PlotHiatusPost(set, set$hiatus.max, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, hiatus.xlim=mem.xlim, hiatus.ylim=mem.ylim, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=post.col, hist.border=post.border)
+      if(is.na(set$boundary[1])) {
+        gaps <- PlotHiatusPost(set, mn=set$hiatus.mean, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, hiatus.xlim=mem.xlim, hiatus.ylim=mem.ylim, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=post.col, hist.border=post.border)
+
+        set$post.hiatus <- cbind(gaps$post.mn, gaps$post.shape)
+        set$hiatus.sizes <- gaps$gaps
+    }
     if(set$isplum) {
        set$post.phi <- PlotPhiPost(set, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, phi.xlim=phi.xlim, phi.ylim=phi.ylim, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=post.col, hist.border=post.border)
        if(set$nPs > 1)
@@ -201,7 +211,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     }
     par(mar=mar.main) # new May 2021
   }
-  
+
   # calculate and plot the ranges and 'best' estimates for each required depth
   if(length(d.min) == 0)
     d.min <- set$d.min
@@ -241,15 +251,16 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
       if(!set$hasBaconData) # May 2021
         d <- d[which(d <= max(set$detsOrig[,2]))]
 
-  if(verbose)
+  if(verbose && !use.cpp)
     message("Calculating age ranges...")
+  
   modelranges <- c()
   if(length(rounded) == 0)
     rounded <- ifelse(set$isplum, 1, 0) # plum tends to need higher precision
-  #ranges <- Bacon.rng(d, set, BCAD=BCAD, prob=prob)
-  ranges <- ageranges(d, paste0(set$prefix, "_ages.txt"), 
-    set=set, BCAD=BCAD, prob=prob, roundby=rounded) 
+  ranges <- ageranges(d, paste0(set$prefix, "_ages.txt"), verbose=verbose,
+    set=set, BCAD=BCAD, prob=prob, roundby=rounded, use.cpp=use.cpp) 
   d.rng <- d
+
   # calculate calendar axis limits
   modelranges <- range(ranges[,-1], na.rm=TRUE)
   if(length(set$calib$probs) > 0) {
@@ -315,9 +326,9 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   }
 
   if(!dates.only) {
-    if(verbose)
+    if(verbose && !use.cpp)
       message("Preparing ghost graph... ")
-    agedepth.ghost(set, rotate.axes=rotate.axes, accordion=accordion, BCAD=BCAD, d.res=d.res, age.res=age.res, rev.d=rev.d, rev.age=rev.age, rgb.res=rgb.res, dark=dark, rgb.scale=rgb.scale, age.lim=age.lim, use.raster=use.raster, flip.age=flip.age, flip.d=flip.d)
+    agedepth.ghost(set, rotate.axes=rotate.axes, accordion=accordion, BCAD=BCAD, d.res=d.res, age.res=age.res, rev.d=rev.d, rev.age=rev.age, rgb.res=rgb.res, dark=dark, from.col=from.col, to.col=to.col, rgb.scale=rgb.scale, age.lim=age.lim, use.raster=use.raster, flip.age=flip.age, flip.d=flip.d, verbose=verbose, use.cpp=use.cpp) # here provide option to read in existing grid from the cpp cal. Make a function agedepth.ghost.grid?
   }
 
   if(length(set$slump) > 0 )
@@ -337,8 +348,8 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(set$isplum) {
     if(set$hasBaconData)
       calib.plot(set, dets=set$detsBacon, accordion=accordion, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes, height=height, calheight=calheight, ex=ex, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff, C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col, new.plot=FALSE, same.heights=same.heights)
-	
-    if(plot.pb)		
+
+    if(plot.pb)
       set <- draw.pbmodelled(set, BCAD=BCAD, rotate.axes=rotate.axes, age.lim=age.lim, d.lim=c(d.min, d.max), pbmodelled.col=pbmodelled.col, pbmeasured.col=pbmeasured.col, pb.lim=pb.lim, supp.col=supp.col, mgp=mgp, pb.lty=pb.lty) # pointing to set since April 2025 
   } else
     calib.plot(set, dets=set$dets, accordion=accordion, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes, height=height, calheight=calheight, ex=ex, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff, C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col, new.plot=FALSE, same.heights=same.heights)
@@ -395,15 +406,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
         }
     }
 
-#  if(length(rounded) == 0)
-#    rounded <- ifelse(set$isplum, 1, 0) # plum tends to need higher precision
-#  set$ranges <- cbind(d, round(ranges, rounded))
-#  colnames(set$ranges) <- c("depth", "min", "max", "median", "mean")
-#  fastwrite(ranges, paste0(set$prefix, "_ages.txt"), quote=FALSE, row.names=FALSE, sep="\t") # was write.table
-
   set$ranges <- ranges
-#  if(save.info)
-#    assign_to_global("info", set)
 
   if(plot.pdf)
     if(names(dev.cur()) != "null device")
@@ -428,9 +431,8 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     if(set$isplum) {
       set$overlap <- model.Pb.hpd(set, verbose=TRUE, decimals=rounded)
       if(set$hasBaconData) { # then also report the overlap with non-210Pb data
-        #set$overlap <- model.dates.overlap(set, talk=TRUE, roundby=rounded)
-		set$overlap.hpds <- model.dates.hpd(set)
-      }
+        overlap.hpds <- model.dates.hpd(set, verbose=verbose)
+      } else overlap.hpds <- set$overlap
 
       below <- which(bg > pb.background)
       if(length(below) == 0)
@@ -442,12 +444,8 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
               " (", round(100*bg[below[i]]), "%)",
               if(i < length(below)) ", " else "\n", sep = "")
         }
-    } else {
-		#set$overlap.hpds <- overlap.intervals(set)
-		set$overlap.hpds <- model.dates.hpd(set)
-        #if(length(rounded==0)) rounded <- 1
-        #set$overlap <- model.dates.overlap(set, talk=TRUE, roundby=rounded) 
-      }
+    } else
+       overlap.hpds <- model.dates.hpd(set, verbose=verbose)
 
     # report summaries of posteriors
     posteriors <- list(acc=set$post.acc, mem=set$post.mem)
@@ -456,11 +454,12 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
         posteriors$hiatus <- set$post.hiatus # probably also allow for multiple posteriors here
     posteriors <- lapply(posteriors, round, digits=roundby)
     if(!is.na(hiatus.depths[1])) {
-      message("Posteriors: accrate mean ", paste(posteriors$acc[,1], collapse=" & "),
-        ", shape ", paste(posteriors$acc[,2], collapse=" & "),
-        ", memory mean ", posteriors$mem[1], ", strength ", posteriors$mem[2],
-        if(is.na(set$boundary[1])) 
-          paste(", hiatus mean ", posteriors$hiatus[1], ", shape ", posteriors$hiatus[2])) 
+	  if(is.na(set$boundary[1])) {
+        message("Posteriors: accrate mean ", paste0(posteriors$acc[,1], collapse=" & "),
+          ", shape ", paste0(posteriors$acc[,2], collapse=" & ",
+          ", memory mean ", posteriors$mem[1], ", strength ", posteriors$mem[2],
+          ", hiatus mean ", posteriors$hiatus[1], ", shape ", posteriors$hiatus[2]))
+        }
 	} else
       message("Posteriors: accrate mean ", posteriors$acc[1], ", shape ", posteriors$acc[2],
         ", memory mean ", posteriors$mem[1], ", strength ", posteriors$mem[2])
@@ -469,23 +468,20 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
       plumpost <- round(c(set$post.phi, set$post.supp), roundby)
       message("phi mean ", plumpost[1], ", shape ", plumpost[2], 
         ", supported mean ", plumpost[3], ", shape ", plumpost[4])
+      overlap.hpds <- model.Pb.hpd(set, verbose=verbose)
     }
-	
-    learning.txt <- learning(set)
-    if(write.summary) {
-      string <- paste0("MCMC diagnostics:\n  effective sample size (ESS) ", 
-	    set$MCMCdiagnostics[1], "\n  integrated autocorrelation time (IAT) ", 
-		set$ssize/set$MCMCdiagnostics[1], "\n  MCMC drift (z) ",
-		set$MCMCdiagnostics[2], "\n  (better MCMC runs have higher ESS (best >200 or >500), lower IAT, and lower z (best <1.96=2sd))",
-		"\n\nPriors and Posteriors:" # prior values, posterior values, then learning
-		# also fit of model to dates
-		)
-    
-      fl <- paste0(info$prefix, "_summary.txt")
-      writeLines(string, fl)
-	}
-	
+  } else {
+      overlap.hpds <- model.dates.hpd(set, verbose=verbose)
+      #overlap <- as.numeric(overlap.hpds[1])
+    } 
+  set$overlap.hpds <- overlap.hpds
+
+  # write a summary file to the core's directory
+  if(write.summary) {
+    learned <- learning(set, talk=verbose)
+    summarise.run(set, roundby, overlap.hpds[2], learn=learned)
   }
+
   if(save.info)
     assign_to_global("info", set)
   
