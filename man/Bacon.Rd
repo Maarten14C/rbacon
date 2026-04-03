@@ -25,6 +25,8 @@ Bacon(
   mem.mean = 0.5,
   boundary = NA,
   hiatus.depths = NA,
+  hiatus.mean = 100,
+  hiatus.shape = 0.5,
   hiatus.max = 10000,
   add = c(),
   after = 1e-04/thick,
@@ -37,6 +39,7 @@ Bacon(
   postbomb = 0,
   F14C = c(),
   pMC = c(),
+  hot.stop = TRUE,
   delta.R = 0,
   delta.STD = 0,
   t.a = 3,
@@ -64,7 +67,7 @@ Bacon(
   MaxAge = c(),
   cutoff = 0.01,
   plot.pdf = TRUE,
-  cairo = TRUE,
+  cairo = FALSE,
   dark = 1,
   date.res = 100,
   age.res = 200,
@@ -134,7 +137,11 @@ allow for a large range of posterior memory values. Please note that the default
 \item{hiatus.depths}{The assumed depths for any hiatus should be provided as, e.g.,
 \code{hiatus.depths=20} for one at 20 cm depth, and \code{hiatus.depths=c(20,40)} for two hiatuses at 20 and 40 cm depth.}
 
-\item{hiatus.max}{The prior for the maximum length of the hiatus. Hiatus length is a uniform distribution, with equal probabilities between 0 and \code{hiatus.max} yr (or whatever other \code{age.unit} is chosen).}
+\item{hiatus.mean}{The prior for the mean of the hiatus gamma prior. Defaults to 100 and should be >0.}
+
+\item{hiatus.shape}{The prior for the shape of the hiatus gamma prior. Set to 0.5 (default) to favour short time gaps but enable larger ones. Set to 1 for an exponential prior distribution, and to >1 for a distribution that peaks around hiatus.mean.}
+
+\item{hiatus.max}{The hiatus prior used to be a uniform distribution with hiatus.max as its limits. Please use hiatus.mean and hiatus.shape instead. Will be deprecated.}
 
 \item{add}{Add a value to the maximum hiatus length if a boundary is chosen. Defaults to 100 yr (or whatever other age unit is chosen). Can be adapted if Bacon complains that the parameters are out of support.}
 
@@ -158,6 +165,8 @@ allow for a large range of posterior memory values. Please note that the default
 \item{F14C}{Radiocarbon ages can be provided as F14C values. If doing so, please indicate here which dates were entered as F14C (e.g., if the first 4 dates are in F14C, write \code{F14C=1:4}). The F14C values in your .csv file will then be replaced by their corresponding C14 ages.}
 
 \item{pMC}{Radiocarbon ages can be provided as pMC values. If doing so, please indicate here which dates were entered as pMC (e.g., if the first 4 dates are in pMC, write \code{pMC=1:4}). The pMC values in your .csv file will then be replaced by their corresponding C14 ages.}
+
+\item{hot.stop}{Stop with a warning if provided F14C or pMC values (see above) are negative or above 3 resp. 300. Defaults to \code{hot.stop=TRUE}.}
 
 \item{delta.R}{Mean of core-wide age offsets (e.g., regional marine offsets).}
 
@@ -224,7 +233,7 @@ try running your core again with \code{remember=FALSE}, or, start cleanly by typ
 
 \item{plot.pdf}{Produce a pdf file of the age-depth plot. Defaults to \code{plot.pdf=TRUE} after a Bacon run.}
 
-\item{cairo}{Use cairo-based pdf plots if available (on Mac OS). Defaults to TRUE.}
+\item{cairo}{Use cairo-based pdf plots if available (on Mac OS). Defaults to FALSE since using 'cairo_pdf()' causes problems for some Mac users.}
 
 \item{dark}{Darkness of the greyscale age-depth model. The darkest grey value is \code{dark=1} by default.
 Lower values will result in lighter grey but values >1 are not allowed.}
@@ -266,7 +275,7 @@ and through millions of Markov Chain Monte Carlo (MCMC) iterations estimates
 the accumulation rate (in years/cm; so more correctly, sedimentation times) for each of these sections.
 Combined with an estimated starting date for the first section, these accumulation rates then form the age-depth model.
 The accumulation rates are constrained by prior information on the accumulation rate (\code{acc.mean, acc.shape}) and its
-variability between neighbouring depths, or "memory" (\code{mem.mean, mem.strength}). Hiatuses can be introduced as well, also constrained by prior information (\code{hiatus.max}).
+variability between neighbouring depths, or "memory" (\code{mem.mean, mem.strength}). Hiatuses can be introduced as well, also constrained by prior information (\code{hiatus.mean, hiatus.shape}).
 
 Although Bacon works with any kind of absolute dates (e.g., OSL, tephra or other dates on a calendar scale),
 it is often used to age-model 14C-dated sequences. Radiocarbon dates should be calibrated using either IntCal20

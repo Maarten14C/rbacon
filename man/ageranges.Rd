@@ -10,13 +10,13 @@ ageranges(
   sep = "\\t",
   set = get("info"),
   BCAD = set$BCAD,
-  na.rm = FALSE,
+  na.rm = TRUE,
   prob = 0.95,
   d.by = 1,
   roundby = 1,
   show.progress = TRUE,
   verbose = TRUE,
-  use.cpp = F,
+  use.cpp = TRUE,
   age.bins = 1
 )
 }
@@ -31,7 +31,7 @@ ageranges(
 
 \item{BCAD}{The calendar scale of graphs and age output-files is in cal BP (calendar or calibrated years before the present, where the present is AD 1950) by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
 
-\item{na.rm}{Whether or not NAs are to be removed. Defaults to \code{na.rm=FALSE}. NAs will still be returned for depths outside of the core's depth range.}
+\item{na.rm}{Whether or not NAs are to be removed. Defaults to \code{na.rm=TRUE}. NAs will still be returned for depths outside of the core's depth range.}
 
 \item{prob}{Probability range. Half of the range is taken away from both sides of the distribution (e.g., 2.5\% for the default of \code{prob=0.95}).}
 

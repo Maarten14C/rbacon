@@ -7,11 +7,12 @@
 * when calculating what proportion of the dates fit within the age-depth model, this is now done by checking for each date if any of its hpd intervals fall within any of the model's hpds (default 95\% confidence ranges).
 * even funnier feedback at the end of MCMC runs.
 * now using `rice` version 2.0.0 and `rintcal` version 1.4.0.
-* rewrote the function `flux.age.ghost` to make it much faster. 
+* rewrote the function `flux.age.ghost` to make it much faster.
+* calculations of age ranges and age-depth ghost plots are now much faster when using the default `use.cpp=TRUE` in the functions `Bacon`, `agedepth` and `ageranges`. This option causes the underlying calculations to be done in cpp, not R. This feature is experimental and can be deactivated using `use.cpp=FALSE` in the above functions.
 * colour gradients (ghost plots) in `agedepth` can now also be provided as `from.col` and `to.col`, to choose from one of the >600 colour names within R's function `colours()`. For example, `agedepth(from.col="papayawhip", to.col="saddlebrown")`. 
 * the check for `cairo` capabilities of macOS systems has been updated in the `Bacon` function.
 * if a core's .csv file (the one containing the dates) contains invisible spaces, quotation marks or spaces before commas (e.g., in the headers), these are now removed.
-* new option `hot.stop` in the Bacon function that stops if any provided F14C or pMC values are either negative or above 3 or 300, respectively.
+* new option `hot.stop` in the `Bacon` function that stops if any provided F14C or pMC values are either negative or above 3 or 300, respectively. Defaults to TRUE.
 
 # rbacon 3.5.2
 * removed the ageranges example to avoid the CRAN NOTE about a slow example.

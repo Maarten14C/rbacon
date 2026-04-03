@@ -735,7 +735,7 @@ assign_to_global <- function(key, val, pos=1) {
 #' @param use.cpp Whether or not to use a cpp function to calculate the ages. Defaults to TRUE, but can be set to FALSE (much slower but less experimental)
 #' @param age.bins Size of the age bins (in years) if use.cpp=TRUE. Defaults to every 1 year.
 #' @export
-ageranges <- function(d=c(), file=c(), sep="\t", set=get("info"), BCAD=set$BCAD, na.rm=TRUE, prob=0.95, d.by=1, roundby=1, show.progress=TRUE, verbose=TRUE, use.cpp=FALSE, age.bins=1) {
+ageranges <- function(d=c(), file=c(), sep="\t", set=get("info"), BCAD=set$BCAD, na.rm=TRUE, prob=0.95, d.by=1, roundby=1, show.progress=TRUE, verbose=TRUE, use.cpp=TRUE, age.bins=1) {
   if(length(d) == 0)
     d <- seq(set$d.min, set$d.max, by=d.by)
   
@@ -746,17 +746,29 @@ ageranges <- function(d=c(), file=c(), sep="\t", set=get("info"), BCAD=set$BCAD,
   means <- numeric(length(d))
 
   if(use.cpp) {
+  	hiatus <- set$hiatus.depths  
+    if(length(set$slump) > 0) {
+      d <- toslump(d, set$slump)
+      if(!is.na(hiatus[1]))
+        hiatus <- set$slumphiatus
+	  }
+	 
 	summ <- tryCatch({  
-    if(is.na(set$hiatus.depths[1])) {
-      summ <- depths_ageranges(d, out=as.matrix(set$output), elbows=set$elbows, n_rows=set$Tr, prob=prob) 
-    } else {
-        summ <- depths_ageranges_hiatus(d, out=as.matrix(set$output), elbows=set$elbows,
-          hiatus_depths=set$hiatus.depths, slopes_above=set$slope.above, slopes_below=set$slope.below,
-          elbow_above_hiatus=set$elbow.above, elbow_below_hiatus=set$elbow.below, n_rows=set$Tr, prob=prob)}
+    if(is.na(hiatus[1])) 
+      summ <- depths_ageranges(d, out=as.matrix(set$output), 
+	    elbows=set$elbows, n_rows=set$Tr, prob=prob) else 
+        summ <- depths_ageranges_hiatus(d, out=as.matrix(set$output), 
+		  elbows=set$elbows, hiatus_depths=hiatus, 
+		  slopes_above=set$slope.above, slopes_below=set$slope.below,
+          elbow_above_hiatus=set$elbow.above, elbow_below_hiatus=set$elbow.below,
+		  n_rows=set$Tr, prob=prob)
 	  },  
 		error = function(e) {warning("C++ problem, please run again using use.cpp=FALSE"); return(NULL)}, interrupt = function(e) {stop("Operation interrupted by user")})
 
   # also needs to deal with slumps...
+  
+  summ[,2:5] <- round(summ[,2:5], roundby)
+  
   } else {
 
     if(show.progress && verbose)

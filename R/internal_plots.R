@@ -19,16 +19,32 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
     d.seq <- squeeze(d.seq, accordion[1], accordion[2])
 
   if(use.cpp) {
+	d <- d.seq  
+    hiatus <- set$hiatus.depths  
+    if(length(set$slump) > 0) {
+      d <- toslump(d, set$slump)
+      if(!is.na(hiatus[1]))
+        hiatus <- set$slumphiatus
+  	}
+
 	hists <- tryCatch({  
-    if(is.na(set$hiatus.depths[1]))
-      depths_agegrid(d.seq, out=as.matrix(set$output), elbows=info$elbows, hist_n=age.res, min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95) else
-        depths_agegrid_hiatus(d.seq, out=as.matrix(set$output), elbows=info$elbows,
-          hiatus_depths=set$hiatus.depths, slopes_above=set$slope.above, slopes_below=set$slope.below, elbow_above_hiatus=set$elbow.above, elbow_below_hiatus=set$elbow.below,
-          hist_n=age.res, min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95)
-    z <- as.matrix(hists$density)}, 
-	error = function(e) {warning("C++ problem, please run again using use.cpp=FALSE"); return(NULL)}, interrupt = function(e) {stop("Operation interrupted by user")})
+      if(is.na(set$hiatus.depths[1]))
+        depths_agegrid(d, out=as.matrix(set$output), elbows=info$elbows, hist_n=age.res, min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95) else
+          depths_agegrid_hiatus(d, out=as.matrix(set$output), elbows=info$elbows,
+            hiatus_depths=hiatus, slopes_above=set$slope.above,
+			slopes_below=set$slope.below, elbow_above_hiatus=set$elbow.above,
+			elbow_below_hiatus=set$elbow.below, hist_n=age.res, 
+			min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95)
+    }, 
+	  error = function(e) {
+       warning("C++ problem, please run again using use.cpp=FALSE"); return(NULL)
+      }, interrupt = function(e) {stop("Operation interrupted by user")})
 	
-    # z needs a bit more manipulation, e.g. check that max=1, dark, cutoff, is.na
+	z <- as.matrix(hists$density)/max(hists$density) # normalise
+	z[z > dark] <- dark
+	z <- z/max(z)
+	z[z<cutoff] <- NA
+	z[is.na(z)] <- 0
   } else {
 
     hists <- Bacon.hist(d.seq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE, save.info=FALSE, verbose=verbose)
@@ -271,9 +287,12 @@ PlotPhiPrior <- function(s, mn, set=get('info'), depth.unit=depth.unit, age.unit
 # plot the posterior (and prior) of the accumulation rate
 PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main="", depth.unit=set$depth.unit, age.unit=set$age.unit, ylab="Frequency", xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, acc.xlim=c(), acc.ylim=c(), acc.lab=c(), line.col=3, line.width=2, text.col=2, hist.col=rgb(0,0,0,0.2), hist.border=grey(0.4)) {
   hi.full <- 2:(set$K - 1) # the accrate columns of the MCMC output (.out file)
-  
+
   if(!is.na(set$hiatus.depths[1])) { # deal with any hiatuses/boundaries
-    split.pos <- sapply(set$hiatus.depths, function(d) max(which(set$elbows < d)))
+    if(length(set$slump) > 0) {
+      hiatus <- set$slumphiatus	
+	} else hiatus <- set$hiatus.depths
+    split.pos <- sapply(hiatus, function(d) max(which(set$elbows < d)))
     split.at <- sort(split.pos)
     segments <- split(hi.full, cut(seq_along(hi.full), breaks = c(0, split.at, length(hi.full)), labels = FALSE))
   } else
