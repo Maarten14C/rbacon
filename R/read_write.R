@@ -391,7 +391,7 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
 
   # if current dets differ from original .csv file, rewrite it
   if(changed > 0)
-    fastwrite(as.data.frame(dets), csv.file, sep=sep, dec=dec, row.names=FALSE, col.names=suggested.names[1:ncol(dets)], quote=FALSE) # sep was paste0(sep, "\t") but fwrite needs sep to be exactly 1 char
+    fastwrite(as.data.frame(dets), csv.file, sep=sep, dec=dec, row.names=FALSE, col.names=suggested.names[1:ncol(dets)], quote=FALSE)
   dets
 }
 

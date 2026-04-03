@@ -1,21 +1,17 @@
 
-# in more recent rbacon, info$slope.below defaults to 20, but it varies in the released one
-
 # model.dates.overlap: overlap is no longer a rice function, so this has to be rethought.
 
-# since a section containing a hiatus is modelled internally using a hiatus jump only, so, not adding the section's acc.rate as well, we now provide the hiatus.mean in the .bacon file as hiatus.mean+(acc.mean*set$thick) (i.e. the slope will be modelled to include the accumulation over the entire section as well as the hiatus jump itself). Note: we're not combining acc.shape and hiatus.shape - only the means are used to combine the two parameters.
+# check DepthstoAges on line 81 of plots.R. This should be updated to the newer cpp functions (and the options)
 
-# check for " and spaces/tabs in .csv files (especially headers) and remove them (perhaps optionally)
+
+# since a section containing a hiatus is modelled internally using a hiatus jump only, so, not adding the section's acc.rate as well, we now provide the hiatus.mean in the .bacon file as hiatus.mean+(acc.mean*set$thick) (i.e. the slope will be modelled to include the accumulation over the entire section as well as the hiatus jump itself). Note: we're not combining acc.shape and hiatus.shape - only the means are used to combine the two parameters.
 
 # do: check rplum bugs w youngest.age (is the bug in rbacon or in rplum?) and w larger-than-previous error sizes
 
 # check doi:10.1016/j.quageo.2016.01.001 as example of using strat to inform age-depth model
 # make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths. Should work in a new core directoy. And then, how to find the original depths? Needs a smoothing function as well.
 
-# check if we should add testthat folder (probably not, use files within ci folder instead), check that rplum runs as expected, check vignette
-
-# in the inst/dev/ folder, there is now a testBaconplots.Rmd file which automates plotting and checking many functions. There is also a file render-plots.yml which can be used to test many plots on a range of github systems (ubuntu, fedora and windows). Produced html files can be downloaded and checked locally. To do this, the file has to be placed in .github/workflows/.
-
+# in the inst/dev/ folder, there is now a testBaconplots.Rmd file which automates plotting and checking many functions. There is also a file render-plots.yml which can be used to test many plots on a range of github systems (ubuntu, fedora and windows). Produced html files can be downloaded and checked locally. To do this, the file has to be placed in .github/workflows/. We could add a testthat folder, but current approach including checking of vignette works.
 
 # replacing the plotting of the calibrated distributions by rice's functions doesn't seem to speed up anything, so keeping the original method in place for now.
 

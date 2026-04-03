@@ -47,7 +47,7 @@
 #'   proxy.ghost()
 #' }
 #' @export
-proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=200, age.res=500, yr.res=age.res, zero.col="white", max.col="black", rgb.scale=c(0,0,0), rgb.res=100, set=get('info'), cutoff=0.001, dark=1, darkest=1, rotate.axes=FALSE, rev.proxy=FALSE, rev.age=FALSE, yr.rev=rev.age, plot.mean=FALSE, mean.col="red", age.lim=NULL, yr.lim=age.lim, proxy.lim=NULL, sep=",", xaxs="i", yaxs="i", xaxt="s", yaxt="s", bty="l", BCAD=set$BCAD, age.lab=ifelse(BCAD, "BC/AD", "cal yr BP"), yr.lab=age.lab, verbose=TRUE, add=FALSE, use.cpp=F) {
+proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=200, age.res=500, yr.res=age.res, zero.col="white", max.col="black", rgb.scale=c(0,0,0), rgb.res=100, set=get('info'), cutoff=0.001, dark=1, darkest=1, rotate.axes=FALSE, rev.proxy=FALSE, rev.age=FALSE, yr.rev=rev.age, plot.mean=FALSE, mean.col="red", age.lim=NULL, yr.lim=age.lim, proxy.lim=NULL, sep=",", xaxs="i", yaxs="i", xaxt="s", yaxt="s", bty="l", BCAD=set$BCAD, age.lab=ifelse(BCAD, "BC/AD", "cal yr BP"), yr.lab=age.lab, verbose=TRUE, add=FALSE, use.cpp=TRUE) {
   if(length(set$Tr)==0)
     stop("please first run agedepth()", call.=FALSE)
   proxies <- read.csv(paste0(set$coredir, set$core, "/", set$core, "_proxies.csv"), header=TRUE, sep=sep)
@@ -78,7 +78,28 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=200, age.res=500, yr.
   if(use.cpp) {
     agerange <- extendrange(set$ranges[,-1], f=.2)
 
-    res <- DepthstoAges(depths, as.matrix(set$output), dmin=set$d.min, section_len=set$thick, hist_n=age.res, n_rows=set$Tr, n_sections = set$K, min_age = min(agerange), max_age = max(agerange))
+    hiatus <- set$hiatus.depths  
+    if(length(set$slump) > 0) {
+      depths <- toslump(depths, set$slump)
+      if(!is.na(hiatus[1]))
+        hiatus <- set$slumphiatus
+  	}
+
+	res <- tryCatch({  
+      if(is.na(set$hiatus.depths[1]))
+        depths_agegrid(depths, out=as.matrix(set$output), elbows=set$elbows, hist_n=age.res, min_age=min(agerange), max_age=max(agerange), n_rows=set$Tr, prob=.95) else
+          depths_agegrid_hiatus(depths, out=as.matrix(set$output), elbows=set$elbows,
+            hiatus_depths=hiatus, slopes_above=set$slope.above,
+			slopes_below=set$slope.below, elbow_above_hiatus=set$elbow.above,
+			elbow_below_hiatus=set$elbow.below, hist_n=age.res, 
+			min_age=min(agerange), max_age=max(agerange), n_rows=set$Tr, prob=.95)
+    }, 
+	  error = function(e) {
+       warning("C++ problem, please run again using use.cpp=FALSE"); return(NULL)
+      }, interrupt = function(e) {stop("Operation interrupted by user")})
+	
+
+ #   res <- DepthstoAges(depths, as.matrix(set$output), dmin=set$d.min, section_len=set$thick, hist_n=age.res, n_rows=set$Tr, n_sections = set$K, min_age = min(agerange), max_age = max(agerange))
     
     hists <- lapply(1:length(depths), function(i) {
       list(th0=res$breaks[1],

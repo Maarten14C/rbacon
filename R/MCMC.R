@@ -343,7 +343,6 @@ model.dates.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE
   dates <- 1:length(depths)
 
   get.modelages <- function(i) {
-    thisdepth <<- depths[i]
     depth.age <- density(Bacon.Age.d(depths[i], set), na.rm=TRUE)
     cbind(depth.age$x, depth.age$y/sum(depth.age$y))
   }

@@ -38,7 +38,7 @@ proxy.ghost(
   yr.lab = age.lab,
   verbose = TRUE,
   add = FALSE,
-  use.cpp = F
+  use.cpp = TRUE
 )
 }
 \arguments{

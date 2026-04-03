@@ -29,8 +29,8 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
 
 	hists <- tryCatch({  
       if(is.na(set$hiatus.depths[1]))
-        depths_agegrid(d, out=as.matrix(set$output), elbows=info$elbows, hist_n=age.res, min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95) else
-          depths_agegrid_hiatus(d, out=as.matrix(set$output), elbows=info$elbows,
+        depths_agegrid(d, out=as.matrix(set$output), elbows=set$elbows, hist_n=age.res, min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95) else
+          depths_agegrid_hiatus(d, out=as.matrix(set$output), elbows=set$elbows,
             hiatus_depths=hiatus, slopes_above=set$slope.above,
 			slopes_below=set$slope.below, elbow_above_hiatus=set$elbow.above,
 			elbow_below_hiatus=set$elbow.below, hist_n=age.res, 
@@ -172,11 +172,10 @@ PlotLogPost <- function(set, from=0, to=set$Tr, xaxs="i", yaxs="i", panel.size=.
 
 
 # plot the prior for the accumulation rate
-PlotAccPrior <- function(s, mn, set=get('info'), depth.unit=depth.unit, age.unit=age.unit, main="", xlim=c(0, 3*max(mn)), xlab=c(), ylab="Density", add=FALSE, legend=TRUE, csize=.9, line.col=3, line.width=2, text.col=2) {
+PlotAccPrior <- function(s, mn, set=get('info'), depth.unit=set$depth.unit, age.unit=set$age.unit, main="", xlim=c(0, 3*max(mn)), xlab=c(), ylab="Density", add=FALSE, legend=TRUE, csize=.9, line.col=3, line.width=2, text.col=2) {
   o <- order(s, decreasing=TRUE)
 #  priors <- unique(cbind(s[o],mn[o])[,1:2])
   priors <- cbind(unique(s[o]), unique(mn[o]))[,1:2]
-  acc.priors <<- priors
   x <- 0
   if(length(xlab) == 0)
     xlab <- paste0("Acc. rate (", noquote(age.unit), "/", noquote(depth.unit), ")")
@@ -233,7 +232,7 @@ PlotHiatusPrior <- function(mn=set$hiatus.mean, s=set$hiatus.shape, hiatus=set$h
   priors <- cbind(unique(s[o]), unique(mn[o]))[,1:2]
   x <- 0
   if(length(xlab) == 0)
-    xlab <- paste0("Hiatus size (", noquote(age.unit), "/", noquote(depth.unit), ")")
+    xlab <- paste0("Hiatus size (", noquote(set$age.unit), "/", noquote(set$depth.unit), ")")
 
   if(length(priors) == 2) {
     curve(dgamma(x, s, s/mn), col=line.col, lwd=line.width, from=0, to=max(xlim), xlim=xlim, xlab=xlab, ylab=ylab, add=add)
