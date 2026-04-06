@@ -262,7 +262,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(length(rounded) == 0)
     rounded <- ifelse(set$isplum, 1, 0) # plum tends to need higher precision
   ranges <- ageranges(d, paste0(set$prefix, "_ages.txt"), verbose=verbose,
-    set=set, BCAD=BCAD, prob=prob, roundby=rounded, use.cpp=use.cpp) 
+    set=set, BCAD=BCAD, prob=prob, roundby=rounded, use.cpp=use.cpp)	
   d.rng <- d
 
   # calculate calendar axis limits
@@ -332,7 +332,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(!dates.only) {
     if(verbose && !use.cpp)
       message("Preparing ghost graph... ")
-    agedepth.ghost(set, rotate.axes=rotate.axes, accordion=accordion, BCAD=BCAD, d.res=d.res, age.res=age.res, rev.d=rev.d, rev.age=rev.age, rgb.res=rgb.res, dark=dark, from.col=from.col, to.col=to.col, rgb.scale=rgb.scale, age.lim=age.lim, use.raster=use.raster, flip.age=flip.age, flip.d=flip.d, verbose=verbose, use.cpp=use.cpp) # here provide option to read in existing grid from the cpp cal. Make a function agedepth.ghost.grid?
+    agedepth.ghost(set, rotate.axes=rotate.axes, accordion=accordion, BCAD=BCAD, d.res=d.res, age.res=age.res, rev.d=rev.d, rev.age=rev.age, rgb.res=rgb.res, dark=dark, from.col=from.col, to.col=to.col, rgb.scale=rgb.scale, age.lim=age.lim, use.raster=use.raster, flip.age=flip.age, flip.d=flip.d, verbose=verbose, use.cpp=use.cpp)
   }
 
   if(length(set$slump) > 0 )

@@ -276,7 +276,7 @@ model.Pb.overlap <- function(set=get('info'), talk=TRUE, roundby=c()) {
 }
 
 
-
+# function no longer used
 model.dates.overlap <- function(set=get('info'), talk=TRUE, roundby=c()) {
   dates <- set$calib$probs
   depths <- set$dets[,4]
@@ -287,8 +287,9 @@ model.dates.overlap <- function(set=get('info'), talk=TRUE, roundby=c()) {
   })
 
   overl <- 100*mapply(function(date, modelled) {
-    rice::coverage(cbind(modelled$x, modelled$y), date, 
-      visualise = FALSE) # coverage is no longer a rice function
+   # rice::coverage(cbind(modelled$x, modelled$y), date, 
+   #   visualise = FALSE) # coverage is no longer a rice function
+	  rice::overlap(list(cbind(modelled$x, modelled$y), date), visualise=FALSE)
   }, dates, model.ages)
 
   if(talk) {

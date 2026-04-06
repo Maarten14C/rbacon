@@ -43,7 +43,7 @@ License: GPL (>= 2)
 Language: en-GB
 NeedsCompilation: yes
 ByteCompile: true
-Imports: coda (>= 0.19-4.1), graphics, grDevices, Rcpp (>= 1.1.1), stats, utils, data.table, rintcal (>= 1.4.0), rice (>= 2.0.0)
+Imports: coda (>= 0.19-4.1), graphics, grDevices, Rcpp (>= 1.1.1), stats, utils, data.table, rintcal (>= 1.4.0), rice (>= 2.0.1)
 Depends: R (>= 3.5.0)
 LinkingTo: Rcpp
 RoxygenNote: 7.3.3

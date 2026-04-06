@@ -9,9 +9,9 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
   d.lim <- range(d.seq)
 
   if(length(age.lim) == 0)
-    age.lim <- range(set$ranges[,2:3]) # 95% age ranges
+    age.lim <- range(set$ranges[,2:3]) # 95% age ranges 
   age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
-
+  
   if(set$isplum) # plum has a strange feature with a grey shape appearing
     d.seq <- d.seq[-1] # at dmin. Thus removing the first depth
 
@@ -19,6 +19,11 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
     d.seq <- squeeze(d.seq, accordion[1], accordion[2])
 
   if(use.cpp) {
+   tops <- set$output[,1] 	  
+   accs <- set$thick * rowSums(set$output[,1+(1:set$K)])
+   age.lim <- range(tops, tops+accs)
+   age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
+
 	d <- d.seq  
     hiatus <- set$hiatus.depths  
     if(length(set$slump) > 0) {
@@ -41,12 +46,14 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
       }, interrupt = function(e) {stop("Operation interrupted by user")})
 	
 	z <- as.matrix(hists$density)/max(hists$density) # normalise
-	z[z > dark] <- dark
-	z <- z/max(z)
-	z[z<cutoff] <- NA
-	z[is.na(z)] <- 0
-  } else {
+	
+	if(BCAD) { # everything is calculated in cal BP, but can be reported in BC/AD
+	  age.seq <- rev(calBPtoBCAD(age.seq))
+	  age.lim <- calBPtoBCAD(age.lim)
+	  z <- z[, ncol(z):1] # reverse to match decreasing BCAD
+	}
 
+  } else {
     hists <- Bacon.hist(d.seq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE, save.info=FALSE, verbose=verbose)
 
     z <- array(0, dim=c(age.res, length(d.seq))) # ages in rows, depths in columns
@@ -67,11 +74,12 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
     z <- z/maxmax # normalise to the height of most precise age estimate
     if(length(dark) == 0)
       dark <- 10 * minmax/maxmax
-    z[z > dark] <- dark
-    z <- z/max(z) # May 2021
-    z[z<cutoff] <- NA # do not plot pixels with probs very close to 0
-    z[is.na(z)] <- 0
   }
+  
+  z[z > dark] <- dark
+  z <- z/max(z) 
+  z[z<cutoff] <- NA # do not plot pixels with probs very close to 0
+  z[is.na(z)] <- 0
   
   if(flip.d)
     z <- z[nrow(z):1,] 

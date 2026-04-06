@@ -1,8 +1,6 @@
+# proxy.ghost & BCAD needs work
 
-# model.dates.overlap: overlap is no longer a rice function, so this has to be rethought.
-
-# check DepthstoAges on line 81 of plots.R. This should be updated to the newer cpp functions (and the options)
-
+# check many different combinations of slump, hiatus, plot, replot, d.min, d.max, BCAD
 
 # since a section containing a hiatus is modelled internally using a hiatus jump only, so, not adding the section's acc.rate as well, we now provide the hiatus.mean in the .bacon file as hiatus.mean+(acc.mean*set$thick) (i.e. the slope will be modelled to include the accumulation over the entire section as well as the hiatus jump itself). Note: we're not combining acc.shape and hiatus.shape - only the means are used to combine the two parameters.
 
@@ -11,11 +9,11 @@
 # check doi:10.1016/j.quageo.2016.01.001 as example of using strat to inform age-depth model
 # make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths. Should work in a new core directoy. And then, how to find the original depths? Needs a smoothing function as well.
 
-# in the inst/dev/ folder, there is now a testBaconplots.Rmd file which automates plotting and checking many functions. There is also a file render-plots.yml which can be used to test many plots on a range of github systems (ubuntu, fedora and windows). Produced html files can be downloaded and checked locally. To do this, the file has to be placed in .github/workflows/. We could add a testthat folder, but current approach including checking of vignette works.
+# in the inst/dev/ folder, there is a testBaconplots.Rmd file which automates plotting and checking many functions. There is also a file render-plots.yml which can be used to test many plots on a range of github systems (ubuntu, fedora and windows). Produced html files can be downloaded and checked locally. To do this, the file has to be placed in .github/workflows/. We could add a testthat folder, but current approach including checking of vignette works.
 
 # replacing the plotting of the calibrated distributions by rice's functions doesn't seem to speed up anything, so keeping the original method in place for now.
 
-# for future versions: add function to estimate best thick value, check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, investigate the slowness of plotting after the Bacon run (not only dates, also the model's 95% ranges etc.), produce proxy.ghost graph with proxy uncertainties?, check/adapt behaviour of AgesOfEvents around hiatuses, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac; use normalizePath or other R-based solutions)
+# for future versions: add function to estimate best thick value, check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, produce proxy.ghost graph with proxy uncertainties?, check/adapt behaviour of AgesOfEvents around hiatuses, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac; use normalizePath or other R-based solutions)
 
 # read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum. Currently done using utils::getFromNamespace which is basically a way to allow :::
 

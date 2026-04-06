@@ -766,7 +766,8 @@ ageranges <- function(d=c(), file=c(), sep="\t", set=get("info"), BCAD=set$BCAD,
 		error = function(e) {warning("C++ problem, please run again using use.cpp=FALSE"); return(NULL)}, interrupt = function(e) {stop("Operation interrupted by user")})
 
   # also needs to deal with slumps...
-  
+  if(BCAD)
+    summ[,2:5] <- BCADtocalBP(summ[,2:5])
   summ[,2:5] <- round(summ[,2:5], roundby)
   
   } else {

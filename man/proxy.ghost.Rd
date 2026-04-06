@@ -24,6 +24,8 @@ proxy.ghost(
   yr.rev = rev.age,
   plot.mean = FALSE,
   mean.col = "red",
+  plot.median = FALSE,
+  median.col = "blue",
   age.lim = NULL,
   yr.lim = age.lim,
   proxy.lim = NULL,
@@ -78,7 +80,11 @@ proxy.ghost(
 
 \item{plot.mean}{The mean ages of the proxy values can be added using \code{plot.mean=TRUE}.}
 
-\item{mean.col}{Colour of the weighted mean ages of the proxy values.}
+\item{mean.col}{Colour of the weighted mean ages of the proxy values. Defaults to red.}
+
+\item{plot.median}{The median ages of the proxy values can be added using \code{plot.median=TRUE}.}
+
+\item{median.col}{Colour of the weighted mean ages of the proxy values. Defaults to blue.}
 
 \item{age.lim}{Minimum and maximum calendar age ranges, calculated automatically by default (\code{yr.lim=NULL}).}
 
