@@ -245,81 +245,82 @@ MCMC.diagnostics <- function(set=get("info"), ssize=nrow(set$output), talk=TRUE)
 }
 
 
-# for plum post-run analysis
-model.Pb.overlap <- function(set=get('info'), talk=TRUE, roundby=c()) {
+# for plum post-run analysis, function no longer used
+# model.Pb.overlap <- function(set=get('info'), talk=TRUE, roundby=c()) {
+#
+#   depths <- set$dets[,4]
+#   A_overlap <- c()
+#
+#   for(i in 1:nrow(set$dets)) {
+#     Aseq <- set$Ai$x[[i]]
+#     A_modelled_probs <- set$Ai$y[[i]]
+#     A_measured_probs <- dnorm(Aseq, set$dets[i,2], set$dets[i,3]) # Plum assumes a normal dist for A, not rbacon's default student-t
+#     A_overlap[i] <- rice::overlap(list(cbind(Aseq, A_modelled_probs), cbind(Aseq, A_measured_probs)),
+#       talk = FALSE, visualise = FALSE)
+#   }
+#
+#   if(talk) {
+#     if(length(roundby) == 0) roundby <- 2
+#       min.overlap <- which(A_overlap==min(A_overlap))[1]
+#       min.overlap <- cbind(round(A_overlap[min.overlap], roundby), depths[min.overlap])
+#       max.overlap <- which(A_overlap==max(A_overlap))[1]
+#       max.overlap <- cbind(round(A_overlap[max.overlap], roundby), depths[max.overlap])
+#       mean.overlap <- round(mean(A_overlap), roundby)
+#
+#       message("Average overlap between measured and modelled Pb-210: ", mean.overlap, "%, from ",
+#         min.overlap[1], "% at ", min.overlap[2], " ", set$unit, " to ",
+#         max.overlap[1], "% at ", max.overlap[2], set$unit)
+#   }
+#
+#   return(cbind(depths, A_overlap))
+# }
 
-  depths <- set$dets[,4]
-  A_overlap <- c()
 
-  for(i in 1:nrow(set$dets)) {
-    Aseq <- set$Ai$x[[i]]
-    A_modelled_probs <- set$Ai$y[[i]]
-    A_measured_probs <- dnorm(Aseq, set$dets[i,2], set$dets[i,3]) # Plum assumes a normal dist for A, not rbacon's default student-t
-    A_overlap[i] <- rice::overlap(list(cbind(Aseq, A_modelled_probs), cbind(Aseq, A_measured_probs)),
-      talk = FALSE, visualise = FALSE)
-  }
-
-  if(talk) {
-    if(length(roundby) == 0) roundby <- 2
-      min.overlap <- which(A_overlap==min(A_overlap))[1]
-      min.overlap <- cbind(round(A_overlap[min.overlap], roundby), depths[min.overlap])
-      max.overlap <- which(A_overlap==max(A_overlap))[1]
-      max.overlap <- cbind(round(A_overlap[max.overlap], roundby), depths[max.overlap])
-      mean.overlap <- round(mean(A_overlap), roundby)
-
-      message("Average overlap between measured and modelled Pb-210: ", mean.overlap, "%, from ",
-        min.overlap[1], "% at ", min.overlap[2], " ", set$unit, " to ",
-        max.overlap[1], "% at ", max.overlap[2], set$unit)
-  }
-
-  return(cbind(depths, A_overlap))
-}
-
-
-# function no longer used
-model.dates.overlap <- function(set=get('info'), talk=TRUE, roundby=c()) {
-  dates <- set$calib$probs
-  depths <- set$dets[,4]
-  
-  model.ages <- lapply(depths, function(d) {
-    dens <- density(Bacon.Age.d(d))
-    list(x = dens$x, y = dens$y)
-  })
-
-  overl <- 100*mapply(function(date, modelled) {
-   # rice::coverage(cbind(modelled$x, modelled$y), date, 
-   #   visualise = FALSE) # coverage is no longer a rice function
-	  rice::overlap(list(cbind(modelled$x, modelled$y), date), visualise=FALSE)
-  }, dates, model.ages)
-
-  if(talk) {
-    if(length(roundby) == 0) roundby <- 2
-      min.overlap <- which(overl==min(overl))[1]
-      min.overlap <- cbind(round(overl[min.overlap], roundby), depths[min.overlap])
-      max.overlap <- which(overl==max(overl))[1]
-      max.overlap <- cbind(round(overl[max.overlap], roundby), depths[max.overlap])
-      mean.overlap <- round(mean(overl), roundby)
-
-      message("Average coverage (% of model covered by each date) ", mean.overlap, "%, from ",
-        min.overlap[1], "% at ", min.overlap[2], " ", set$unit, " to ",
-        max.overlap[1], "% at ", max.overlap[2], set$unit)
-  }
-
-  return(cbind(depths, overl))
-}
+# # function no longer used
+# model.dates.overlap <- function(set=get('info'), talk=TRUE, roundby=c()) {
+#   dates <- set$calib$probs
+#   depths <- set$dets[,4]
+#
+#   model.ages <- lapply(depths, function(d) {
+#     dens <- density(Bacon.Age.d(d))
+#     list(x = dens$x, y = dens$y)
+#   })
+#
+#   overl <- 100*mapply(function(date, modelled) {
+#    # rice::coverage(cbind(modelled$x, modelled$y), date,
+#    #   visualise = FALSE) # coverage is no longer a rice function
+# 	  rice::overlap(list(cbind(modelled$x, modelled$y), date), visualise=FALSE)
+#   }, dates, model.ages)
+#
+#   if(talk) {
+#     if(length(roundby) == 0) roundby <- 2
+#       min.overlap <- which(overl==min(overl))[1]
+#       min.overlap <- cbind(round(overl[min.overlap], roundby), depths[min.overlap])
+#       max.overlap <- which(overl==max(overl))[1]
+#       max.overlap <- cbind(round(overl[max.overlap], roundby), depths[max.overlap])
+#       mean.overlap <- round(mean(overl), roundby)
+#
+#       message("Average coverage (% of model covered by each date) ", mean.overlap, "%, from ",
+#         min.overlap[1], "% at ", min.overlap[2], " ", set$unit, " to ",
+#         max.overlap[1], "% at ", max.overlap[2], set$unit)
+#   }
+#
+#   return(cbind(depths, overl))
+# }
 
 
 
 model.Pb.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE) {
   depths <- set$dets[,4]
-  dates <- 1:length(depths)
+  n <- min(length(depths), length(set$Ai$x))
+  dates <- 1:n
   
   A_overlap <- c()
   for(i in dates) {
     Aseq <- set$Ai$x[[i]]
     A_modelled_probs <- set$Ai$y[[i]]
     A_measured_probs <- dnorm(Aseq, set$dets[i,2], set$dets[i,3]) # Plum assumes a normal dist for A, not rbacon's default student-t
-    A_overlap[i] <- rice::hpd.overlap(cbind(Aseq, A_modelled_probs), cbind(Aseq, A_measured_probs), prob=prob)
+    A_overlap[i] <- rice::hpd.overlap(cbind(Aseq, A_modelled_probs), cbind(Aseq, A_measured_probs), prob=prob, add.zeros=TRUE)
   }
   
   mean_A_overlap <- 100*sum(A_overlap)/length(A_overlap)
@@ -339,6 +340,9 @@ model.Pb.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE) {
 
 model.dates.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE) {
   depths <- set$dets[,4]
+  if(set$isplum)
+    if(set$hasBaconData)
+      depths <- set$detsBacon[,4]
   if(length(set$slump) > 0)
     depths <- toslump(depths, set$slump, remove=FALSE)
   dates <- 1:length(depths)
@@ -350,7 +354,7 @@ model.dates.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE
 
   # for each dated depth, check if any of its date's hpds fall within any of the model's hpds
   this.overlap <- function(i) 
-    rice::hpd.overlap(get.modelages(i), set$calib$probs[[i]], prob=prob) 
+    rice::hpd.overlap(get.modelages(i), set$calib$probs[[i]], prob=prob, add.zeros=TRUE) 
 
   # proportion of dates that overlap with the model - at hpd level
   inorout <- sapply(dates, this.overlap)

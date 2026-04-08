@@ -105,10 +105,11 @@ draw.pbmeasured <- function(set=get('info'), rotate.axes=FALSE, rev.d=FALSE, rev
 #' @param age.lim values of the age axis. Used to calculate where to plot the pb values on the secondary axis
 #' @param mgp Axis text margins (where should titles, labels and tick marks be plotted). Defaults to \code{mgp=c(1.7, .7, .0)}.
 #' @param pb.lty Line type of measured Pb-210 data.
+#' @param save.info By default, a variable called `info' with relevant information about the run (e.g., core name, priors, settings, ages, output) is saved into the working directory. Note that this will overwrite any existing variable with the same name.
 #' @author Maarten Blaauw, J. Andres Christen, Marco Aquino-Lopez
 #' @return A plot of the modelled (and optionally the measured) 210Pb values
 #' @export
-draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, pb.lim=c(), d.lim=c(), d.lab=c(), pb.lab=c(), pbmodelled.col=function(x) rgb(0,0,1,x), pbmeasured.col="blue", supp.col="purple", plot.measured=TRUE, age.lim=c(), mgp=mgp, pb.lty=1) {
+draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, pb.lim=c(), d.lim=c(), d.lab=c(), pb.lab=c(), pbmodelled.col=function(x) rgb(0,0,1,x), pbmeasured.col="blue", supp.col="purple", plot.measured=TRUE, age.lim=c(), mgp=mgp, pb.lty=1, save.info=TRUE) {
 
   pb <- set$dets[set$dets[,9] == 5,]
   depths <- pb[,4] # set$detsOrig[,2]
@@ -172,6 +173,9 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
     set$Ai <- Ai
     set$A.rng <- A.rng
 
+    if(save.info)
+      assign_to_global("info", set)
+
     this <- ifelse(rotate.axes, 3, 4)
     pretty.pb <- pretty(pb.lim)
     onbp <- pb2bp(pretty.pb)
@@ -182,6 +186,7 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
     mtext(pb.lab, this, 2.5, col=pbmeasured.col, cex=.8)
 
     for(i in 1:length(depths)) {
+    #for(i in 1:min(length(depths), length(Ai$x), na.rm=TRUE)) {		
       ages <- pb2bp(Ai$x[[i]], AD=BCAD)
       if(BCAD) 
 		ages <- rev(ages)

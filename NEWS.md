@@ -14,6 +14,8 @@
 * if a core's .csv file (the one containing the dates) contains invisible spaces, quotation marks or spaces before commas (e.g., in the headers), these are now removed.
 * new option `hot.stop` in the `Bacon` function that stops if any provided F14C or pMC values are either negative or above 3 or 300, respectively. Defaults to TRUE.
 * `proxy.ghost` gains the option to plot the median ages (mean ages were already an option).
+* `model.dates.hpd` and `model.Pb.hpd` now call rice's `hpd.overlap` function using the option to pad the distributions with 0 at both ends. This avoids problems with open-ended distributions. 
+* new function `Bacon_runs` which lists the cores available in the Bacon_runs directory. 
 
 # rbacon 3.5.2
 * removed the ageranges example to avoid the CRAN NOTE about a slow example.

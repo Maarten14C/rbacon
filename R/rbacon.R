@@ -1,10 +1,10 @@
-# proxy.ghost & BCAD needs work
+# first release rice since it has a new option to deal with open-ended hpds (hpd.overlap)
 
-# check many different combinations of slump, hiatus, plot, replot, d.min, d.max, BCAD
+# check many different combinations of slump, hiatus, plot, replot, d.min, d.max, BCAD, for different functions (Bacon, agedepth, proxy.ghost, ...)
+
+# do: check rplum bugs w youngest.age (is the bug in rbacon or in rplum?) and w larger-than-previous error sizes. ... not sure any more what this error was about
 
 # since a section containing a hiatus is modelled internally using a hiatus jump only, so, not adding the section's acc.rate as well, we now provide the hiatus.mean in the .bacon file as hiatus.mean+(acc.mean*set$thick) (i.e. the slope will be modelled to include the accumulation over the entire section as well as the hiatus jump itself). Note: we're not combining acc.shape and hiatus.shape - only the means are used to combine the two parameters.
-
-# do: check rplum bugs w youngest.age (is the bug in rbacon or in rplum?) and w larger-than-previous error sizes
 
 # check doi:10.1016/j.quageo.2016.01.001 as example of using strat to inform age-depth model
 # make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths. Should work in a new core directoy. And then, how to find the original depths? Needs a smoothing function as well.
@@ -13,7 +13,7 @@
 
 # replacing the plotting of the calibrated distributions by rice's functions doesn't seem to speed up anything, so keeping the original method in place for now.
 
-# for future versions: add function to estimate best thick value, check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, produce proxy.ghost graph with proxy uncertainties?, check/adapt behaviour of AgesOfEvents around hiatuses, allow for asymmetric cal BP errors (e.g. read from files), proxy.ghost very slow with long/detailed cores - optimization possible?, check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac; use normalizePath or other R-based solutions)
+# for future versions: add function to estimate best thick value, check if a less ugly solution can be found to internal_plots.R at line 26 (hists length < 7). This happens when there are some very precise dates causing non-creation of th0/th1, produce proxy.ghost graph with proxy uncertainties?, check/adapt behaviour of AgesOfEvents around hiatuses, allow for asymmetric cal BP errors (e.g. read from files), check again if/how/when Bacon gets confused by Windows usernames with non-ascii characters (works fine on Mac; use normalizePath or other R-based solutions)
 
 # read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum. Currently done using utils::getFromNamespace which is basically a way to allow :::
 
@@ -193,6 +193,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   # Check coredir and if required, copy example files into core directory
   coredir <- assign_coredir(coredir, core, ask, isPlum=FALSE)
   csv.file <- paste0(coredir, core, "/", core, ".csv")
+  csv.when <- file.mtime(csv.file)
 
   if(core == "MSB2K" || core == "RLGH3") {
     if(!dir.exists(file.path(coredir, core))) {
@@ -446,8 +447,11 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     file.create(outfile)
   
   ### if the dates file has been modified after the outfile, suggest to clean up 
-#  if(file.mtime(outfile) < file.mtime(csv.file))
-#    message("Warning! The file with the dates seems newer than the run you are loading. If any dates have been added/changed/removed, then please run Bacon.cleanup()")
+  out.mtime <- file.mtime(outfile)
+  if(!is.na(out.mtime) && !is.na(csv.when) && out.mtime < csv.when) 
+    message(
+     "Warning! The file with the dates seems newer than the run you are loading. ",
+      "If any dates have been added/changed/removed, then please run Bacon.cleanup()")
 
   ### store values (again) for future manipulations
   if(BCAD)

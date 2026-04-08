@@ -139,7 +139,6 @@ class BaconFix: public Bacon {
 
 			double *ha, *hb; //a priori pars (ha hiatus.shape, hb hiatus.shape/hiatus.mean = rate) for the gamma prior on hiatus jumps in each inter hiatus.
 			double priorHU(int i, const double x) { return (1.0-ha[i])*log(x) + hb[i]*Dc*x; } // old prior, back 8 Aug 2025
-			//double priorHU(int i, const double x) { return (ha[i] - 1.0) * log(x) - (hb[i] * Dc * x); } // swapped first term, changed '+ hb[i]' to '- hb[i]', MB March 2026
 			//double priorHU(int i, const double x) { return 1.0; } //Uniform. Commented June 2025. And uncommented again. commented out 8 Aug 2025. MB Activated again March 2026
 
 			// perhaps best to return to a gamma, since some users do prefer providing info that shorter hiatuses are more likely than longer ones

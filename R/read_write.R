@@ -10,6 +10,22 @@ validateDirectoryName <- function(dir) {
 
 
 
+#' @name Bacon_runs
+#' @title List the folders present in the current core directory.
+#' @description Lists all folders located within the core's directory.
+#' @details The directory is either "Bacon_runs", "Cores" or a custom-named one.
+#' @author Maarten Blaauw, J. Andres Christen
+#' @return A list of folders
+#' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
+#' @param coredir The directory where the Bacon runs reside. Defaults to \code{coredir="Bacon_runs"}.
+#' @export
+Bacon_runs <- function(set=get('info'), coredir=set$coredir) {
+  if(length(coredir) == 0)
+    coredir <- "Bacon_runs"
+  list.files(coredir)
+}
+
+
 #' @name set.initvals
 #' @title Set initial values for the Bacon MCMC run.
 #' @description Select initial values th0 and th1 for a Bacon MCMC run and write them into a file that can be read by Bacon.
@@ -623,13 +639,16 @@ write.Bacon.file <- function(set=get('info'), younger.than=c(), older.than=c(), 
 	
     cat("\n\n### Depths and priors for fixed hiatuses, in descending order",
       "\n##### cm  alpha beta      ha     hb", file=fl)
-    for(i in length(hiatus.depths):1)
-      # piste = slope of acc.rate + jump of hiatus. Does not include the accumulation rate prior above the hiatus
-      piste <- set$hiatus.shape/(set$hiatus.mean[i] + set$acc.mean[i+1]*set$thick) 
+    for(i in length(hiatus.depths):1) {
+      # piste = slope of acc.rate + jump of hiatus. The slope is a weighted mix of the acc.mean priors from below and above the hiatus
+	  frac.below <- (set$elbows[min(which(set$elbows >= hiatus.depths[i]))] -
+	    hiatus.depths[i]) / set$thick # fraction of section below the hiatus
+	  slope <- frac.below*set$acc.mean[i+1] + (1-frac.below)*set$acc.mean[i]
+      piste <- set$hiatus.shape[i]/(set$hiatus.mean[i] + slope*set$thick) 
       cat("\nHiatus ", i-1, ":  ", hiatus.depths[i], ",  ", set$acc.shape[i+1],
-        ",  ", set$acc.shape[i+1]/set$acc.mean[i+1], ",  ", set$hiatus.shape, 
-        ",  ", piste, ";", sep="", file=fl) # the hiatus prior should also include the accumulation over the section with a hiatus, MB Mar 2026
-      # h.a = shape, h.b = shape/mean
+        ",  ", set$acc.shape[i+1]/set$acc.mean[i+1], ",  ", set$hiatus.shape[i], 
+        ",  ", piste, ";", sep="", file=fl)
+	}
   }
 
   cK <- set$d.min+(set$thick*set$K)
