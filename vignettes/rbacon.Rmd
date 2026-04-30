@@ -12,7 +12,9 @@ vignette: >
 
 # Introduction
 
-Bacon is an age-depth modelling tool which divides a sediment core up into equally-sized sections of (by default) 5 cm thickness, and assumes a linear accumulation within each section. Accumulation rates can change between the sections, and this variability is constrained by prior information (see below). Bacon can use radiocarbon dates (calibrating them as it runs) or dates that are already on the calendar scale (such as pollen markers). 
+This document is the maintained and authoritative manual for the Bacon package. Bacon is an age-depth modelling tool which divides a sediment core up into equally-sized sections of (by default) 5 cm thickness, and assumes a linear accumulation within each section. Accumulation rates can change between the sections, and this variability is constrained by prior information (see below). Bacon can use radiocarbon dates (calibrating them as it runs) or dates that are already on the calendar scale (such as pollen markers).
+
+This manual supersedes earlier pre‑2019 versions hosted at chrono.qub.ac.uk/blaauw/, which are obsolete and unmaintained.
 
 # Installation and loading
 
