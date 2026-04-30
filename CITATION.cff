@@ -1,0 +1,19 @@
+
+cff-version: 1.2.0
+message: "When using rbacon, please cite it as follows."
+type: software
+title: "rbacon: Bayesian Age-Depth Modelling"
+authors:
+  - family-names: Blaauw
+    given-names: Maarten
+url: https://cran.r-project.org/package=rbacon
+repository-code: https://github.com/maarten14c/rbacon
+abstract: >
+  rbacon presents an approach to age-depth modelling that uses Bayesian statistics to reconstruct accumulation histories for deposits, through combining radiocarbon and other dates with prior information on accumulation rates and their variability. See Blaauw & Christen (2011).
+keywords:
+  - Bayesian age-depth modelling
+  - chronology
+  - radiocarbon dating
+  - palaeoecology
+license: GPL-3.0-or-later
+``
