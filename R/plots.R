@@ -79,26 +79,26 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=200, age.res=500, yr.
   }
 
   if(use.cpp) {
-    tops <- set$output[,1] 	  
+    tops <- set$output[,1]
     accs <- set$thick * rowSums(set$output[,1+(1:set$K)])
     age.lim <- range(tops, tops+accs)
     age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
-	  
-    hiatus <- set$hiatus.depths
-	age.min <- min(age.lim)
-	age.max <- max(age.lim)
 
-	res <- tryCatch({  
+    hiatus <- set$hiatus.depths
+    age.min <- min(age.lim)
+    age.max <- max(age.lim)
+
+    res <- tryCatch({
       if(is.na(set$hiatus.depths[1]))
         depths_agegrid(depths, out=as.matrix(set$output), elbows=set$elbows, hist_n=age.res, min_age=age.min, max_age=age.max, n_rows=set$Tr, prob=.95) else
           depths_agegrid_hiatus(depths, out=as.matrix(set$output), elbows=set$elbows,
             hiatus_depths=hiatus, slopes_above=set$slope.above,
-			slopes_below=set$slope.below, elbow_above_hiatus=set$elbow.above,
-			elbow_below_hiatus=set$elbow.below, hist_n=age.res, 
-			min_age=age.min, max_age=age.max, n_rows=set$Tr, prob=.95)
+            slopes_below=set$slope.below, elbow_above_hiatus=set$elbow.above,
+            elbow_below_hiatus=set$elbow.below, hist_n=age.res,
+            min_age=age.min, max_age=age.max, n_rows=set$Tr, prob=.95)
     }, 
-	  error = function(e) {
-       warning("C++ problem, please run again using use.cpp=FALSE"); return(NULL)
+      error = function(e) {
+        warning("C++ problem, please run again using use.cpp=FALSE"); return(NULL)
       }, interrupt = function(e) {stop("Operation interrupted by user")})
     
     hists <- lapply(1:length(depths), function(i) {
@@ -109,17 +109,17 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=200, age.res=500, yr.
     })
 
     } else {
-      rev.age <- !rev.age  	
+      rev.age <- !rev.age
       if(verbose)
         message("Calculating histograms")
       hists <- Bacon.hist(depths, set, calc.range=FALSE, progress=verbose) # BCAD always FALSE
       message("")
-	  age.min <- c()
-	  age.max <- c()
-	  for(i in 1:length(hists)) {
-	    age.min <- min(age.min, hists[[i]]$th0)
-	    age.max <- max(age.max, hists[[i]]$th1)
-	  }
+      age.min <- c()
+      age.max <- c()
+      for(i in 1:length(hists)) {
+        age.min <- min(age.min, hists[[i]]$th0)
+        age.max <- max(age.max, hists[[i]]$th1)
+      }
   }
   age.seq <- seq(age.min, age.max, length=age.res)
 
@@ -144,10 +144,10 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=200, age.res=500, yr.
   if(!use.cpp)
     max.counts <- max.counts[,ncol(max.counts):1]
   if(rev.proxy)
-	  max.counts <- max.counts[nrow(max.counts):1,]
+    max.counts <- max.counts[nrow(max.counts):1,]
   if(rev.age) {
     age.lim <- age.lim[2:1]
-	max.counts <- max.counts[,ncol(max.counts):1]
+    max.counts <- max.counts[,ncol(max.counts):1]
   }
   if(BCAD) {
     age.lim <- rev(calBPtoBCAD(age.lim))
@@ -165,14 +165,14 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=200, age.res=500, yr.
   col <- col.scales(rgb.res, zero.col, max.col, dark=dark, darkest=darkest)
   if(rotate.axes) {
     if(!add)
-	  plot(0, type="n", xlim=proxy.lim, ylim=age.lim, ylab=age.lab, xlab=proxy.lab, xaxs=xaxs, yaxs=yaxs, xaxt=xaxt, yaxt=yaxt) 
-	image(proxyseq, age.seq, max.counts, col=col, add=TRUE, useRaster=TRUE)
+      plot(0, type="n", xlim=proxy.lim, ylim=age.lim, ylab=age.lab, xlab=proxy.lab, xaxs=xaxs, yaxs=yaxs, xaxt=xaxt, yaxt=yaxt)
+    image(proxyseq, age.seq, max.counts, col=col, add=TRUE, useRaster=TRUE)
     if(plot.mean)
       lines(proxy[,2], pr.mn.ages, col=mean.col)
   } else {
       if(!add)
         plot(0, type="n", ylim=proxy.lim, xlim=age.lim, xlab=age.lab, ylab=proxy.lab, xaxs=xaxs, yaxs=yaxs, xaxt=xaxt, yaxt=yaxt)
-	image(age.seq, proxyseq, t(max.counts), col=col, add=TRUE, useRaster=TRUE)  
+    image(age.seq, proxyseq, t(max.counts), col=col, add=TRUE, useRaster=TRUE)
     if(plot.mean)
       lines(pr.mn.ages, proxy[,2], col=mean.col)
     if(plot.median)

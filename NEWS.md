@@ -16,6 +16,8 @@
 * `proxy.ghost` gains the option to plot the median ages (mean ages were already an option).
 * `model.dates.hpd` and `model.Pb.hpd` now call rice's `hpd.overlap` function using the option to pad the distributions with 0 at both ends. This avoids problems with open-ended distributions. 
 * new function `Bacon_runs` which lists the cores available in the Bacon_runs directory. 
+* cleaned up 'orphan' variables.
+* `add.dates` now has options `BCAD`, `is.F` and `is.pMC`.
 
 # rbacon 3.5.2
 * removed the ageranges example to avoid the CRAN NOTE about a slow example.

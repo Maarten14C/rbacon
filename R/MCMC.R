@@ -7,7 +7,7 @@ bacon.its <- function(ssize, burnin, set=get('info'), ACCEP_EV=20, EVERY_MULT=25
   dims <- set$K + 2 # accrates, start age, accumulation rate, memory
   store.every <- dims * EVERY_MULT # depends on the amount of parameters
   MCMC.size <- store.every * (ssize + burnin + BURN_IN_MULT) # all iterations
-  MCMC.kept <- MCMC.size - (store.every * BURN_IN_MULT) # removing burnin
+  # MCMC.kept <- MCMC.size - (store.every * BURN_IN_MULT) # removing burnin
   message(" Will run ", prettyNum(MCMC.size, big.mark=","), " iterations and store ", prettyNum(ssize, big.mark=","))
 }
 

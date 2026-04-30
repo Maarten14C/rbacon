@@ -67,7 +67,7 @@ set.initvals <- function(set=get('info'), core=set$core, values=c(), click=1) {
         par(mfg=c(2,2)) # back to bottom-right panel
 
     ages <- approx(draft.agedepth$x, draft.agedepth$y, elbows, rule=2)$y
-    agedepth <- cbind(elbows, ages)
+    #agedepth <- cbind(elbows, ages)
     accs <- diff(ages) / diff(elbows)
     accs <- c(accs[1], accs)
     accs1 <- abs(jitter(accs)) # add some scatter to ensure that th

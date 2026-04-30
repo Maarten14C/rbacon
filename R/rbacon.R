@@ -1,3 +1,5 @@
+# check option o fusing draw.dates from rice again. Perhaps does better scaling of heights 
+
 # first release rice since it has a new option to deal with open-ended hpds (hpd.overlap)
 
 # check many different combinations of slump, hiatus, plot, replot, d.min, d.max, BCAD, for different functions (Bacon, agedepth, proxy.ghost, ...)

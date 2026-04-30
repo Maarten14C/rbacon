@@ -180,10 +180,10 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
   oldpar <- par(no.readonly = TRUE)
   #on.exit(par(oldpar))
-  newpar <- par(mar=mar.main, mgp=mgp)
+  par(mar=mar.main, mgp=mgp)
 
   if(!model.only) {
-    newpar <- par(mar=mar.left, bty=bty, mgp=mgp, xaxs=xaxs, yaxs=yaxs)
+    par(mar=mar.left, bty=bty, mgp=mgp, xaxs=xaxs, yaxs=yaxs)
 
     ifelse(set$isplum, pn <- c(1:5, rep(6,5)), pn <- c(1:3, rep(4,3)))
     if(!is.na(set$hiatus.depths[1]))
@@ -193,7 +193,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     layout(matrix(pn, nrow=2, byrow=TRUE), heights=c(.3,.7))
     PlotLogPost(set, 0, set$Tr, xaxs=xaxs, yaxs=yaxs, panel.size=toppanel.fontsize, col=MCMC.col) # convergence information
 
-    newpar <- par(mar=mar.middle) # reduce white space
+    par(mar=mar.middle) # reduce white space
     #on.exit(par(oldpar))
     set$post.acc <- PlotAccPost(set, depth.unit=depth.unit, age.unit=age.unit, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, acc.xlim=acc.xlim, acc.ylim=acc.ylim, acc.lab=acc.lab, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=post.col, hist.border=post.border)
     set$post.mem <- PlotMemPost(set, set$core, set$K, "", set$mem.strength, set$mem.mean, ds=1, thick=set$thick, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, mem.xlim=mem.xlim, mem.ylim=mem.ylim, mem.lab=mem.lab, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=post.col, hist.border=post.border)
@@ -365,7 +365,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
       age <- set$calib$probs[[i]][,1]
       if(label.age == 1)
         age.pos <- max(age) else
-          ages.pos <- min(age)
+          age.pos <- min(age)
       d <- set$calib$d[i]
       if(rotate.axes)
          text(age.pos+label.offset[1], d+label.offset[2], labels[i], cex=label.size, col=label.col, adj=label.adj, srt=label.rot) else

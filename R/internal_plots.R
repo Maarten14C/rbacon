@@ -6,7 +6,7 @@
 agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, accordion=c(), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), from.col=NA, to.col="black", col.res=256, rgb.scale=c(0,0,0), cutoff=0.001, age.lim, use.raster=FALSE, flip.d=FALSE, flip.age=FALSE, verbose=TRUE, grid=FALSE, use.cpp=TRUE) {
   if(length(dseq) == 0)
     d.seq <- seq(d.min, d.max, length=d.res)
-  d.lim <- range(d.seq)
+  # d.lim <- range(d.seq)
 
   if(length(age.lim) == 0)
     age.lim <- range(set$ranges[,2:3]) # 95% age ranges 
@@ -24,34 +24,34 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
    age.lim <- range(tops, tops+accs)
    age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
 
-	d <- d.seq  
+    d <- d.seq
     hiatus <- set$hiatus.depths  
     if(length(set$slump) > 0) {
       d <- toslump(d, set$slump)
       if(!is.na(hiatus[1]))
         hiatus <- set$slumphiatus
-  	}
+    }
 
-	hists <- tryCatch({  
+    hists <- tryCatch({
       if(is.na(set$hiatus.depths[1]))
         depths_agegrid(d, out=as.matrix(set$output), elbows=set$elbows, hist_n=age.res, min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95) else
           depths_agegrid_hiatus(d, out=as.matrix(set$output), elbows=set$elbows,
             hiatus_depths=hiatus, slopes_above=set$slope.above,
-			slopes_below=set$slope.below, elbow_above_hiatus=set$elbow.above,
-			elbow_below_hiatus=set$elbow.below, hist_n=age.res, 
-			min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95)
+            slopes_below=set$slope.below, elbow_above_hiatus=set$elbow.above,
+            elbow_below_hiatus=set$elbow.below, hist_n=age.res,
+            min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95)
     }, 
-	  error = function(e) {
+      error = function(e) {
        warning("C++ problem, please run again using use.cpp=FALSE"); return(NULL)
       }, interrupt = function(e) {stop("Operation interrupted by user")})
-	
-	z <- as.matrix(hists$density)/max(hists$density) # normalise
-	
-	if(BCAD) { # everything is calculated in cal BP, but can be reported in BC/AD
-	  age.seq <- rev(calBPtoBCAD(age.seq))
-	  age.lim <- calBPtoBCAD(age.lim)
-	  z <- z[, ncol(z):1] # reverse to match decreasing BCAD
-	}
+
+    z <- as.matrix(hists$density)/max(hists$density) # normalise
+
+    if(BCAD) { # everything is calculated in cal BP, but can be reported in BC/AD
+      age.seq <- rev(calBPtoBCAD(age.seq))
+      age.lim <- calBPtoBCAD(age.lim)
+      z <- z[, ncol(z):1] # reverse to match decreasing BCAD
+    }
 
   } else {
     hists <- Bacon.hist(d.seq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE, save.info=FALSE, verbose=verbose)

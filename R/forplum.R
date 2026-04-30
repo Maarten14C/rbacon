@@ -26,11 +26,11 @@
 #' @export
 draw.pbmeasured <- function(set=get('info'), rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, BCAD=set$BCAD, pb.lim=c(), age.lim=c(), d.lim=c(), d.lab=c(), pb.lab=c(), pbmeasured.col="blue", pbmeasured.lty=2, pb.log=FALSE, supp.col="purple", newplot=TRUE, on.agescale=FALSE) {
   depths <- set$detsOrig[,2]
-  dns <- set$detsOrig[,3]
+  # dns <- set$detsOrig[,3]
   Pb <- set$detsOrig[,4]
   err <- set$detsOrig[,5]
   thickness <- set$detsOrig[,6]
-  n <- nrow(set$detsOrig)
+  # n <- nrow(set$detsOrig)
 
   if(length(pb.lim) == 0)
     pb.lim <- extendrange(c(0, Pb+2*err), f=c(0,0.05))
@@ -119,15 +119,15 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
   thickness <- pb[,5] # set$detsOrig[,6]
   n <- nrow(pb)
 
-  if(ncol(pb) > 6) {
-    supp <- pb[,7] # set$detsOrig[,7]
-    supperr <- pb[,8] # set$detsOrig[,8]
-  } else {
-    supp <- set$supportedData[,1]
-    supperr <- set$supportedData[,2]
-    suppd <- set$supportedData[,3]
-    suppthick <- set$supportedData[,4]
-  }
+  #if(ncol(pb) > 6) {
+  #  supp <- pb[,7] # set$detsOrig[,7]
+    # supperr <- pb[,8] # set$detsOrig[,8]
+  #} else {
+   # supp <- set$supportedData[,1]
+    # supperr <- set$supportedData[,2]
+    #suppd <- set$supportedData[,3]
+    #suppthick <- set$supportedData[,4]
+  #}
 
   if(length(d.lab) == 0)
     d.lab <- paste0("depth (", set$depth.unit, ")")
