@@ -2,7 +2,7 @@
 % Please edit documentation in R/accrate.R
 \name{accrate.depth.ghost}
 \alias{accrate.depth.ghost}
-\title{Plot modelled accumulation rates against the depths of a core.}
+\title{plot modelled accumulation rates against the depths of a core}
 \usage{
 accrate.depth.ghost(
   set = get("info"),

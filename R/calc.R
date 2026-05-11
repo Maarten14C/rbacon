@@ -1,5 +1,5 @@
 #' @name Bacon.Age.d
-#' @title Output all ages for a single depth.
+#' @title output all ages for a single depth
 #' @description Output all MCMC-derived age estimates for a given depth.
 #' @details Obtaining an age-depth model is often only a step towards a goal, e.g., plotting a core's
 #' fossil series ('proxies') against calendar time. Bacon.Age.d can be used to list all MCMC-derived age estimates for a given (single) depth, for example to calculate mean ages for a depth. See also Bacon.d.Age which calculates the depths of a single age estimate.
@@ -67,7 +67,7 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
 
 
 #' @name Bacon.d.Age
-#' @title Output all depths for a single age.
+#' @title output all depths for a single age
 #' @description Output all MCMC-derived depth estimates for a single given age.
 #' @details Obtaining an age-depth model is often only a step towards a goal, e.g., plotting a core's
 #' fossil series ('proxies') against calendar time. Bacon.d.Age can be used to list all MCMC-derived depths belonging to a given (single) age, for example to calculate mean depths belonging to a modelled depth. 
@@ -285,7 +285,7 @@ hiatus.slopes <- function(set=get('info')) {
 
 
 #' @name Bacon.hist
-#' @title Calculate age distributions of depths.
+#' @title calculate age distributions of depths
 #' @description Calculate the distribution of age estimates of single or multiple depths.
 #' @details Age estimates of specific depths can also be plotted.
 #' @param d The depth or depths for which a histogram and age ranges should be provided. If multiple depths are given, then just the age ranges, median and means (no graphs) are provided for each depth.
@@ -437,7 +437,7 @@ Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob, verbose=
 
 
 #' @name agemodel.it
-#' @title Extract one age-model iteration
+#' @title extract one age-model iteration
 #' @description For one MCMC iteration (it), extract the corresponding age-depth model.
 #' @param it The MCMC iteration of which the age-model should be calculated.
 #' @param set Detailed information of the current run, stored within this session's memory as variable info.
@@ -512,7 +512,7 @@ fromslump <- function(d, slump) {
 
 
 #' @name squeeze
-#' @title Squeeze some depths of a core
+#' @title squeeze some depths of a core
 #' @description Squeeze or compress depths below a boundary by a certain amount. Accompanies the stretch function; see the stretch function for code on running the accordion
 #' @param d The depth(s) to be squeezed
 #' @param boundary The depth below which depths should be squeezed
@@ -532,7 +532,7 @@ squeeze <- function(d, boundary, times) {
 
 
 #' @name stretch
-#' @title Stretch some depths of a core
+#' @title stretch some depths of a core
 #' @description Stretch squeezed depths e.g., calculate the original depths of depths that were squeezed. Accompanies the squeeze function.
 #' @param d The depth(s) to be stretched
 #' @param boundary The depth below which depths should be stretched

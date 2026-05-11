@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_write.R
 \name{Bacon_runs}
 \alias{Bacon_runs}
-\title{List the folders present in the current core directory.}
+\title{list the folders present in the current core directory}
 \usage{
 Bacon_runs(set = get("info"), coredir = set$coredir)
 }

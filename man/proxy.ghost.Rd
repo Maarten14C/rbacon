@@ -2,7 +2,7 @@
 % Please edit documentation in R/plots.R
 \name{proxy.ghost}
 \alias{proxy.ghost}
-\title{Proxies analysed along the depths of a core can be plotted as 'proxy-ghost' graphs against calendar time while taking into account chronological uncertainties. Here darker grey indicates more likely calendar ages for specific proxy values.}
+\title{greyscale plot of a proxy against time}
 \usage{
 proxy.ghost(
   proxy = 1,

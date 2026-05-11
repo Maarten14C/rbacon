@@ -1,4 +1,4 @@
-#' @title Plot an age-depth model
+#' @title plot an age-depth model
 #' @description Plot the age-depth model of a core.
 #' @details After loading a previous run, or after running either the \link{scissors} or \link{thinner} command, plot the age-model
 #' again using the command \code{agedepth()}.

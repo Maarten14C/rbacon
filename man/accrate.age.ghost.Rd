@@ -2,7 +2,7 @@
 % Please edit documentation in R/accrate.R
 \name{accrate.age.ghost}
 \alias{accrate.age.ghost}
-\title{Plot a core's accumulation rates against calendar time.}
+\title{plot a core's accumulation rates against calendar time}
 \usage{
 accrate.age.ghost(
   set = get("info"),

@@ -3,7 +3,7 @@
 ## Accumulation rate calculations
 #' should take into account hiatuses and slumps
 #' @name accrate.depth
-#' @title Obtain estimated accumulation rates as for any depth of a core.
+#' @title obtain estimated accumulation rates as for any depth of a core
 #' @description Obtain accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for any depth of a core.
 #' @details Considering accumulation rates is crucial for age-depth modelling, and even more so if they are subsequently used for calculating proxy
 #' influx values, or interpreted as proxy for environmental change such as carbon accumulation.
@@ -49,7 +49,7 @@ accrate.depth <- function(d, set=get('info'), cmyr=FALSE, na.rm=FALSE, inversion
 
 # should take into account hiatuses
 #' @name accrate.age
-#' @title Obtain estimated accumulation rates for any age of a core.
+#' @title obtain estimated accumulation rates for any age of a core
 #' @description Obtain accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for any age of a core.
 #' @details Considering accumulation rates is crucial for age-depth modelling, and even more so if they are subsequently
 #' used for calculating proxy influx values, or interpreted as proxy for environmental change such as carbon accumulation. See also \code{accrate.age.ghost}, \code{accrate.depth} and \code{accrate.depth.ghost}.
@@ -107,7 +107,7 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
 
 
 #' @name accrate.depth.summary
-#' @title Provide a summary of the estimated accumulation rates for any depth of a core.
+#' @title provide a summary of the estimated accumulation rates for any depth of a core
 #' @description Obtain a summary (95\% range, 68\% range, 50\%=median, mean) of the accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for any depth of a core.
 #' @param d The depth for which accumulation rates need to be returned.
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
@@ -136,7 +136,7 @@ accrate.depth.summary <- function(d, set=get('info'), cmyr=FALSE, na.rm=FALSE, p
 
 
 #' @name accrate.age.summary
-#' @title Provide a summary of the estimated accumulation rates for any age of a core.
+#' @title provide a summary of the estimated accumulation rates for any age of a core
 #' @description Obtain a summary (95\% range, 68\% range, median, mean) of the accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for any age of a core.
 #' @param age The age for which accumulation rates need to be returned.
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
@@ -165,7 +165,7 @@ accrate.age.summary <- function(age, set=get('info'), cmyr=FALSE, na.rm=TRUE, pr
 
 
 #' @name accrates.core
-#' @title Provide a summary of the estimated accumulation rates for a range of core depths
+#' @title provide a summary of the estimated accumulation rates for a range of core depths
 #' @description Obtain a summary (95\% range, 68\% range, median, mean) of the accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for a range of depths of a core, and optionally write this as a file to the core directory (ending in '_accrates.txt').
 #' @param dseq The sequence of depths for which accumulation rates need to be returned. Defaults to whatever info$dseq is, which most often is a sequence from the top to the bottom of the core at 1 cm increments.
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
@@ -204,7 +204,7 @@ accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, na.rm=TRUE, pro
 
 
 #' @name accrate.depth.ghost
-#' @title Plot modelled accumulation rates against the depths of a core.
+#' @title plot modelled accumulation rates against the depths of a core
 #' @description Plot grey-scale representation of modelled accumulation rates over a core's depth. Each section of the core (see Bacon's option \code{"thick"}) will have modelled accumulation rates.
 #' @details This plot shows the modelled accumulation rates in grey-scales, where darker grey indicates more likely accumulation rates.
 #' Axis limits for accumulation rates are estimated automatically, however upper limits can be very variable (and thus hard to predict)
@@ -363,7 +363,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 
 
 #' @name accrate.age.ghost
-#' @title Plot a core's accumulation rates against calendar time.
+#' @title plot a core's accumulation rates against calendar time
 #' @description Plot a grey-scale representation of a core's estimated accumulation rates against time.
 #' @details Calculating accumulation rates against calendar age will take some time to calculate, and might show unexpected
 #' rates around the core's maximum ages (only a few of all age-model iterations will reach such ages and they will tend to have
@@ -545,7 +545,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
 
 
 #' @name flux.age.ghost
-#' @title Plot flux rates for proxies.
+#' @title plot flux rates for proxies
 #' @description Plot grey-scale representation of estimated flux rates for proxies against calendar age.
 #' @details To plot flux rates (e.g. pollen grains/cm2/yr) as greyscales,
 #' provide a plain text file with headers and the data in columns separated by commas, ending in '_flux.csv'
@@ -690,5 +690,5 @@ flux.age.ghost <- function(column=1, flux=c(), set=get("info"), age.lab=c(), age
   
   invisible(list(age=age.mids, flux=flux.mids, prob=t(fluxes), 
     medians=cbind(age.mids, median.flux), means=cbind(age.mids, mean.flux), 
-	ranges=cbind(age.mids, rng.flux)))
+    ranges=cbind(age.mids, rng.flux)))
 }

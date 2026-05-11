@@ -297,8 +297,8 @@ PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main=
 
   if(!is.na(set$hiatus.depths[1])) { # deal with any hiatuses/boundaries
     if(length(set$slump) > 0) {
-      hiatus <- set$slumphiatus	
-	} else hiatus <- set$hiatus.depths
+      hiatus <- set$slumphiatus
+    } else hiatus <- set$hiatus.depths
     split.pos <- sapply(hiatus, function(d) max(which(set$elbows < d)))
     split.at <- sort(split.pos)
     segments <- split(hi.full, cut(seq_along(hi.full), breaks = c(0, split.at, length(hi.full)), labels = FALSE))
@@ -322,7 +322,7 @@ PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main=
     post.dens <- density(post.all, from=min(xpol), to=max(xpol), n=500)$y
     post <- cbind(xpol, c(0, post.dens, 0)) # single polygon
   } else {
-	out.rng <- range(unlist(set$output[,unlist(segments)]))  
+    out.rng <- range(unlist(set$output[,unlist(segments)]))
     accseq <- seq(min(out.rng), max(out.rng), length=500)
     xpol <- c(min(out.rng), accseq, max(out.rng))
     post <- xpol  # first column
@@ -498,5 +498,5 @@ export.pdf <- function(fl) {
   if(capabilities("cairo")) 
     dev.copy(cairo_pdf, file=fl) else 
       dev.copy(pdf, file=fl)
-  dev.off()	
+  dev.off()
 }

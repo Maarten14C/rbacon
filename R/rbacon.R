@@ -20,7 +20,7 @@
 # read https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-native-routines for linking between rbacon and rplum. Currently done using utils::getFromNamespace which is basically a way to allow :::
 
 #' @name Bacon
-#' @title Main age-depth modelling function
+#' @title main age-depth modelling function
 #' @description This is the main age-depth modelling function of the rbacon package.
 #' @details Bacon is an approach to age-depth modelling that uses Bayesian statistics in order to reconstruct Bayesian
 #' accumulation histories for deposits, through combining radiocarbon and other dates with prior information ('Blaauw' and 'Christen', 2011).
@@ -124,6 +124,7 @@
 #' @param normal By default, Bacon uses the t-distribution to treat the dates. Use \code{normal=TRUE} to use the normal/Gaussian distribution. This will generally give higher weight to the dates.
 #' @param suggest If initial analysis of the data indicates abnormally slow or fast accumulation rates, Bacon will suggest to change the prior.
 #' @param accept.suggestions Automatically accept the suggested values. Use with care. Default \code{accept.suggestions=FALSE}.
+#' @param adjust.dby Automatically adjust d.by to a value smaller than thick. Defaults to \code{adjust.dby=TRUE}.
 #'  Also, if the length of the core would cause too few or too many sections with the default settings, Bacon will suggest an alternative section thickness \code{thick}.
 #'  Accept these suggested alternative settings by typing "y" (or "yes please" if you prefer to be polite), or leave as is by typing "n" (or anything else, really). To get rid of these suggestions, use \code{suggest=FALSE}.
 #' @param reswarn Bacon will warn you if the number of sections lies outside the safe range (default between 10 and 200 sections;
@@ -191,7 +192,7 @@
 #' Journal of Ecology 77: 1-23.
 #'
 #' @export
-Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=10, mem.mean=0.5, boundary=NA, hiatus.depths=NA, hiatus.mean=100, hiatus.shape=0.5, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", cc.dir=c(), postbomb=0, F14C=c(), pMC=c(), hot.stop=TRUE, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), remove=FALSE, BCAD=FALSE, ssize=4000, th0=c(), burnin=min(500, ssize), youngest.age=c(), oldest.age=c(), MinAge=c(), MaxAge=c(), cutoff=.01, plot.pdf=TRUE, cairo=FALSE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, save.info=TRUE, older.than=c(), younger.than=c(), save.elbowages=FALSE, verbose=TRUE, use.cpp=TRUE, ...) {
+Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=10, mem.mean=0.5, boundary=NA, hiatus.depths=NA, hiatus.mean=100, hiatus.shape=0.5, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", cc.dir=c(), postbomb=0, F14C=c(), pMC=c(), hot.stop=TRUE, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, adjust.dby=TRUE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), remove=FALSE, BCAD=FALSE, ssize=4000, th0=c(), burnin=min(500, ssize), youngest.age=c(), oldest.age=c(), MinAge=c(), MaxAge=c(), cutoff=.01, plot.pdf=TRUE, cairo=FALSE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, save.info=TRUE, older.than=c(), younger.than=c(), save.elbowages=FALSE, verbose=TRUE, use.cpp=TRUE, ...) {
   # Check coredir and if required, copy example files into core directory
   coredir <- assign_coredir(coredir, core, ask, isPlum=FALSE)
   csv.file <- paste0(coredir, core, "/", core, ".csv")
@@ -271,8 +272,12 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
       }
     }
 
-  if(thick < d.by)
-    warning("Please set d.by to a value smaller than that of thick", .call=TRUE)
+  if(thick < d.by) 
+    if(adjust.dby) {
+      d.by <- thick/2
+	  message(" adjusting d.by to ", d.by)
+    } else
+        warning("Please set d.by to a value smaller than that of thick", call.=FALSE)
 
   # check values for the prior's mean, Jan 2021
   if(mem.mean < 0 || mem.mean >1)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/MCMC.R
 \name{MCMC.diagnostics}
 \alias{MCMC.diagnostics}
-\title{Test mixing and stationarity of the MCMC run}
+\title{test mixing and stationarity of the MCMC run}
 \usage{
 MCMC.diagnostics(set = get("info"), ssize = nrow(set$output), talk = TRUE)
 }

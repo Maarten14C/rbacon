@@ -6,7 +6,7 @@
 * if boundaries or hiatuses are set, the acc.rate panel of the `agedepth` function now shows the posteriors of the multiple sections separately.
 * when calculating what proportion of the dates fit within the age-depth model, this is now done by checking for each date if any of its hpd intervals fall within any of the model's hpds (default 95\% confidence ranges).
 * even funnier feedback at the end of MCMC runs.
-* now using `rice` version 2.0.0 and `rintcal` version 1.4.0.
+* now using `rice` version 2.1.0 and `rintcal` version 1.4.0.
 * rewrote the function `flux.age.ghost` to make it much faster.
 * calculations of age ranges and age-depth ghost plots are now much faster when using the default `use.cpp=TRUE` in the functions `Bacon`, `agedepth`, `proxy.ghost` and `ageranges`. This option causes the underlying calculations to be done in cpp, not R. This feature is experimental and can be deactivated using `use.cpp=FALSE` in the above functions.
 * colour gradients (ghost plots) in `agedepth` can now also be provided as `from.col` and `to.col`, to choose from one of the >600 colour names within R's function `colours()`. For example, `agedepth(from.col="papayawhip", to.col="saddlebrown")`. 
@@ -18,6 +18,7 @@
 * new function `Bacon_runs` which lists the cores available in the Bacon_runs directory. 
 * cleaned up 'orphan' variables.
 * `add.dates` now has options `BCAD`, `is.F` and `is.pMC`.
+* Within the `Bacon()` zommand, `d.by` is now adjusted automatically if it is larger than `thick`. This can be avoided by setting `adjust.dby=FALSE`.
 
 # rbacon 3.5.2
 * removed the ageranges example to avoid the CRAN NOTE about a slow example.

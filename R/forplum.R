@@ -1,7 +1,7 @@
 ### functions which are for running Plum, but are looked for by generic agedepth() function, so are included in the rbacon code
 
 #' @name draw.pbmeasured
-#' @title Plot the 210Pb data
+#' @title plot the 210Pb data
 #' @description Produce a plot of the 210Pb data and their depths
 #' @details This function is generally called internally to produce the age-depth graph.
 #' It can be used to produce custom-built graphs.
@@ -85,7 +85,7 @@ draw.pbmeasured <- function(set=get('info'), rotate.axes=FALSE, rev.d=FALSE, rev
 
 
 #' @name draw.pbmodelled
-#' @title Plot the 210Pb data
+#' @title plot the 210Pb data
 #' @description Produce a plot of the 210Pb data and their depths
 #' @details This function is generally called internally to produce the age-depth graph.
 #' It can be used to produce custom-built graphs.
@@ -189,23 +189,23 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
     #for(i in 1:min(length(depths), length(Ai$x), na.rm=TRUE)) {		
       ages <- pb2bp(Ai$x[[i]], AD=BCAD)
       if(BCAD) 
-		ages <- rev(ages)
+        ages <- rev(ages)
       z <- matrix(Ai$y[[i]]/hght, nrow=1)
       d_slice <- c(depths[i]-thickness[i], depths[i])
-	  
-	  # keeping rgb approach with alpha here, since the bluescales overlap with agedepth.ghost
+
+      # keeping rgb approach with alpha here, since the bluescales overlap with agedepth.ghost
       modelled_col <- pbmodelled.col(seq(0, 1-max(z), length=50)) 
-	  
-	  # we're not using ghost.mirror, because of BC/AD axis reversal issues
+
+      # we're not using ghost.mirror, because of BC/AD axis reversal issues
       if(rotate.axes) {
         if(BCAD)	  
           image(ages, d_slice, z, add=TRUE, col=modelled_col, useRaster=FALSE) else
             image(ages, d_slice, z, add=TRUE, col=modelled_col, useRaster=FALSE)
         } else {
-	     if(BCAD)  
-  	       image(d_slice, ages, z, add=TRUE, col=modelled_col, useRaster=FALSE) else
-	         image(d_slice, ages, z, add=TRUE, col=modelled_col, useRaster=FALSE)
-        }	  
+          if(BCAD)
+            image(d_slice, ages, z, add=TRUE, col=modelled_col, useRaster=FALSE) else
+              image(d_slice, ages, z, add=TRUE, col=modelled_col, useRaster=FALSE)
+        }
     }
   }
 
@@ -218,7 +218,7 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
 
 
 #' @name A.modelled
-#' @title Calculate modelled 210Pb
+#' @title calculate modelled 210Pb
 #' @description Calculate modelled 210Pb values of a sample slice, based on the parameters of the age-model (i.e., time passed since deposition of the bottom and top of the slice), supported and influx
 #' @param d.top top depth of the slice
 #' @param d.bottom bottom depth of the slice

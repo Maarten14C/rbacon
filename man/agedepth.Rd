@@ -2,7 +2,7 @@
 % Please edit documentation in R/agedepth.R
 \name{agedepth}
 \alias{agedepth}
-\title{Plot an age-depth model}
+\title{plot an age-depth model}
 \usage{
 agedepth(
   set = get("info"),

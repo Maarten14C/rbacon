@@ -311,14 +311,24 @@ class BaconFix: public Bacon {
 						Xp0[k] = GammaSim( alpha[0], mult/beta[0]);
 
 					}
-				} else {//initial values for the acc. rates, with hiatus
+				} else { //initial values for the acc. rates, with hiatus
 
 					//we go backwards until we find the hiatus
 					int l=0;
 					for (int k=K-1; k>0; k--) {
 						if ((fcmp( c(k-1), h[l]) == -1) && (fcmp( h[l], c(k)) != 1)) { //if c_{k-1} < h_l & h_l !> c_k, forgets
-						    X0[k]  = GammaSim( ha[l], 1.0/(hb[l]*Dc) ); // this is the original one
+						    X0[k] = GammaSim( ha[l], 1.0/(hb[l]*Dc) ); // this is the original one
+							
 							//x[k] = X0[k];
+
+							// propuesta MB mayo 2026:
+							// salto = GammaSim( ha[l], 1.0/hb[l] ); // jump in time
+							// prop = (c(k) - hb[l]) / Dc; // proportion of section below hiatus l
+							// prop = fmax(0.0, fmin(1.0, prop)); // guard against rounding errors, necesario?
+							// acc.below = GammaSim( alpha[l+1], mult/beta[l+1]);
+							// acc.above = GammaSim( alpha[l], mult/beta[l]);
+							// X0[k] = (salto / Dc) + prop*acc.below + (1-prop) * acc.above;
+							
 							l++; //jump to next hiatus, but max one hiatus in each section.
 						} else { //continue with the memory
 							X0[k]  = GammaSim( alpha[l], mult/beta[l]);

@@ -2,7 +2,7 @@
 % Please edit documentation in R/accrate.R
 \name{flux.age.ghost}
 \alias{flux.age.ghost}
-\title{Plot flux rates for proxies.}
+\title{plot flux rates for proxies}
 \usage{
 flux.age.ghost(
   column = 1,

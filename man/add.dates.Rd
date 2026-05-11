@@ -10,9 +10,12 @@ add.dates(
   depth,
   cc = 1,
   set = get("info"),
+  BCAD = set$BCAD,
   above = 1e-06,
   postbomb = 0,
   normal = TRUE,
+  is.F = FALSE,
+  is.pMC = FALSE,
   delta.R = 0,
   delta.STD = 0,
   t.a = set$t.a,
@@ -27,7 +30,6 @@ add.dates(
   rotate.axes = FALSE,
   mirror = TRUE,
   up = TRUE,
-  BCAD = FALSE,
   pch = 4,
   cc.dir = c()
 )
@@ -43,11 +45,17 @@ add.dates(
 
 \item{set}{Detailed information of the current run, stored within this session's memory as variable \code{info}.}
 
+\item{BCAD}{The calendar scale is in cal BP by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
+
 \item{above}{Threshold for plotting of probability values. Defaults to \code{above=1e-3}.}
 
 \item{postbomb}{Use a postbomb curve for negative (i.e. postbomb) 14C ages. \code{0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}}
 
 \item{normal}{By default, Bacon uses the t-distribution (Christen and Perez 2009) to treat the dates. Use \code{normal=TRUE} to use the normal/Gaussian distribution. This will generally give higher weight to the dates.}
+
+\item{is.F}{Dates can be provided as F14C values. Defaults to \code{is.F=FALSE}.}
+
+\item{is.pMC}{Dates can be provided as pMC values. Defaults to \code{is.pMC=FALSE}.}
 
 \item{delta.R}{Mean of core-wide age offsets (e.g., regional marine offsets).}
 
@@ -82,8 +90,6 @@ For symmetry reasons, t.a must always be equal to t.b-1.}
 \item{mirror}{Plot the dates as 'blobs'. Set to \code{mirror=FALSE} to plot simple distributions.}
 
 \item{up}{Directions of distributions if they are plotted non-mirrored. Default \code{up=TRUE}.}
-
-\item{BCAD}{The calendar scale of graphs is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
 
 \item{pch}{The shape of any marker to be added to the date. Defaults to a cross, \code{pch=4}. To leave empty, use \code{pch=NA}.}
 

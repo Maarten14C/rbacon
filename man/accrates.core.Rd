@@ -2,7 +2,7 @@
 % Please edit documentation in R/accrate.R
 \name{accrates.core}
 \alias{accrates.core}
-\title{Provide a summary of the estimated accumulation rates for a range of core depths}
+\title{provide a summary of the estimated accumulation rates for a range of core depths}
 \usage{
 accrates.core(
   dseq = c(),

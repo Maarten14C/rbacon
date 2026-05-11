@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc.R
 \name{agemodel.it}
 \alias{agemodel.it}
-\title{Extract one age-model iteration}
+\title{extract one age-model iteration}
 \usage{
 agemodel.it(it, set = get("info"), BCAD = set$BCAD, save.info = set$save.info)
 }

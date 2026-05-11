@@ -11,7 +11,7 @@ validateDirectoryName <- function(dir) {
 
 
 #' @name Bacon_runs
-#' @title List the folders present in the current core directory.
+#' @title list the folders present in the current core directory
 #' @description Lists all folders located within the core's directory.
 #' @details The directory is either "Bacon_runs", "Cores" or a custom-named one.
 #' @author Maarten Blaauw, J. Andres Christen
@@ -27,7 +27,7 @@ Bacon_runs <- function(set=get('info'), coredir=set$coredir) {
 
 
 #' @name set.initvals
-#' @title Set initial values for the Bacon MCMC run.
+#' @title set initial values for the Bacon MCMC run
 #' @description Select initial values th0 and th1 for a Bacon MCMC run and write them into a file that can be read by Bacon.
 #' @details By default, the initial MCMC values th0 and th1 of the Bacon age-depth model (upper ages and accumulation rate
 #' for each model section) are estimated randomly. Since version 3.1.0, these starting values can
@@ -90,7 +90,7 @@ set.initvals <- function(set=get('info'), core=set$core, values=c(), click=1) {
 
 
 #' @name clam2bacon
-#' @title Translate clam .csv files to Bacon .csv files.
+#' @title translate clam .csv files to Bacon .csv files
 #' @description Reads a clam .csv file containing the dates, and transforms it into a Bacon .csv file.
 #' @details Please ensure that if the clam file has offset (d.R) estimates, that errors (d.STD) are provided manually, since these values cannot be determined automatically from the clam .csv file.
 #' @author Maarten Blaauw, J. Andres Christen
@@ -128,7 +128,7 @@ clam2bacon <- function(core, clamdir="clam_runs", bacondir="Bacon_runs", sep=","
 
 
 #' @name bacon2clam
-#' @title Translate Bacon .csv files to clam .csv files.
+#' @title translate Bacon .csv files to clam .csv files
 #' @description Reads a Bacon .csv file containing the dates, and transforms it into a clam .csv file.
 #' @details Assumes that Bacon .csv files with 4 columns indicate 14C dates. Please make sure this is correct.
 #' @author Maarten Blaauw, J. Andres Christen
@@ -180,7 +180,7 @@ bacon2clam <- function(core, bacondir="Bacon_runs", clamdir="clam_runs", sep=","
 
 
 #' @name Bacon.cleanup
-#' @title Remove files made to produce the current core's age-depth model.
+#' @title remove files made to produce the current core's age-depth model
 #' @description Remove files ending in .bacon, .plum (if it exists), .out, .pdf, _ages.txt, and _settings.txt of current core.
 #' @details If cores behave badly, you can try cleaning up previous runs and settings, by
 #' removing files *.bacon, *.plum, *.out, *.pdf, *_ages.txt, and *_settings.txt of current core.
@@ -636,19 +636,18 @@ write.Bacon.file <- function(set=get('info'), younger.than=c(), older.than=c(), 
     if(save.info)
       assign_to_global("info", set)
     
-	
     cat("\n\n### Depths and priors for fixed hiatuses, in descending order",
       "\n##### cm  alpha beta      ha     hb", file=fl)
     for(i in length(hiatus.depths):1) {
       # piste = slope of acc.rate + jump of hiatus. The slope is a weighted mix of the acc.mean priors from below and above the hiatus
-	  frac.below <- (set$elbows[min(which(set$elbows >= hiatus.depths[i]))] -
-	    hiatus.depths[i]) / set$thick # fraction of section below the hiatus
-	  slope <- frac.below*set$acc.mean[i+1] + (1-frac.below)*set$acc.mean[i]
+      frac.below <- (set$elbows[min(which(set$elbows >= hiatus.depths[i]))] -
+        hiatus.depths[i]) / set$thick # fraction of section below the hiatus
+      slope <- frac.below*set$acc.mean[i+1] + (1-frac.below)*set$acc.mean[i]
       piste <- set$hiatus.shape[i]/(set$hiatus.mean[i] + slope*set$thick) 
       cat("\nHiatus ", i-1, ":  ", hiatus.depths[i], ",  ", set$acc.shape[i+1],
         ",  ", set$acc.shape[i+1]/set$acc.mean[i+1], ",  ", set$hiatus.shape[i], 
         ",  ", piste, ";", sep="", file=fl)
-	}
+    }
   }
 
   cK <- set$d.min+(set$thick*set$K)
@@ -765,24 +764,24 @@ ageranges <- function(d=c(), file=c(), sep="\t", set=get("info"), BCAD=set$BCAD,
   means <- numeric(length(d))
 
   if(use.cpp) {
-  	hiatus <- set$hiatus.depths  
+    hiatus <- set$hiatus.depths
     if(length(set$slump) > 0) {
       d <- toslump(d, set$slump)
       if(!is.na(hiatus[1]))
         hiatus <- set$slumphiatus
-	  }
-	 
-	summ <- tryCatch({  
+    }
+
+    summ <- tryCatch({
     if(is.na(hiatus[1])) 
       summ <- depths_ageranges(d, out=as.matrix(set$output), 
-	    elbows=set$elbows, n_rows=set$Tr, prob=prob) else 
+        elbows=set$elbows, n_rows=set$Tr, prob=prob) else
         summ <- depths_ageranges_hiatus(d, out=as.matrix(set$output), 
-		  elbows=set$elbows, hiatus_depths=hiatus, 
-		  slopes_above=set$slope.above, slopes_below=set$slope.below,
+          elbows=set$elbows, hiatus_depths=hiatus,
+          slopes_above=set$slope.above, slopes_below=set$slope.below,
           elbow_above_hiatus=set$elbow.above, elbow_below_hiatus=set$elbow.below,
-		  n_rows=set$Tr, prob=prob)
-	  },  
-		error = function(e) {warning("C++ problem, please run again using use.cpp=FALSE"); return(NULL)}, interrupt = function(e) {stop("Operation interrupted by user")})
+          n_rows=set$Tr, prob=prob)
+      },
+        error = function(e) {warning("C++ problem, please run again using use.cpp=FALSE"); return(NULL)}, interrupt = function(e) {stop("Operation interrupted by user")})
 
   # also needs to deal with slumps...
   if(BCAD)

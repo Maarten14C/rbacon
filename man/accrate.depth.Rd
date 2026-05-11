@@ -2,7 +2,7 @@
 % Please edit documentation in R/accrate.R
 \name{accrate.depth}
 \alias{accrate.depth}
-\title{Obtain estimated accumulation rates as for any depth of a core.}
+\title{obtain estimated accumulation rates as for any depth of a core}
 \usage{
 accrate.depth(
   d,

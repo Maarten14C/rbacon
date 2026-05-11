@@ -16,7 +16,7 @@ bacon.its <- function(ssize, burnin, set=get('info'), ACCEP_EV=20, EVERY_MULT=25
 #################### functions for post-run checks and adaptations ####################
 
 #' @name scissors
-#' @title Remove the first n iterations.
+#' @title remove the first n iterations
 #' @description Removes iterations of the MCMC time series, and then updates the output file.
 #' @details Bacon will perform millions of MCMC iterations for each age-model run by default, although only a fraction
 #' of these will be stored. In most cases the remaining MCMC iterations will be well mixed (the upper left panel
@@ -83,7 +83,7 @@ scissors <- function(burnin, set=get('info'), write=TRUE, save.info=set$save.inf
 
 
 #' @name thinner
-#' @title Thin iterations.
+#' @title thin iterations
 #' @description Randomly thin iterations by a given proportion, for example if autocorrelation is visible within the MCMC series.
 #' @details From all iterations, a proportion is removed with to-be-removed iterations sampled randomly among all iterations.
 #' @param proportion Proportion of iterations to remove. Should be between 0 and 1. Default \code{proportion=0.1}.
@@ -129,7 +129,7 @@ thinner <- function(proportion=0.1, set=get('info'), write=TRUE, save.info=set$s
 
 
 #' @name Baconvergence
-#' @title Test to identify poorly mixed MCMC runs.
+#' @title test to identify poorly mixed MCMC runs
 #' @description Test how well-mixed and converged the MCMC runs are with the chosen core and settings, by running the core several times and comparing the different runs using the Gelman and Rubin Reduction factor (Brooks and Gelman, 1998).
 #' @details Generally Bacon will perform millions of MCMC iterations for each age-model run, although only a fraction
 #' of these will be stored. In most cases the remaining MCMC iterations will be well mixed (the upper left panel
@@ -194,7 +194,7 @@ Baconvergence <- function(core="MSB2K", runs=5, suggest=FALSE, verbose=TRUE, ...
 
 
 #' @name MCMC.diagnostics
-#' @title Test mixing and stationarity of the MCMC run
+#' @title test mixing and stationarity of the MCMC run
 #' @description Test how well-mixed and stationary the MCMC run is. A good value for the effective sample size ('ess', number of effective independent samples from the MCMC iterations) is >200 (>1000 indicates an excelling mixing). Besides the mixing, stationarity 'z' is also measured (the start of the run is compared with the end). A 'z' below 1.96 (1 standard deviation) indicates no drift, and if it is >2.58 (2 standard deviations) then the MCMC chain is likely drifting.
 #' @details Generally Bacon will perform millions of MCMC iterations for each age-model run, although only a fraction
 #' of these will be stored. In most cases the remaining MCMC iterations will be well mixed (ess, and also visually check that the upper left panel
@@ -220,7 +220,7 @@ MCMC.diagnostics <- function(set=get("info"), ssize=nrow(set$output), talk=TRUE)
     invisible(NA)
   } else {
 
-	if(talk) {
+    if(talk) {
       if(ess < 10)
         message("Warning, the MCMC run has a very high autocorrelation (effective sample size=", round(ess,2), ", <100. So,", ssize.warn) else
         if(ess < 100)

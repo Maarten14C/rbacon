@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc.R
 \name{Bacon.hist}
 \alias{Bacon.hist}
-\title{Calculate age distributions of depths.}
+\title{calculate age distributions of depths}
 \usage{
 Bacon.hist(
   d,

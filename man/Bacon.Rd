@@ -2,7 +2,7 @@
 % Please edit documentation in R/rbacon.R
 \name{Bacon}
 \alias{Bacon}
-\title{Main age-depth modelling function}
+\title{main age-depth modelling function}
 \usage{
 Bacon(
   core = "MSB2K",
@@ -47,6 +47,7 @@ Bacon(
   normal = FALSE,
   suggest = TRUE,
   accept.suggestions = FALSE,
+  adjust.dby = TRUE,
   reswarn = c(10, 200),
   remember = TRUE,
   ask = TRUE,
@@ -186,7 +187,9 @@ For symmetry reasons, t.a must always be equal to t.b-1.}
 
 \item{suggest}{If initial analysis of the data indicates abnormally slow or fast accumulation rates, Bacon will suggest to change the prior.}
 
-\item{accept.suggestions}{Automatically accept the suggested values. Use with care. Default \code{accept.suggestions=FALSE}.
+\item{accept.suggestions}{Automatically accept the suggested values. Use with care. Default \code{accept.suggestions=FALSE}.}
+
+\item{adjust.dby}{Automatically adjust d.by to a value smaller than thick. Defaults to \code{adjust.dby=TRUE}.
 Also, if the length of the core would cause too few or too many sections with the default settings, Bacon will suggest an alternative section thickness \code{thick}.
 Accept these suggested alternative settings by typing "y" (or "yes please" if you prefer to be polite), or leave as is by typing "n" (or anything else, really). To get rid of these suggestions, use \code{suggest=FALSE}.}
 

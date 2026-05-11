@@ -2,7 +2,7 @@
 % Please edit documentation in R/accrate.R
 \name{accrate.depth.summary}
 \alias{accrate.depth.summary}
-\title{Provide a summary of the estimated accumulation rates for any depth of a core.}
+\title{provide a summary of the estimated accumulation rates for any depth of a core}
 \usage{
 accrate.depth.summary(
   d,

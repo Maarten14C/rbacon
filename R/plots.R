@@ -1,6 +1,6 @@
 
 #' @name proxy.ghost
-#' @title Proxies analysed along the depths of a core can be plotted as 'proxy-ghost' graphs against calendar time while taking into account chronological uncertainties. Here darker grey indicates more likely calendar ages for specific proxy values.
+#' @title greyscale plot of a proxy against time
 #' @description Proxies analysed along the depths of a core can be plotted as 'proxy-ghost' graphs against calendar time while taking into account chronological uncertainties. Here darker grey indicates more likely calendar ages for specific proxy value.
 #' @details Place a csv file with the values of proxies against depth within your core's folder. The values should be in columns separated by commas (default \code{sep=","}), the first column containing the depths and the first line (header) containing the proxy names.
 #' The file name should start with the core's name and end with "_proxies.csv". For an example see \code{"Bacon_coredir/MSB2K/MSB2K_proxies.csv"} or \code{"Cores/MSB2K/MSB2K_proxies.csv"}.
@@ -204,7 +204,7 @@ proxy.ghost <- function(proxy=1, proxy.lab=NULL, proxy.res=200, age.res=500, yr.
 
 
 #' @name AgesOfEvents
-#' @title Event probabilities against calendar age
+#' @title event probabilities against calendar age
 #' @description Plot probability curves for events in the core, expressed against calendar age.
 #' @details Probabilities of depths with 'events' in an age-modelled core can be plotted against time, taking into account
 #' chronological uncertainties (Blaauw et al. 2007). Such events could be for example core depths at which proxies

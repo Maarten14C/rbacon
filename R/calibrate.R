@@ -49,7 +49,7 @@
 #' @export
 add.dates <- function(mn, sdev, depth, cc=1, set=get('info'), BCAD=set$BCAD, above=1e-6, postbomb=0, normal=TRUE, is.F=FALSE, is.pMC=FALSE, delta.R=0, delta.STD=0, t.a=set$t.a, t.b=set$t.b, date.res=100, height=1, calheight=1, agesteps=1, cutoff=0.005, col=rgb(1,0,0,.5), border=rgb(1,0,0,.5), rotate.axes=FALSE, mirror=TRUE, up=TRUE, pch=4, cc.dir=c()) {
 
-  dists <- draw.dates(mn-delta.R, sqrt(sdev^2+delta.STD^2), depth, cc=cc, BCAD=BCAD, is.F=is.F, is.pMC=is.pMC, postbomb=postbomb, normal=normal, t.a=t.a, t.b=t.b, dist.res=date.res, ex=height, threshold=cutoff, col=col, border=border, draw.hpd=FALSE, rotate.axes=!rotate.axes, mirror=mirror, up=up, cc.dir=cc.dir, add=TRUE, BCAD=BCAD)
+  dists <- draw.dates(mn-delta.R, sqrt(sdev^2+delta.STD^2), depth, cc=cc, BCAD=BCAD, is.F=is.F, is.pMC=is.pMC, postbomb=postbomb, normal=normal, t.a=t.a, t.b=t.b, dist.res=date.res, ex=height, threshold=cutoff, col=col, border=border, draw.hpd=FALSE, rotate.axes=!rotate.axes, mirror=mirror, up=up, cc.dir=cc.dir, add=TRUE)
 
   if(length(pch) > 0) {
     best <- c()
@@ -166,7 +166,7 @@ calib.plot <- function(set=get('info'), dets=set$dets, accordion=c(), BCAD=set$B
       if(BCAD)
         cal[,1] <- calBPtoBCAD(cal[,1])
       if((max(cal[,1]) - min(cal[,1])) > 4*agesteps)
-        cal <- approx(cal[,1], cal[,2], seq(min(cal[,1], na.rm=TRUE), max(cal[,1], na.rm=TRUE), by=agesteps)) else
+        cal <- approx(cal[,1], cal[,2], seq(min(cal[,1], na.rm=TRUE), max(cal[,1], na.rm=TRUE), by=max(.001, agesteps))) else
           cal <- approx(cal[,1], cal[,2], seq(min(cal[,1]), max(cal[,1]), length=100))
       # the above is not ideal because it causes different heights for very precise distributions
 
