@@ -646,6 +646,7 @@ write.Bacon.file <- function(set=get('info'), younger.than=c(), older.than=c(), 
       piste <- set$hiatus.shape[i]/(set$hiatus.mean[i] + slope*set$thick) 
       cat("\nHiatus ", i-1, ":  ", hiatus.depths[i], ",  ", set$acc.shape[i+1],
         ",  ", set$acc.shape[i+1]/set$acc.mean[i+1], ",  ", set$hiatus.shape[i], 
+        #",  ", set$hiatus.shape[1]/set$hiatus.mean[i], ";", sep="", file=fl) # undoing piste approach, MB 12 May 2026
         ",  ", piste, ";", sep="", file=fl)
     }
   }

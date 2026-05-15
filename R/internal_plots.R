@@ -19,7 +19,7 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
     d.seq <- squeeze(d.seq, accordion[1], accordion[2])
 
   if(use.cpp) {
-   tops <- set$output[,1] 	  
+   tops <- set$output[,1]
    accs <- set$thick * rowSums(set$output[,1+(1:set$K)])
    age.lim <- range(tops, tops+accs)
    age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
@@ -295,15 +295,19 @@ PlotPhiPrior <- function(s, mn, set=get('info'), depth.unit=depth.unit, age.unit
 PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main="", depth.unit=set$depth.unit, age.unit=set$age.unit, ylab="Frequency", xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, acc.xlim=c(), acc.ylim=c(), acc.lab=c(), line.col=3, line.width=2, text.col=2, hist.col=rgb(0,0,0,0.2), hist.border=grey(0.4)) {
   hi.full <- 2:(set$K - 1) # the accrate columns of the MCMC output (.out file)
 
-  if(!is.na(set$hiatus.depths[1])) { # deal with any hiatuses/boundaries
-    if(length(set$slump) > 0) {
-      hiatus <- set$slumphiatus
-    } else hiatus <- set$hiatus.depths
-    split.pos <- sapply(hiatus, function(d) max(which(set$elbows < d)))
-    split.at <- sort(split.pos)
-    segments <- split(hi.full, cut(seq_along(hi.full), breaks = c(0, split.at, length(hi.full)), labels = FALSE))
-  } else
-      segments <- list(hi.full)
+  if(!is.na(set$hiatus.depths[1])) {
+    if(length(set$slump) > 0)
+      hiatus <- set$slumphiatus else
+        hiatus <- set$hiatus.depths
+
+    split.pos <- sapply(hiatus, function(d) max(which(set$elbows < d))+1)
+    hi.full <- hi.full[!(hi.full %in% split.pos)] # remove hiatus columns
+
+    # split into contiguous segments
+    segments <- split(hi.full, findInterval(hi.full, split.pos))
+  } else {
+    segments <- list(hi.full)
+  }
 
   accseq <- c()
   xpol <- c()
@@ -395,15 +399,15 @@ PlotHiatusPost <- function(set=get('info'), mn=set$hiatus.mean, main="", xlab=pa
   max.y <- 1.1/mn
   if(length(gaps) > 1) {
     gaps <- density(gaps, from=0)
-    max.y <- max(max.y, gaps$y)
+    max.y <- max(max.y, gaps$y, na.rm=TRUE)
   }
   if(length(hiatus.ylim) == 0)
     hiatus.ylim <- c(0, max.y)
+
   plot(0, type="n", main="", xlab=xlab, xlim=hiatus.xlim, ylab=ylab, ylim=hiatus.ylim, xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
   if(length(gaps) > 1)
     polygon(cbind(c(min(gaps$x), gaps$x, max(gaps$x)), c(0,gaps$y,0)),
-    col=hist.col, border=hist.border)
-
+      col=hist.col, border=hist.border)
   PlotHiatusPrior(add=TRUE, xlab="", ylab=ylab, main=main, xlim=hiatus.xlim, csize=prior.size, line.col=line.col, line.width=line.width, text.col=text.col)
   invisible(list(post.mn=post.mn, post.shape=post.shape, gaps=raw.gaps))
 }
@@ -492,11 +496,4 @@ PlotPhiPost <- function(set=get('info'), xlab=paste0("Bq/",expression(m^2)," yr"
   invisible(c(post.mn, post.shape))
 }
 
-
-
-export.pdf <- function(fl) {
-  if(capabilities("cairo")) 
-    dev.copy(cairo_pdf, file=fl) else 
-      dev.copy(pdf, file=fl)
-  dev.off()
-}
+# removed internal function export.pdf, as not used any longer

@@ -68,6 +68,7 @@ Bacon(
   MaxAge = c(),
   cutoff = 0.01,
   plot.pdf = TRUE,
+  quartz = FALSE,
   cairo = FALSE,
   dark = 1,
   date.res = 100,
@@ -236,7 +237,9 @@ try running your core again with \code{remember=FALSE}, or, start cleanly by typ
 
 \item{plot.pdf}{Produce a pdf file of the age-depth plot. Defaults to \code{plot.pdf=TRUE} after a Bacon run.}
 
-\item{cairo}{Use cairo-based pdf plots if available (on Mac OS). Defaults to FALSE since using 'cairo_pdf()' causes problems for some Mac users.}
+\item{quartz}{Use quartz-based pdf plots if available (on Mac OS). Defaults to FALSE.}
+
+\item{cairo}{Use cairo-based pdf plots if available (on Mac OS). Defaults to FALSE.}
 
 \item{dark}{Darkness of the greyscale age-depth model. The darkest grey value is \code{dark=1} by default.
 Lower values will result in lighter grey but values >1 are not allowed.}

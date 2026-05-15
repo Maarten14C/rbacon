@@ -1,5 +1,7 @@
 # check option o fusing draw.dates from rice again. Perhaps does better scaling of heights 
 
+# make sure that the posteriors of acc.rates in the main age-model graph take into account hiatuses (currently large acc.rates are shown which seems to be owing to low acc.rates at sections with hiatuses)
+
 # first release rice since it has a new option to deal with open-ended hpds (hpd.overlap)
 
 # check many different combinations of slump, hiatus, plot, replot, d.min, d.max, BCAD, for different functions (Bacon, agedepth, proxy.ghost, ...)
@@ -150,7 +152,8 @@
 #' @param oldest.age Maximum age limit for Bacon runs, default at 1,000,000 cal BP. To set plot limits, use \code{age.max} instead.
 #' @param cutoff Avoid plotting very low probabilities of date distributions (default \code{cutoff=0.001}).
 #' @param plot.pdf Produce a pdf file of the age-depth plot. Defaults to \code{plot.pdf=TRUE} after a Bacon run.
-#' @param cairo Use cairo-based pdf plots if available (on Mac OS). Defaults to FALSE since using 'cairo_pdf()' causes problems for some Mac users.
+#' @param quartz Use quartz-based pdf plots if available (on Mac OS). Defaults to FALSE.
+#' @param cairo Use cairo-based pdf plots if available (on Mac OS). Defaults to FALSE.
 #' @param dark Darkness of the greyscale age-depth model. The darkest grey value is \code{dark=1} by default.
 #' Lower values will result in lighter grey but values >1 are not allowed.
 #' @param date.res Date distributions are plotted using \code{date.res=100} segments by default.
@@ -192,7 +195,7 @@
 #' Journal of Ecology 77: 1-23.
 #'
 #' @export
-Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=10, mem.mean=0.5, boundary=NA, hiatus.depths=NA, hiatus.mean=100, hiatus.shape=0.5, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", cc.dir=c(), postbomb=0, F14C=c(), pMC=c(), hot.stop=TRUE, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, adjust.dby=TRUE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), remove=FALSE, BCAD=FALSE, ssize=4000, th0=c(), burnin=min(500, ssize), youngest.age=c(), oldest.age=c(), MinAge=c(), MaxAge=c(), cutoff=.01, plot.pdf=TRUE, cairo=FALSE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, save.info=TRUE, older.than=c(), younger.than=c(), save.elbowages=FALSE, verbose=TRUE, use.cpp=TRUE, ...) {
+Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=10, mem.mean=0.5, boundary=NA, hiatus.depths=NA, hiatus.mean=100, hiatus.shape=0.5, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", cc.dir=c(), postbomb=0, F14C=c(), pMC=c(), hot.stop=TRUE, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, adjust.dby=TRUE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), remove=FALSE, BCAD=FALSE, ssize=4000, th0=c(), burnin=min(500, ssize), youngest.age=c(), oldest.age=c(), MinAge=c(), MaxAge=c(), cutoff=.01, plot.pdf=TRUE, quartz=FALSE, cairo=FALSE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, save.info=TRUE, older.than=c(), younger.than=c(), save.elbowages=FALSE, verbose=TRUE, use.cpp=TRUE, ...) {
   # Check coredir and if required, copy example files into core directory
   coredir <- assign_coredir(coredir, core, ask, isPlum=FALSE)
   csv.file <- paste0(coredir, core, "/", core, ".csv")
@@ -498,27 +501,14 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   cook <- function() {
     bacon.its(ssize, burnin, info) # information on amounts of iterations
     txt <- paste0(info$prefix, ".bacon")
-    #cat("this is the bacon file: ", txt)
     bacon(txt, as.character(outfile), ssize+burnin, cc.dir)
     info <- scissors(burnin, info, save.info=save.info)
     output <- info$output # tmp
-    info <- agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=TRUE, age.unit=age.unit, depth.unit=depth.unit, save.info=save.info, ssize=ssize, use.cpp=use.cpp, ...)
+    info <- agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=TRUE,
+      age.unit=age.unit, depth.unit=depth.unit, save.info=save.info, ssize=ssize, 
+	  use.cpp=use.cpp, plot.pdf=plot.pdf, quartz=quartz, cairo=cairo, ...)
     info$output <- output
-    #    cat(mean(info$Tr)) # this is to check how hists and info get saved
-
-    if(plot.pdf)
-      if(dev.interactive())
-        export.pdf(paste0(info$prefix, ".pdf")) else {
-          pdf.fl <- paste0(info$prefix, ".pdf")
-          if(capabilities("aqua")) # macOS
-            grDevices::quartz(file=pdf.fl, type="pdf") else 
-              if(cairo && capabilities("cairo")) # linux
-                cairo_pdf(filename=pdf.fl) else 
-                  pdf(file=pdf.fl)
-          agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=FALSE, age.unit=age.unit, depth.unit=depth.unit, save.info=FALSE, ...)
-          dev.off()
-        }
-     return(info)
+	return(info)
   }
 
 ### run bacon if initial graphs seem OK; run automatically, not at all, or only plot the age-depth model

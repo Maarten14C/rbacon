@@ -32,8 +32,8 @@ agedepth(
   darkest = 1,
   prob = set$prob,
   rounded = c(),
-  d.res = 400,
-  age.res = 400,
+  d.res = 500,
+  age.res = 500,
   yr.res = age.res,
   date.res = 100,
   rotate.axes = FALSE,
@@ -129,6 +129,8 @@ agedepth(
   plot.pb = TRUE,
   pb.lty = 1,
   plot.pdf = FALSE,
+  quartz = FALSE,
+  cairo = FALSE,
   dates.only = FALSE,
   model.only = FALSE,
   verbose = TRUE,
@@ -390,6 +392,10 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 \item{pb.lty}{Line type of measured Pb-210 data.}
 
 \item{plot.pdf}{Produce a pdf file of the age-depth plot.}
+
+\item{quartz}{Use quartz-based pdf plots if available (on Mac OS). Defaults to FALSE.}
+
+\item{cairo}{Use cairo-based pdf plots if available (on Mac OS). Defaults to FALSE.}
 
 \item{dates.only}{By default, the age-depth model is plotted on top of the dates. This can be avoided by supplying \code{dates.only=TRUE}.}
 

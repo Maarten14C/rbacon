@@ -84,16 +84,33 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
     if(age < min(ages) || age > max(ages))
       stop(" Warning, age outside the core's age range!\n")
 
-   # these two lines do the same as the loop below, 
-   #   but at the same speed and values outside the ages do not get NAs
-   # col_indices <- rowSums(ages <= age) + 1 
-   # accs <- set$output[cbind(seq_len(nrow(ages)), col_indices)]
+  # we do need to take into account hiatuses - this function doesn't yet
+   hiatus.sections <- c()
+   if(length(set$hiatus.depths) > 0)
+     for(i in 1:length(set$hiatus.depths))
+       hiatus.sections[i] <- max(which(set$elbows <= set$hiatus.depths[i]))
 
   accs <- rep(NA_real_, nrow(ages)) # suggested by henningte on github
   for(i in 2:ncol(ages)) {
     these <- (ages[,i-1] < age) & (ages[,i] > age)
-    if(sum(these) > 0) # age lies within these age-model iterations
-      accs[which(these>0)] <- set$output[which(these>0),i] # Jan 2023
+
+    # if(length(set$hiatus.depth) >0) then check if the age falls within a hiatus section
+    # if it does, then check if it is below or above it, and use set$slope.below or set$slope.above accordingly
+    if(any(these)) { # age lies within these age-model iterations
+      rows <- which(these)
+      accs[rows] <- set$output[rows,i] # assign the accumulation rates
+
+       if(length(hiatus.sections) > 0)
+         for(j in 1:length(hiatus.sections)){
+         below <- age > set$hiatus.start[rows, j] # which of these lie below the hiatus
+         above <- age < set$hiatus.end[rows, j] # which lie above it
+         inside <- age <= set$hiatus.start[rows, j] & age >= set$hiatus.end[rows, j]
+
+         accs[rows[below]] <- set$slope.below[rows[below],j]
+         accs[rows[above]] <- set$slope.above[rows[above],j]
+         accs[rows[inside]] <- NA
+       }
+    }
   }
 
   if(na.rm)
@@ -435,6 +452,8 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
     acc.lim[is.infinite(acc.lim)] <- 0  
   }  
   acc.seq <- seq(min(acc.lim, na.rm=TRUE), max(acc.lim, na.rm=TRUE), length=acc.res)
+  acc_min <- min(acc.lim, na.rm=TRUE)
+  acc_max <- max(acc.lim, na.rm=TRUE)
   
   z <- array(0, dim=c(acc.res, age.res)) # accs in rows, ages in columns
   acc.rng <- array(NA, dim=c(age.res, 2))
@@ -450,8 +469,8 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
     setTxtProgressBar(pb, i)
     acc <- accrate.age(age.seq[i], set, cmyr=cmyr, ages=ages, silent=TRUE, BCAD=BCAD) # BCAD was F, June '25
     acc <- acc[!is.na(acc)]
-    if(length(acc[!is.na(acc)]) > 1) {
-      z[,i] <- density(acc, from=min(acc.lim, na.rm=TRUE), to=max(acc.lim, na.rm=TRUE), n=acc.res)$y
+    if(length(acc) > 1) {
+      z[,i] <- density(acc, from=acc_min, to=acc_max, n=acc.res)$y
       acc.rng[i,] <- quantile(acc, c((1-prob)/2, 1-((1-prob)/2)))
       acc.mean[i] <- mean(acc)
       acc.median[i] <- median(acc)

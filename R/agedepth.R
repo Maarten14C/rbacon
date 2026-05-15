@@ -129,6 +129,8 @@
 #' @param plot.pb Plot the 210Pb data (if present). Defaults to \code{plot.pb=TRUE}.
 #' @param pb.lty Line type of measured Pb-210 data.
 #' @param plot.pdf Produce a pdf file of the age-depth plot.
+#' @param quartz Use quartz-based pdf plots if available (on Mac OS). Defaults to FALSE.
+#' @param cairo Use cairo-based pdf plots if available (on Mac OS). Defaults to FALSE.
 #' @param model.only By default, panels showing the MCMC iterations and the priors and posteriors for accumulation rate and memory are plotted above the main age-depth model panel. This can be avoided by supplying \code{model.only=TRUE}. Note however that this removes relevant information to evaluate the age-depth model, so we do recommend to present age-models together with these upper panels.
 #' @param dates.only By default, the age-depth model is plotted on top of the dates. This can be avoided by supplying \code{dates.only=TRUE}.
 #' @param verbose Provide a summary of the age ranges after producing the age-depth model graph; default \code{verbose=FALSE}.
@@ -137,7 +139,6 @@
 #' @param write.summary Whether or not to write a file to the core's folder, which summarizes the run (MCMC, model fit, priors, posteriors, learning).
 #' @param ssize Number of MCMC iterations to use.
 #' @param use.cpp Whether or not to use a cpp function to calculate the ages. Defaults to TRUE, but can be set to FALSE (much slower but less experimental)
-
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A plot of the age-depth model, and estimated ages incl. confidence ranges for each depth.
 #' @examples
@@ -146,7 +147,7 @@
 #'   agedepth()
 #' }
 #' @export
-agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), mem.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, accordion=c(), plotatthesedepths=c(), age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=1, darkest=1, prob=set$prob, rounded=c(), d.res=400, age.res=400, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, use.raster=FALSE, flip.age=FALSE, flip.d=FALSE, maxcalc=500, height=1, calheight=1, ex=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, range.col=grey(.5), range.lty="12", range.lwd=1, mn.col="red", mn.lty="12", mn.lwd=1, med.col=NA, med.lty="12", med.lwd=1, C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pb.background=.5, pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), supp.col=rgb(.5,0,.5,.5), remove.tail=TRUE, MCMC.resample=TRUE, hiatus.col=grey(0.5), hiatus.lty="12", from.col="white", to.col="black", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, plot.labels=FALSE, labels=c(), label.age=1, label.size=0.8, label.col="black", label.offset=c(0,0), label.adj=c(0.5,0), label.rot=0, after=set$after, bty="l", mar.left=c(3,3,1,.5), mar.middle=c(3,0,1,.5), mar.right=c(3,0,1,.5), mar.main=c(3,3,1,1), righthand=3, mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", MCMC.col=grey(.4), post.col=rgb(0,0,0,.2), post.border=rgb(0,0,0,.4), prior.col=3, prior.lwd=2, prior.fontcol=2, prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, mainpanel.tickfontsize=1, mainpanel.labelfontsize=1, acc.xlim=c(), acc.ylim=c(), mem.xlim=c(), mem.ylim=c(), hiatus.xlim=c(), hiatus.ylim=c(), phi.xlim=c(), phi.ylim=c(), supp.xlim=c(), supp.ylim=c(), xaxt="s", yaxt="s", plot.pb=TRUE, pb.lty=1, plot.pdf=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE, roundby=2, save.info=set$save.info, write.summary=TRUE, ssize=4e3, use.cpp=TRUE) {
+agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), mem.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, accordion=c(), plotatthesedepths=c(), age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=1, darkest=1, prob=set$prob, rounded=c(), d.res=500, age.res=500, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, use.raster=FALSE, flip.age=FALSE, flip.d=FALSE, maxcalc=500, height=1, calheight=1, ex=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, range.col=grey(.5), range.lty="12", range.lwd=1, mn.col="red", mn.lty="12", mn.lwd=1, med.col=NA, med.lty="12", med.lwd=1, C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pb.background=.5, pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), supp.col=rgb(.5,0,.5,.5), remove.tail=TRUE, MCMC.resample=TRUE, hiatus.col=grey(0.5), hiatus.lty="12", from.col="white", to.col="black", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, plot.labels=FALSE, labels=c(), label.age=1, label.size=0.8, label.col="black", label.offset=c(0,0), label.adj=c(0.5,0), label.rot=0, after=set$after, bty="l", mar.left=c(3,3,1,.5), mar.middle=c(3,0,1,.5), mar.right=c(3,0,1,.5), mar.main=c(3,3,1,1), righthand=3, mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", MCMC.col=grey(.4), post.col=rgb(0,0,0,.2), post.border=rgb(0,0,0,.4), prior.col=3, prior.lwd=2, prior.fontcol=2, prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, mainpanel.tickfontsize=1, mainpanel.labelfontsize=1, acc.xlim=c(), acc.ylim=c(), mem.xlim=c(), mem.ylim=c(), hiatus.xlim=c(), hiatus.ylim=c(), phi.xlim=c(), phi.ylim=c(), supp.xlim=c(), supp.ylim=c(), xaxt="s", yaxt="s", plot.pb=TRUE, pb.lty=1, plot.pdf=FALSE, quartz=FALSE, cairo=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE, roundby=2, save.info=set$save.info, write.summary=TRUE, ssize=4e3, use.cpp=TRUE) {
 # Load the output, if it exists
   outp <- paste0(set$prefix, ".out")
   if(file.exists(outp))
@@ -281,6 +282,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(length(age.max) == 0)
     age.max <- max(modelranges, dateranges)
   age.lim <- extendrange(c(age.min, age.max), f=0.01)
+  message(age.lim[1], " to ", age.lim[2])
 
   if(BCAD)
     age.lim <- rev(age.lim)
@@ -306,6 +308,15 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
         d.lim <- range(set$dets[above,4], set$detsBacon[,4])[2:1] else
           d.lim[which(d.lim==max(d.lim))] <- max(set$dets[above,4])
     }
+	
+  pdf.fl <- paste0(set$prefix, ".pdf")	
+  if(!dev.interactive()) {
+    if(capabilities("aqua") && quartz) # macOS
+      grDevices::quartz(file=pdf.fl, type="pdf") else 
+        if(capabilities("cairo") && cairo)
+          cairo_pdf(filename=pdf.fl) else 
+            pdf(file=pdf.fl)
+  }
 
   if(rotate.axes)
     plot(0, type="n", ylim=d.lim, xlim=age.lim, ylab=d.lab, xlab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt, mar=mar.main, cex.axis=mainpanel.tickfontsize, cex.lab=mainpanel.labelfontsize) else
@@ -332,7 +343,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(!dates.only) {
     if(verbose && !use.cpp)
       message("Preparing ghost graph... ")
-    agedepth.ghost(set, rotate.axes=rotate.axes, accordion=accordion, BCAD=BCAD, d.res=d.res, age.res=age.res, rev.d=rev.d, rev.age=rev.age, rgb.res=rgb.res, dark=dark, from.col=from.col, to.col=to.col, rgb.scale=rgb.scale, age.lim=age.lim, use.raster=use.raster, flip.age=flip.age, flip.d=flip.d, verbose=verbose, use.cpp=use.cpp)
+    agedepth.ghost(set, rotate.axes=rotate.axes, accordion=accordion, BCAD=BCAD, d.min=d.min, d.max=d.max, d.res=d.res, age.res=age.res, rev.d=rev.d, rev.age=rev.age, rgb.res=rgb.res, dark=dark, from.col=from.col, to.col=to.col, rgb.scale=rgb.scale, age.lim=age.lim, use.raster=use.raster, flip.age=flip.age, flip.d=flip.d, verbose=verbose, use.cpp=use.cpp)
   }
 
   if(length(set$slump) > 0 )
@@ -413,8 +424,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   set$ranges <- ranges
 
   if(plot.pdf)
-    if(names(dev.cur()) != "null device")
-      export.pdf(paste0(set$prefix, ".pdf"))
+    ifelse(dev.interactive(), grDevices::dev.copy2pdf(file=pdf.fl), dev.off())
 
   rng <- abs(ranges[,3]-ranges[,2])
   min.rng <- d[which(rng==min(rng, na.rm=TRUE))]
@@ -457,13 +467,13 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
         posteriors$hiatus <- set$post.hiatus # probably also allow for multiple posteriors here
     posteriors <- lapply(posteriors, round, digits=roundby)
     if(!is.na(hiatus.depths[1])) {
-	  if(is.na(set$boundary[1])) {
+      if(is.na(set$boundary[1])) {
         message("Posteriors: accrate mean ", paste0(posteriors$acc[,1], collapse=" & "),
           ", shape ", paste0(posteriors$acc[,2], collapse=" & ",
           ", memory mean ", posteriors$mem[1], ", strength ", posteriors$mem[2],
           ", hiatus mean ", posteriors$hiatus[1], ", shape ", posteriors$hiatus[2]))
         }
-	} else
+    } else
       message("Posteriors: accrate mean ", posteriors$acc[1], ", shape ", posteriors$acc[2],
         ", memory mean ", posteriors$mem[1], ", strength ", posteriors$mem[2])
 

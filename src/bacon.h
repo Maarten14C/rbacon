@@ -26,8 +26,7 @@ Bacon
 //This is my traditional farewell, may be changed to something more "serious"
 #define FAREWELL "Eso es to...eso es to...eso es to...eso es toooodo amigos!\n"\
 
-//if(Un01() < 0.5)
-//    #define FAREWELL "Ats us nai!\n";
+
 
 //#include <stdio.h>
 #include <math.h>
@@ -316,18 +315,31 @@ class BaconFix: public Bacon {
 					//we go backwards until we find the hiatus
 					int l=0;
 					for (int k=K-1; k>0; k--) {
-						if ((fcmp( c(k-1), h[l]) == -1) && (fcmp( h[l], c(k)) != 1)) { //if c_{k-1} < h_l & h_l !> c_k, forgets
-						    X0[k] = GammaSim( ha[l], 1.0/(hb[l]*Dc) ); // this is the original one
+						if ((fcmp( c(k-1), h[l]) == -1) && (fcmp( h[l], c(k)) != 1)) { // c_{k-1} < h_l <= c_k, forgets
+						  X0[k] = GammaSim( ha[l], 1.0/(hb[l]*Dc) ); // this is the original one
 							
 							//x[k] = X0[k];
 
-							// propuesta MB mayo 2026:
-							// salto = GammaSim( ha[l], 1.0/hb[l] ); // jump in time
-							// prop = (c(k) - hb[l]) / Dc; // proportion of section below hiatus l
-							// prop = fmax(0.0, fmin(1.0, prop)); // guard against rounding errors, necesario?
-							// acc.below = GammaSim( alpha[l+1], mult/beta[l+1]);
-							// acc.above = GammaSim( alpha[l], mult/beta[l]);
-							// X0[k] = (salto / Dc) + prop*acc.below + (1-prop) * acc.above;
+						  // debe de usar (extrapolar desde) X0[k+1] para el rango de acumulacion abajo del hiatus, y usar X0[k-1] para la parte arriba del hiatus (tambien extrapolando?). Pero todavia no hemos modelado X0[k+1]. 
+						  // o sea, que hacer con la parte arriba del hiatus? 
+						  // Debe de perder la memoria, y tenemos que poder calcular el salto y la pendiente usando el archivo .out
+						  // Simular X0[k] (como combinacion de slope y hiatus) y X0[k+1] en el mismo paso?
+						  // arriba = GammaSim( alpha[l], mult/beta[l]); (calcular el rango entero); X0[k+1] = arriba; k <- k-1
+						  // pero usar un 'flag' para que no recalcula X0[k-1] en el paso siguente?
+						   
+						  // works in R where piste is supplied instead of hiatus.mean:
+					      // frac.below <- (set$elbows[min(which(set$elbows >= hiatus.depths[i]))] -
+					      //   hiatus.depths[i]) / set$thick # fraction of section below the hiatus
+					      // slope <- frac.below*set$acc.mean[i+1] + (1-frac.below)*set$acc.mean[i]
+					      // piste <- set$hiatus.shape[i]/(set$hiatus.mean[i] + slope*set$thick) 
+						  // (but probably hiatus.shape[l]/hiatus.mean[l] should be provided as parameter hb)
+						   
+						  // doesn't work as expected (should we really sample 3x instead of 1x?):
+							//double salto = GammaSim( ha[l], 1.0/hb[l] ); // jump in time
+							//double prop = (c(k) - hb[l]) / Dc; // proportion of section below hiatus l
+							//prop = fmax(0.0, fmin(1.0, prop)); // guard against rounding errors, necesario?
+							//double accabove = GammaSim( alpha[l], mult/beta[l]);
+							//X0[k] = (salto / Dc) + prop*X0[k+1] + (1-prop) * accabove;
 							
 							l++; //jump to next hiatus, but max one hiatus in each section.
 						} else { //continue with the memory
@@ -340,6 +352,13 @@ class BaconFix: public Bacon {
 					l = 0; //do it again
 					for (int k=K-1; k>0; k--) {
 						if ((fcmp( c(k-1), h[l]) == -1) && (fcmp( h[l], c(k)) != 1)) { //forgets
+							// propuesta MB mayo 2026:
+							//double salto = GammaSim( ha[l], 1.0/hb[l] ); // jump in time
+							//double prop = (c(k) - hb[l]) / Dc; // proportion of section below hiatus l
+							//prop = fmax(0.0, fmin(1.0, prop)); // guard against rounding errors, necesario?
+							//double accbelow = GammaSim( alpha[l+1], mult/beta[l+1]);
+							//double accabove = GammaSim( alpha[l], mult/beta[l]);
+							//Xp0[k] = (salto / Dc) + prop*accbelow + (1-prop) * accabove;
 							Xp0[k]  = GammaSim( ha[l], 1.0/(hb[l]*Dc) );
 							l++; //jump to next hiatus, but max one hiatus in each section.
 						} else{ //continue with the memory
@@ -657,7 +676,6 @@ class BaconFix: public Bacon {
 				//Rprintf("Memory %.8lf\n", x[K+1]);
 
 				U = Uprior + Uli;
-
 
 				return U;
 			}
