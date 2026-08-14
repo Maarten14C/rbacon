@@ -181,7 +181,7 @@ calib.plot <- function(set=get('info'), dets=set$dets, accordion=c(), BCAD=set$B
       y = cal[,2]
       y = ex[i]*y[!duplicated(x)]
       x = x[!duplicated(x)]
-      cal <- approx(x, y, seq(min(x), max(x), length= 100)) # tmp but probably not a bad idea
+      cal <- approx(x, y, seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length= 100)) # tmp but probably not a bad idea
 
       if(mirror)
         pol <- cbind(c(d-cal$y, d+rev(cal$y)), c(cal$x, rev(cal$x))) else
@@ -282,7 +282,7 @@ bacon.calib <- function(dat, set=get('info'), date.res=100, cutoff=0.01, postbom
     if(length(dets) >= 9) { # the user provided t.a and t.b values for each date
       t.a <- dets[8]
       t.b <- dets[9]
-      if(round(t.b-t.a) != 1)
+      if(round(is.numeric(t.b-t.a)) != 1) # added is.numeric June 2026
         stop("t.b - t.a should always be 1, check the manual", call.=FALSE)
     }
     calib$probs[[i]] <- d.cal(calcurve, dets[2]-delta.R, dets[3]^2+delta.STD^2, t.a, t.b)

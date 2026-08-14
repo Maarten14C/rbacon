@@ -282,7 +282,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(length(age.max) == 0)
     age.max <- max(modelranges, dateranges)
   age.lim <- extendrange(c(age.min, age.max), f=0.01)
-  message(age.lim[1], " to ", age.lim[2])
+  #message(age.lim[1], " to ", age.lim[2])
 
   if(BCAD)
     age.lim <- rev(age.lim)
@@ -309,7 +309,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
           d.lim[which(d.lim==max(d.lim))] <- max(set$dets[above,4])
     }
 	
-  pdf.fl <- paste0(set$prefix, ".pdf")	
+  pdf.fl <- paste0(set$prefix, ".pdf")
   if(!dev.interactive()) {
     if(capabilities("aqua") && quartz) # macOS
       grDevices::quartz(file=pdf.fl, type="pdf") else 

@@ -104,7 +104,7 @@ int bacon( std::string inputfile1, std::string outputfile1, int ssize, std::stri
   } else if (blurt < 0.9) {
      Rprintf("That bacon would go well in a soda, so it would!\n");
   } else if (blurt < 0.95) {
-     Rprintf("El saber es poder, pero sin tocino no hay sabor\n");      	
+     Rprintf("Is maith liom bag\u00FAn\n");      	
   } else if(blurt < 1.0) {
      Rprintf("Remember, never pour grease down the drain!\n");
   }

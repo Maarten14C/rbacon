@@ -5,7 +5,7 @@
 * cleaned up the function `accrate.age.ghost`.
 * `accrate.age` now deals better with hiatuses.
 * rewrote the function `flux.age.ghost` to make it much faster.
-* if boundaries or hiatuses are set, the acc.rate panel of the `agedepth` function now shows the posteriors of the multiple sections separately. 
+* if boundaries or hiatuses are set, the acc.rate panel of the main `agedepth` function now shows the posteriors of the multiple sections separately. 
 * when calculating what proportion of the dates fit within the age-depth model, this is now done by checking for each date if any of its hpd intervals fall within any of the model's hpds (default 95\% confidence ranges).
 * even funnier feedback at the end of MCMC runs.
 * now using `rice` version 2.1.0 and `rintcal` version 1.4.0.

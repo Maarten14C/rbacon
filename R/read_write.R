@@ -304,8 +304,8 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
       ok <- 0
       # if((name[5] %in% cc.names) && (min(dets[,5])[1] >= 0) && (max(dets[,5])[1] <= 4)) {} else
       if(name[5] %in% cc.names) ok <- ok+1
-      if(min(dets[,5])[1] >= 0) ok <- ok+1
-      if(max(dets[,5])[1] <= 4) ok <- ok+1
+      if(min(dets[,5], na.rm=TRUE)[1] >= 0) ok <- ok+1
+      if(max(dets[,5], na.rm=TRUE)[1] <= 4) ok <- ok+1
       if(ok < 3)
         stop("unexpected name or values in fifth column (cc, should be between 0 and 4). Please check the manual for guidelines in producing a correct .csv file.\n", call.=FALSE)
     } else
@@ -323,8 +323,8 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
         if(ncol(dets) == 7) { # probably a 'new' file: cc, dR, dSTD
           ok <- 0
           if(name[5] %in% cc.names) ok <- ok+1
-          if(min(dets[,5])[1] >= 0) ok <- ok+1
-          if(max(dets[,5])[1] <= 4) ok <- ok+1
+          if(min(dets[,5], na.rm=TRUE)[1] >= 0) ok <- ok+1
+          if(max(dets[,5], na.rm=TRUE)[1] <= 4) ok <- ok+1
           if(name[6] %in% dR.names) ok <- ok+1
           if(name[7] %in% dSTD.names) ok <- ok+1
           if(ok < 5)
@@ -348,9 +348,9 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
             if(ncol(dets) == 9) { # most complex case, many checks needed
               ok <- 0
               if(name[9] %in% cc.names) ok <- ok+1 # almost sure this is a 'classic' dets file
-              if(min(dets[,9])[1] >= 0) ok <- ok+1
-              if(max(dets[,9])[1] <= 4) ok <- ok+1
-              tab <- range(dets[,8] - dets[,7])
+              if(min(dets[,9], na.rm=TRUE)[1] >= 0) ok <- ok+1
+              if(max(dets[,9], na.rm=TRUE)[1] <= 4) ok <- ok+1
+              tab <- range(dets[,8] - dets[,7], na.rm=TRUE)
               if(tab[1] == 1) ok <- ok+1
               if(tab[2] == 1) ok <- ok+1
               if(name[5] %in% dR.names) ok <- ok+1
@@ -364,9 +364,9 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
               } else { # probably a 'new' file from more recent Bacon
                 ok <- 0
                 if(name[5] %in% cc.names) ok <- ok+1
-                if(min(dets[,5])[1] >= 0) ok <- ok+1
-                if(max(dets[,5])[1] <= 4) ok <- ok+1
-                tab <- range(dets[,9] - dets[,8])
+                if(min(dets[,5], na.rm=TRUE)[1] >= 0) ok <- ok+1
+                if(max(dets[,5], na.rm=TRUE)[1] <= 4) ok <- ok+1
+                tab <- range(dets[,9] - dets[,8], na.rm=TRUE)
                 if(tab[1] == 1) ok <- ok+1
                 if(tab[2] == 1) ok <- ok+1
                 if(name[8] %in% ta.names) ok <- ok+1

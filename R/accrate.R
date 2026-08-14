@@ -152,6 +152,7 @@ accrate.depth.summary <- function(d, set=get('info'), cmyr=FALSE, na.rm=FALSE, p
 
 
 
+# should take into account slumps and hiatuses
 #' @name accrate.age.summary
 #' @title provide a summary of the estimated accumulation rates for any age of a core
 #' @description Obtain a summary (95\% range, 68\% range, median, mean) of the accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for any age of a core.
@@ -181,6 +182,7 @@ accrate.age.summary <- function(age, set=get('info'), cmyr=FALSE, na.rm=TRUE, pr
 
 
 
+# should take into account slumps and hiatuses
 #' @name accrates.core
 #' @title provide a summary of the estimated accumulation rates for a range of core depths
 #' @description Obtain a summary (95\% range, 68\% range, median, mean) of the accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for a range of depths of a core, and optionally write this as a file to the core directory (ending in '_accrates.txt').

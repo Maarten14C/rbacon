@@ -1,6 +1,5 @@
-# check option o fusing draw.dates from rice again. Perhaps does better scaling of heights 
 
-# make sure that the posteriors of acc.rates in the main age-model graph take into account hiatuses (currently large acc.rates are shown which seems to be owing to low acc.rates at sections with hiatuses)
+# all accrate functions (in accrate.R) should deal with slumps and hiatuses/boundaries
 
 # first release rice since it has a new option to deal with open-ended hpds (hpd.overlap)
 
@@ -264,7 +263,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     ballpacc <- ballpacc[ballpacc > 0] # do not suggest 0
     sugg <- sugg[order(ballpacc)[1]] # suggest rounded acc.rate with lowest absolute difference
     if(!sugg %in% acc.mean) 
-      if(accept.suggestions) { # new Oct '20
+      if(accept.suggestions) { # Oct 2020
         acc.mean <- sugg
         message("Adapting acc.mean to ", sugg, " ", age.unit, "/", depth.unit)
     } else {
