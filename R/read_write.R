@@ -197,9 +197,10 @@ Bacon.cleanup <- function(set=get('info')) {
     paste0(set$coredir,set$core, "/", set$core, "_settings.txt"))
   for(i in files)
     if(file.exists(i))
-      tmp <- file.remove(i)
-  if(exists("tmp"))
-    rm(tmp)
+    #  tmp <- file.remove(i)
+      file.remove(i)
+  #if(exists("tmp"))
+  #  rm(tmp)
 #  if(exists('info')) # new Oct 2020
 #    rm(info)
   message("Previous runs of core ", set$core, " with thick=", set$thick, " ", set$depth.unit, " deleted. Now try running the core again\n")

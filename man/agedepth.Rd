@@ -106,6 +106,16 @@ agedepth(
   MCMC.col = grey(0.4),
   post.col = rgb(0, 0, 0, 0.2),
   post.border = rgb(0, 0, 0, 0.4),
+  acc.post.col = c(),
+  acc.post.border = c(),
+  mem.post.col = c(),
+  mem.post.border = c(),
+  hiatus.post.col = c(),
+  hiatus.post.border = c(),
+  phi.post.col = c(),
+  phi.post.border = c(),
+  s.post.col = c(),
+  s.post.border = c(),
   prior.col = 3,
   prior.lwd = 2,
   prior.fontcol = 2,
@@ -343,13 +353,33 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{MCMC.col}{Colour of the MCMC output. Defaults to \code{post.col=grey(0.4))}.}
 
-\item{post.col}{Colour of the posterior histogram. Defaults to \code{post.col=grey(0.8))}.}
+\item{post.col}{Colour of the posterior histogram. Defaults to \code{post.col=grey(0.8))}. In case of hiatuses/boundaries, you can provide colours for the individual sections, e.g., post.col=c(2,3,4).}
 
-\item{post.border}{Colour of the posterior border. Defaults to \code{post.border=grey(0.4))}.}
+\item{post.border}{Colour of the posterior border. Defaults to \code{post.border=grey(0.4))}.  In case of hiatuses/boundaries, you can provide colours for the individual sections, e.g., post.col=c(2,3,4).}
 
-\item{prior.col}{Colour of the prior curve. Defaults to light green, \code{prior.col=3)}.}
+\item{acc.post.col}{Colour of the posterior of the accumulation rate (yr/cm). Defaults to \code{post.col=grey(0.8))}. Multiple colours can be provided. See post.col.}
 
-\item{prior.lwd}{Line width of the prior curve. Defaults to \code{prior.lwd=2)}.}
+\item{acc.post.border}{Colour of the posterior border of the accumulation rate (yr/cm). Defaults to \code{post.border=grey(0.4))}. Multiple colours can be provided. See post.border.}
+
+\item{mem.post.col}{Colour of the posterior of the memory. Defaults to \code{post.col=grey(0.8))}. See post.col.}
+
+\item{mem.post.border}{Colour of the posterior of the memory. Defaults to \code{post.border=grey(0.4))}. See post.border.}
+
+\item{hiatus.post.col}{Colour of the posterior of the hiatus length. Defaults to \code{post.col=grey(0.8))}. Multiple colours can be provided. See post.col.}
+
+\item{hiatus.post.border}{Colour of the border of the hiatus length. Defaults to \code{post.border=grey(0.4))}. Multiple colours can be provided. See post.border.}
+
+\item{phi.post.col}{Colour of the posterior of the 210Pb influx phi. Defaults to \code{post.col=grey(0.8))}. See post.col.}
+
+\item{phi.post.border}{Colour of the posterior border of the 210Pb influx phi. Defaults to \code{post.border=grey(0.4))}. See post.border.}
+
+\item{s.post.col}{Colour of the posterior of the supported 210Pb. Defaults to \code{post.col=grey(0.8))}. See post.col.}
+
+\item{s.post.border}{Colour of the border of the posterior supported 210Pb. Defaults to \code{post.border=grey(0.4))}. See post.border.}
+
+\item{prior.col}{Colour of the prior curves. Defaults to light green, \code{prior.col=3)}.}
+
+\item{prior.lwd}{Line width of the prior curves. Defaults to \code{prior.lwd=2)}.}
 
 \item{prior.fontcol}{Colour of the font accompanying the posterior histograms. Defaults to red, \code{prior.fontcol=2)}.}
 

@@ -104,10 +104,23 @@
 #' @param xaxs Extension of x-axis. By default, add some extra white-space at both extremes (\code{xaxs="r"}). See ?par for other options.
 #' @param yaxs Extension of y-axis. By default, add no extra white-space at both extremes (\code{yaxs="i"}). See ?par for other options.
 #' @param MCMC.col Colour of the MCMC output. Defaults to \code{post.col=grey(0.4))}.
-#' @param post.col Colour of the posterior histogram. Defaults to \code{post.col=grey(0.8))}.
-#' @param post.border Colour of the posterior border. Defaults to \code{post.border=grey(0.4))}.
-#' @param prior.col Colour of the prior curve. Defaults to light green, \code{prior.col=3)}.
-#' @param prior.lwd Line width of the prior curve. Defaults to \code{prior.lwd=2)}.
+#' @param post.col Colour of the posterior histogram. Defaults to \code{post.col=grey(0.8))}. In case of hiatuses/boundaries, you can provide colours for the individual sections, e.g., post.col=c(2,3,4).
+#' @param post.border Colour of the posterior border. Defaults to \code{post.border=grey(0.4))}.  In case of hiatuses/boundaries, you can provide colours for the individual sections, e.g., post.col=c(2,3,4).
+#' @param acc.post.col Colour of the posterior of the accumulation rate (yr/cm). Defaults to \code{post.col=grey(0.8))}. Multiple colours can be provided. See post.col.
+#' @param acc.post.border Colour of the posterior border of the accumulation rate (yr/cm). Defaults to \code{post.border=grey(0.4))}. Multiple colours can be provided. See post.border.
+#' @param mem.post.col Colour of the posterior of the memory. Defaults to \code{post.col=grey(0.8))}. See post.col. 
+#' @param mem.post.border Colour of the posterior of the memory. Defaults to \code{post.border=grey(0.4))}. See post.border.
+#' @param hiatus.post.col Colour of the posterior of the hiatus length. Defaults to \code{post.col=grey(0.8))}. Multiple colours can be provided. See post.col.
+#' @param hiatus.post.border Colour of the border of the hiatus length. Defaults to \code{post.border=grey(0.4))}. Multiple colours can be provided. See post.border.
+#' @param phi.post.col Colour of the posterior of the 210Pb influx phi. Defaults to \code{post.col=grey(0.8))}. See post.col.
+#' @param phi.post.border Colour of the posterior border of the 210Pb influx phi. Defaults to \code{post.border=grey(0.4))}. See post.border.
+#' @param s.post.col Colour of the posterior of the supported 210Pb. Defaults to \code{post.col=grey(0.8))}. See post.col.
+#' @param s.post.border Colour of the border of the posterior supported 210Pb. Defaults to \code{post.border=grey(0.4))}. See post.border.
+#' @param prior.col Colour of the prior curves. Defaults to light green, \code{prior.col=3)}.
+#' @param prior.lwd Line width of the prior curves. Defaults to \code{prior.lwd=2)}.
+#' @param prior.fontcol Colour of the font accompanying the posterior histograms. Defaults to red, \code{prior.fontcol=2)}.
+#' @param prior.col Colour of the prior curves. Defaults to light green, \code{prior.col=3)}.
+#' @param prior.lwd Line width of the prior curves. Defaults to \code{prior.lwd=2)}.
 #' @param prior.fontcol Colour of the font accompanying the posterior histograms. Defaults to red, \code{prior.fontcol=2)}.
 #' @param prior.ticks Plot tickmarks and values on the vertical axes for the prior and posterior distributions. Defaults to no tick marks (\code{prior.ticks="n"}). Set to \code{prior.ticks="s"} to plot the tick marks. Note that these values are of little practical use, as they correspond poorly to, e.g., the mean and strength values. All that matters is that the areas of both the prior and the posterior distributions sum to 1; wider distributions tend to give lower peaks, and narrower distributions higher peaks. 
 #' @param prior.fontsize Font size of the prior, relative to R's standard size. Defaults to \code{prior.fontsize=0.9}.
@@ -147,7 +160,7 @@
 #'   agedepth()
 #' }
 #' @export
-agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), mem.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, accordion=c(), plotatthesedepths=c(), age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=1, darkest=1, prob=set$prob, rounded=c(), d.res=500, age.res=500, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, use.raster=FALSE, flip.age=FALSE, flip.d=FALSE, maxcalc=500, height=1, calheight=1, ex=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, range.col=grey(.5), range.lty="12", range.lwd=1, mn.col="red", mn.lty="12", mn.lwd=1, med.col=NA, med.lty="12", med.lwd=1, C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pb.background=.5, pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), supp.col=rgb(.5,0,.5,.5), remove.tail=TRUE, MCMC.resample=TRUE, hiatus.col=grey(0.5), hiatus.lty="12", from.col="white", to.col="black", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, plot.labels=FALSE, labels=c(), label.age=1, label.size=0.8, label.col="black", label.offset=c(0,0), label.adj=c(0.5,0), label.rot=0, after=set$after, bty="l", mar.left=c(3,3,1,.5), mar.middle=c(3,0,1,.5), mar.right=c(3,0,1,.5), mar.main=c(3,3,1,1), righthand=3, mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", MCMC.col=grey(.4), post.col=rgb(0,0,0,.2), post.border=rgb(0,0,0,.4), prior.col=3, prior.lwd=2, prior.fontcol=2, prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, mainpanel.tickfontsize=1, mainpanel.labelfontsize=1, acc.xlim=c(), acc.ylim=c(), mem.xlim=c(), mem.ylim=c(), hiatus.xlim=c(), hiatus.ylim=c(), phi.xlim=c(), phi.ylim=c(), supp.xlim=c(), supp.ylim=c(), xaxt="s", yaxt="s", plot.pb=TRUE, pb.lty=1, plot.pdf=FALSE, quartz=FALSE, cairo=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE, roundby=2, save.info=set$save.info, write.summary=TRUE, ssize=4e3, use.cpp=TRUE) {
+agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), mem.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, accordion=c(), plotatthesedepths=c(), age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=1, darkest=1, prob=set$prob, rounded=c(), d.res=500, age.res=500, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, use.raster=FALSE, flip.age=FALSE, flip.d=FALSE, maxcalc=500, height=1, calheight=1, ex=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, range.col=grey(.5), range.lty="12", range.lwd=1, mn.col="red", mn.lty="12", mn.lwd=1, med.col=NA, med.lty="12", med.lwd=1, C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pb.background=.5, pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), supp.col=rgb(.5,0,.5,.5), remove.tail=TRUE, MCMC.resample=TRUE, hiatus.col=grey(0.5), hiatus.lty="12", from.col="white", to.col="black", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, plot.labels=FALSE, labels=c(), label.age=1, label.size=0.8, label.col="black", label.offset=c(0,0), label.adj=c(0.5,0), label.rot=0, after=set$after, bty="l", mar.left=c(3,3,1,.5), mar.middle=c(3,0,1,.5), mar.right=c(3,0,1,.5), mar.main=c(3,3,1,1), righthand=3, mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", MCMC.col=grey(.4), post.col=rgb(0,0,0,.2), post.border=rgb(0,0,0,.4), acc.post.col=c(), acc.post.border=c(), mem.post.col=c(), mem.post.border=c(), hiatus.post.col=c(), hiatus.post.border=c(), phi.post.col=c(), phi.post.border=c(), s.post.col=c(), s.post.border=c(), prior.col=3, prior.lwd=2, prior.fontcol=2, prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, mainpanel.tickfontsize=1, mainpanel.labelfontsize=1, acc.xlim=c(), acc.ylim=c(), mem.xlim=c(), mem.ylim=c(), hiatus.xlim=c(), hiatus.ylim=c(), phi.xlim=c(), phi.ylim=c(), supp.xlim=c(), supp.ylim=c(), xaxt="s", yaxt="s", plot.pb=TRUE, pb.lty=1, plot.pdf=FALSE, quartz=FALSE, cairo=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE, roundby=2, save.info=set$save.info, write.summary=TRUE, ssize=4e3, use.cpp=TRUE) {
 # Load the output, if it exists
   outp <- paste0(set$prefix, ".out")
   if(file.exists(outp))
@@ -196,28 +209,55 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
     par(mar=mar.middle) # reduce white space
     #on.exit(par(oldpar))
-    set$post.acc <- PlotAccPost(set, depth.unit=depth.unit, age.unit=age.unit, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, acc.xlim=acc.xlim, acc.ylim=acc.ylim, acc.lab=acc.lab, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=post.col, hist.border=post.border)
-    set$post.mem <- PlotMemPost(set, set$core, set$K, "", set$mem.strength, set$mem.mean, ds=1, thick=set$thick, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, mem.xlim=mem.xlim, mem.ylim=mem.ylim, mem.lab=mem.lab, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=post.col, hist.border=post.border)
+
+    if(length(acc.post.col) == 0)
+      acc.post.col <- post.col
+    if(length(acc.post.border) == 0)
+      acc.post.border <- post.border
+    if(length(mem.post.col) == 0)
+      mem.post.col <- post.col
+    if(length(mem.post.border) == 0)
+      mem.post.border <- post.border
+    if(length(hiatus.post.col) == 0)
+      hiatus.post.col <- post.col
+    if(length(hiatus.post.border) == 0)
+      hiatus.post.border <- post.border
+    if(length(phi.post.col) == 0)
+      phi.post.col <- post.col
+    if(length(phi.post.border) == 0)
+      phi.post.border <- post.border
+    if(length(s.post.col) == 0)
+      s.post.col <- post.col
+    if(length(s.post.border) == 0)
+      s.post.border <- post.border
+
+    set$post.acc <- PlotAccPost(set, depth.unit=depth.unit, age.unit=age.unit, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, acc.xlim=acc.xlim, acc.ylim=acc.ylim, acc.lab=acc.lab, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=acc.post.col, hist.border=acc.post.border)
+    set$post.mem <- PlotMemPost(set, set$core, set$K, "", set$mem.strength, set$mem.mean, ds=1, thick=set$thick, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, mem.xlim=mem.xlim, mem.ylim=mem.ylim, mem.lab=mem.lab, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=mem.post.col, hist.border=mem.post.border)
 
     if(!is.na(set$hiatus.depths[1]))
       if(is.na(set$boundary[1])) {
-        gaps <- PlotHiatusPost(set, mn=set$hiatus.mean, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, hiatus.xlim=mem.xlim, hiatus.ylim=mem.ylim, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=post.col, hist.border=post.border)
+        gaps <- PlotHiatusPost(set, mn=set$hiatus.mean, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, hiatus.xlim=mem.xlim, hiatus.ylim=mem.ylim, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=hiatus.post.col, hist.border=hiatus.post.border)
 
         set$post.hiatus <- cbind(gaps$post.mn, gaps$post.shape)
         set$hiatus.sizes <- gaps$gaps
     }
+
     if(set$isplum) {
-       set$post.phi <- PlotPhiPost(set, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, phi.xlim=phi.xlim, phi.ylim=phi.ylim, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=post.col, hist.border=post.border)
+       set$post.phi <- PlotPhiPost(set, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, phi.xlim=phi.xlim, phi.ylim=phi.ylim, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=phi.post.col, hist.border=phi.post.border)
        if(set$nPs > 1)
          prior.ticks <- "s" # because with varying supported Pb, the y-axis is important
        par(mar=mar.right)
-       set$post.supp <- PlotSuppPost(set, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, supp.xlim=supp.xlim, supp.ylim=supp.ylim, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=post.col, hist.border=post.border, data.col=supp.col)
+
+       set$post.supp <- PlotSuppPost(set, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, supp.xlim=supp.xlim, supp.ylim=supp.ylim, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=s.post.col, hist.border=s.post.border, data.col=supp.col)
+
        mar.main[4] <- mar.main[4] + righthand # to enable space for righthand axis
     }
     par(mar=mar.main) # new May 2021
   }
 
   # calculate and plot the ranges and 'best' estimates for each required depth
+  depth.limits <- c(d.max, d.min)
+  age.limits <- c(age.min, age.max)
   if(length(d.min) == 0)
     d.min <- set$d.min
   if(length(d.max) == 0)
@@ -237,7 +277,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(length(depths) > 0)
     d <- sort(depths) else
       d <- seq(set$d.min, set$d.max, by=d.by) # not d.min itself as depths < set$d.min cannot be calculated. Same for d.max, best not extrapolate here
-  # but if squeezing/stretching has to be done, then :
+  # but if squeezing/stretching has to be done, then:
   if(length(accordion) == 2) {
     d <- seq(set$d.min, stretch(set$d.max, accordion[1], accordion[2]), by=d.by)
     d <- squeeze(d, accordion[1], accordion[2])
@@ -266,13 +306,12 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     set=set, BCAD=BCAD, prob=prob, roundby=rounded, use.cpp=use.cpp)	
   d.rng <- d
 
-  # calculate calendar axis limits
   modelranges <- range(ranges[,-1], na.rm=TRUE)
   if(length(set$calib$probs) > 0) {
     dates <- set$calib$probs
   dateranges <- c()
   for(i in 1:length(dates))
-    if(BCAD)
+    if(BCAD && !set$BCAD) # we want to plot in BCAD but the original is in cal BP
       dateranges <- range(dateranges, 1950-dates[[i]][,1], na.rm=TRUE) else
         dateranges <- range(dateranges, dates[[i]][,1], na.rm=TRUE)
   } else dateranges <- modelranges # assuming plum with no additional dates
@@ -282,8 +321,8 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(length(age.max) == 0)
     age.max <- max(modelranges, dateranges)
   age.lim <- extendrange(c(age.min, age.max), f=0.01)
-  #message(age.lim[1], " to ", age.lim[2])
-
+  # then also adapt depth axis lim?
+  
   if(BCAD)
     age.lim <- rev(age.lim)
   if(rev.age)
@@ -292,10 +331,50 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(rev.d)
     d.lim <- d.lim[2:1]
 
+  # recalculate calendar axis limits of the plots
+  if(length(depth.limits) > 0) { # depth range has been provided
+    if(length(age.limits) == 0) { # no age ranges provided
+      minyr <- approx(ranges[,1], ranges[,2], c(d.max, d.min), rule=2)$y
+      maxyr <- approx(ranges[,1], ranges[,3], c(d.max, d.min), rule=2)$y
+      # has to find age range of the relevant dates
+      inside <- which(set$calib$d >= min(d.min, d.max, na.rm=TRUE) & set$calib$d <= max(d.min, d.max, na.rm=TRUE))
+      date.ranges <- c()
+      if(length(inside)>0)
+        for(i in inside)
+          date.ranges <- range(date.ranges, set$calib$probs[[i]][,1], na.rm=TRUE)
+      age.limits <- range(minyr, maxyr, date.ranges)
+      depth.limits <- c(d.max, d.min)
+    } else {
+        age.limits <- c(age.min, age.max)
+        depth.limits <- c(d.max, d.min)
+      }
+  } else {
+      if(length(age.limits) == 0) {
+        depth.limits <- c(d.max, d.min)
+        if(length(set$calib) == 0) # we have (non-Pb) dates
+          dates.limits <- c() else
+            dates.limits <- range(unlist(lapply(set$calib$probs, function(x) x[,1])))
+        if(BCAD)
+          dates.limits <- rice::BCADtocalBP(dates.limits)
+        age.limits <- range(ranges[,2:3], dates.limits)
+      } else {
+          depth.limits <- approx(ranges[,4], ranges[,1], c(age.max, age.min), rule=2)$y
+          age.limits <- c(min(age.min, max(ranges[,4]), na.rm=TRUE), max(age.max, min(ranges[,4]), na.rm=TRUE))
+          if(BCAD)
+           age.limits <- rev(age.limits)
+        }
+    }
+  if(BCAD)
+    age.limits <- rev(age.limits)
+  if(rev.age)
+    age.limits <- rev(age.limits)
+  if(rev.d)
+    depth.limits <- rev(depth.limits)
+
   if(length(d.lab) == 0)
     d.lab <- paste0("Depth (", depth.unit, ")")
   if(length(age.lab) == 0)
-    age.lab <- ifelse(BCAD, "BC/AD", ifelse(kcal, "kcal BP", paste("cal", age.unit, "BP")))
+    age.lab <- ifelse(BCAD, "cal BC/AD", ifelse(kcal, "kcal BP", paste("cal", age.unit, "BP")))
 
   if(kcal)
     ifelse(rotate.axes, xaxt <- "n", yaxt <- "n")
@@ -308,9 +387,9 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
         d.lim <- range(set$dets[above,4], set$detsBacon[,4])[2:1] else
           d.lim[which(d.lim==max(d.lim))] <- max(set$dets[above,4])
     }
-	
+
   pdf.fl <- paste0(set$prefix, ".pdf")
-  if(!dev.interactive()) {
+  if(!dev.interactive() && !isTRUE(getOption("knitr.in.progress"))) {
     if(capabilities("aqua") && quartz) # macOS
       grDevices::quartz(file=pdf.fl, type="pdf") else 
         if(capabilities("cairo") && cairo)
@@ -319,8 +398,8 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   }
 
   if(rotate.axes)
-    plot(0, type="n", ylim=d.lim, xlim=age.lim, ylab=d.lab, xlab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt, mar=mar.main, cex.axis=mainpanel.tickfontsize, cex.lab=mainpanel.labelfontsize) else
-      plot(0, type="n", xlim=d.lim[2:1], ylim=age.lim, xlab=d.lab, ylab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt, mar=mar.main, cex.axis=mainpanel.tickfontsize, cex.lab=mainpanel.labelfontsize)
+    plot(0, type="n", ylim=depth.limits, xlim=age.limits, ylab=d.lab, xlab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt, mar=mar.main, cex.axis=mainpanel.tickfontsize, cex.lab=mainpanel.labelfontsize) else
+      plot(0, type="n", xlim=depth.limits[2:1], ylim=age.limits, xlab=d.lab, ylab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt, mar=mar.main, cex.axis=mainpanel.tickfontsize, cex.lab=mainpanel.labelfontsize)
   if(kcal)
     axis(ifelse(rotate.axes, 1, 2), pretty(age.lim), pretty(age.lim/1e3), cex.axis=mainpanel.labelfontsize)
 
@@ -343,7 +422,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(!dates.only) {
     if(verbose && !use.cpp)
       message("Preparing ghost graph... ")
-    agedepth.ghost(set, rotate.axes=rotate.axes, accordion=accordion, BCAD=BCAD, d.min=d.min, d.max=d.max, d.res=d.res, age.res=age.res, rev.d=rev.d, rev.age=rev.age, rgb.res=rgb.res, dark=dark, from.col=from.col, to.col=to.col, rgb.scale=rgb.scale, age.lim=age.lim, use.raster=use.raster, flip.age=flip.age, flip.d=flip.d, verbose=verbose, use.cpp=use.cpp)
+    agedepth.ghost(set, rotate.axes=rotate.axes, accordion=accordion, BCAD=BCAD, d.min=d.min, d.max=d.max, d.res=d.res, age.res=age.res, rev.d=rev.d, rev.age=rev.age, rgb.res=rgb.res, dark=dark, from.col=from.col, to.col=to.col, rgb.scale=rgb.scale, age.lim=age.limits, use.raster=use.raster, flip.age=flip.age, flip.d=flip.d, verbose=verbose, use.cpp=use.cpp)
   }
 
   if(length(set$slump) > 0 )
@@ -374,6 +453,8 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
       labels <- set$dets[,1]
     for(i in 1:nrow(set$dets)) {
       age <- set$calib$probs[[i]][,1]
+      if(BCAD)
+        age <- rice::calBPtoBCAD(age)
       if(label.age == 1)
         age.pos <- max(age) else
           age.pos <- min(age)

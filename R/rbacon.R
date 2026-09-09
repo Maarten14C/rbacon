@@ -1,7 +1,12 @@
+# Bacon('Bao');accrate.depth.ghost(cmyr=T, acc.lim=c(0,1));accrate.age.ghost(cmyr=T, acc.lim=c(0,1)) shows very different means and acc axis limits 
+
+# consider adding BCE option. Then if all ages are negative, reduce to cal BCE, if all positive reduce to cal CE. Do same for BCAD? Or too much work, since one would have to remove - from negative ages...
+
+# accrate.age.ghost() doesn't work well when there are hiatuses
+
+# check that set$hiatus.end < set$hiatus.start, always (it isn't)
 
 # all accrate functions (in accrate.R) should deal with slumps and hiatuses/boundaries
-
-# first release rice since it has a new option to deal with open-ended hpds (hpd.overlap)
 
 # check many different combinations of slump, hiatus, plot, replot, d.min, d.max, BCAD, for different functions (Bacon, agedepth, proxy.ghost, ...)
 
@@ -12,7 +17,7 @@
 # check doi:10.1016/j.quageo.2016.01.001 as example of using strat to inform age-depth model
 # make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths. Should work in a new core directoy. And then, how to find the original depths? Needs a smoothing function as well.
 
-# in the inst/dev/ folder, there is a testBaconplots.Rmd file which automates plotting and checking many functions. There is also a file render-plots.yml which can be used to test many plots on a range of github systems (ubuntu, fedora and windows). Produced html files can be downloaded and checked locally. To do this, the file has to be placed in .github/workflows/. We could add a testthat folder, but current approach including checking of vignette works.
+# in the ci/ folder, there is a testBaconplots.Rmd file which automates plotting and checking many functions. There is also a file render-plots.yml which can be used to test many plots on a range of github systems (ubuntu, fedora and windows). Produced html files can be downloaded and checked locally. To do this, the file has to be placed in .github/workflows/. We could add a testthat folder, but current approach including checking of vignette works.
 
 # replacing the plotting of the calibrated distributions by rice's functions doesn't seem to speed up anything, so keeping the original method in place for now.
 
@@ -277,7 +282,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   if(thick < d.by) 
     if(adjust.dby) {
       d.by <- thick/2
-	  message(" adjusting d.by to ", d.by)
+      message(" adjusting d.by to ", d.by)
     } else
         warning("Please set d.by to a value smaller than that of thick", call.=FALSE)
 
@@ -505,9 +510,9 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     output <- info$output # tmp
     info <- agedepth(info, BCAD=BCAD, depths.file=depths.file, depths=depths, verbose=TRUE,
       age.unit=age.unit, depth.unit=depth.unit, save.info=save.info, ssize=ssize, 
-	  use.cpp=use.cpp, plot.pdf=plot.pdf, quartz=quartz, cairo=cairo, ...)
+      use.cpp=use.cpp, plot.pdf=plot.pdf, quartz=quartz, cairo=cairo, ...)
     info$output <- output
-	return(info)
+    return(info)
   }
 
 ### run bacon if initial graphs seem OK; run automatically, not at all, or only plot the age-depth model

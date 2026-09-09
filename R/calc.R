@@ -388,9 +388,9 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
       pol <- cbind(c(hst$th0, seq(hst$th0, hst$th1, length=hst$n), hst$th1), c(0, hst$counts, 0))
       plot(0, type="n", xlim=age.lim, ylim=hist.lim, xlab=age.lab, ylab=hist.lab, yaxs="i")
       polygon(pol, col=hist.col, border=hist.border)
-      segments(rng[,1], 0, rng[,2], 0, col=range.col, lwd=3)
-      points(rng[,3], 0, col=med.col, pch=20)
-      points(rng[,4], 0, col=mean.col, pch=20)
+      segments(rng[,2], 0, rng[,3], 0, col=range.col, lwd=3)
+      points(rng[,4], 0, col=med.col, pch=20)
+      points(rng[,5], 0, col=mean.col, pch=20)
 
       if(verbose) {
         message("mean (", mean.col, "): ", round(rng[4],1), " ", age.lab,

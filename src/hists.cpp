@@ -62,8 +62,8 @@ NumericMatrix depths_ageranges(
     int idx = std::upper_bound(elbows.begin(), elbows.end(), d)
       - elbows.begin() - 1;
 
-    if (idx < 0)   idx = 0;
-    if (idx >= K)  idx = K - 1;
+    if (idx < 0) idx = 0;
+    if (idx >= K) idx = K - 1;
     depth_section[i] = idx; // the section containing the depth
   }
 
@@ -82,10 +82,10 @@ NumericMatrix depths_ageranges(
 
     std::sort(age_vec.begin(), age_vec.end()); // place in order
 
-    double qmin   = quantile_type7(age_vec, lower);
-    double qmax   = quantile_type7(age_vec, upper);
+    double qmin = quantile_type7(age_vec, lower);
+    double qmax = quantile_type7(age_vec, upper);
     double median = quantile_type7(age_vec, 0.5);
-    double mean   = std::accumulate(age_vec.begin(), age_vec.end(), 0.0) / n_rows;
+    double mean = std::accumulate(age_vec.begin(), age_vec.end(), 0.0) / n_rows;
 
     quantiles(i, 0) = depths[i];
     quantiles(i, 1) = qmin;
@@ -201,10 +201,10 @@ NumericMatrix depths_ageranges_hiatus(
 
     std::sort(age_vec.begin(), age_vec.end()); // place in order
 
-    double qmin   = quantile_type7(age_vec, lower);
-    double qmax   = quantile_type7(age_vec, upper);
+    double qmin = quantile_type7(age_vec, lower);
+    double qmax = quantile_type7(age_vec, upper);
     double median = quantile_type7(age_vec, 0.5);
-    double mean   = std::accumulate(age_vec.begin(), age_vec.end(), 0.0) / n_rows;
+    double mean = std::accumulate(age_vec.begin(), age_vec.end(), 0.0) / n_rows;
 
     quantiles(i, 0) = depths[i];
     quantiles(i, 1) = qmin;
@@ -238,7 +238,7 @@ List depths_agegrid(
   int n_bins = hist_n - 1;
   NumericVector breaks(hist_n);
   NumericMatrix densities(n_depths, n_bins);
-  double bin_width = (max_age - min_age) / hist_n;
+  double bin_width = (max_age - min_age) / n_bins;
   for (int b = 0; b < hist_n; b++) {
     breaks[b] = min_age + b * bin_width;
   }
@@ -318,11 +318,10 @@ List depths_agegrid_hiatus(
   int n_bins = hist_n - 1;
   NumericVector breaks(hist_n);
   NumericMatrix densities(n_depths, n_bins);
-  double bin_width = (max_age - min_age) / hist_n;
+  double bin_width = (max_age - min_age) / n_bins;
   for (int b = 0; b < hist_n; b++) {
     breaks[b] = min_age + b * bin_width;
   }
-
 
   for (int r = 0; r < n_rows; r++) { // find elbow ages
     theta(r, 0) = out(r, 0); // core-top age for iteration r
@@ -413,8 +412,8 @@ List depths_agegrid_hiatus(
   }
 
   return List::create(
-      Named("density")   = densities,
-      Named("breaks")    = breaks,
-      Named("depths")    = depths);
+      Named("density") = densities,
+      Named("breaks") = breaks,
+      Named("depths") = depths);
 }
 

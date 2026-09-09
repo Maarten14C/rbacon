@@ -44,10 +44,10 @@ License: GPL (>= 2)
 Language: en-GB
 NeedsCompilation: yes
 ByteCompile: true
-Imports: coda (>= 0.19-4.1), graphics, grDevices, Rcpp (>= 1.1.1), stats, utils, data.table, rintcal (>= 1.4.0), rice (>= 2.2.1)
+Imports: coda (>= 0.19-4.1), graphics, grDevices, Rcpp (>= 1.1.1), stats, utils, data.table, rintcal (>= 1.4.1), rice (>= 2.3.0)
 Depends: R (>= 3.5.0)
 LinkingTo: Rcpp
 Suggests: knitr, rmarkdown, utf8
 VignetteBuilder: knitr
 Maintainer: Maarten Blaauw <maarten.blaauw@qub.ac.uk>
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0

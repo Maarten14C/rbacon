@@ -1,7 +1,7 @@
 
 
 ## Accumulation rate calculations
-#' should take into account hiatuses and slumps
+#' should take into account hiatuses and slumps (I think it does though)
 #' @name accrate.depth
 #' @title obtain estimated accumulation rates as for any depth of a core
 #' @description Obtain accumulation rates (in years per cm, so actually sedimentation times) as estimated by the MCMC iterations for any depth of a core.
@@ -86,7 +86,7 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
 
   # we do need to take into account hiatuses - this function doesn't yet
    hiatus.sections <- c()
-   if(length(set$hiatus.depths) > 0)
+   if(!is.na(set$hiatus.depths[1])) # was ... length==0
      for(i in 1:length(set$hiatus.depths))
        hiatus.sections[i] <- max(which(set$elbows <= set$hiatus.depths[i]))
 
@@ -100,16 +100,17 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
       rows <- which(these)
       accs[rows] <- set$output[rows,i] # assign the accumulation rates
 
-       if(length(hiatus.sections) > 0)
-         for(j in 1:length(hiatus.sections)){
-         below <- age > set$hiatus.start[rows, j] # which of these lie below the hiatus
-         above <- age < set$hiatus.end[rows, j] # which lie above it
-         inside <- age <= set$hiatus.start[rows, j] & age >= set$hiatus.end[rows, j]
+      if(length(hiatus.sections) > 0)
+        if((i-1) %in% hiatus.sections) {
+          j <- which(hiatus.sections == (i-1))
+          below <- age > set$hiatus.start[rows, j] # which of these lie below the hiatus
+          above <- age < set$hiatus.end[rows, j] # which lie above it
+          inside <- age <= set$hiatus.start[rows, j] & age >= set$hiatus.end[rows, j]
 
-         accs[rows[below]] <- set$slope.below[rows[below],j]
-         accs[rows[above]] <- set$slope.above[rows[above],j]
-         accs[rows[inside]] <- NA
-       }
+          accs[rows[below]] <- set$slope.below[rows[below],j]
+          accs[rows[above]] <- set$slope.above[rows[above],j]
+          accs[rows[inside]] <- NA
+        }
     }
   }
 
@@ -209,7 +210,7 @@ accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, na.rm=TRUE, pro
   mysummary <- function(dseq)
     accrate.depth.summary(dseq, set, cmyr, na.rm, probs)
   allaccs <- t(sapply(dseq, mysummary))
-  allaccs <- cbind(depths=dseq, round(allaccs,round))
+  allaccs <- cbind(depths=dseq, round(allaccs, round))
   
   if(write) {
     fl <- paste0(set$coredir, set$core, "/", set$core, "_", set$K, "_accrates.txt")
@@ -274,7 +275,7 @@ accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, na.rm=TRUE, pro
 #' @export
 accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, darkest=.8, cutoff=0.001, zero.col="white", max.col="black", rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE, xaxs="r", yaxs="r", bty="l", remove.laststep=TRUE, use.raster=FALSE, flip.acc=FALSE) {
 
-  max.acc <- 0; max.dens <- 0
+  max.acc <- 0; max.dens <- 0; max.acc2 <- 0
   acc <- list(); min.rng <- numeric(length(d)); max.rng <- numeric(length(d)); mean.rng <- numeric(length(d)); median.rng <- numeric(length(d))
   for(i in 1:length(d))
     if(length(acc.lim) == 0)
@@ -283,6 +284,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 
   for(i in 1:length(d)) {
     max.acc <- max(max.acc, acc[[i]]$x)
+    max.acc2 <- max(max.acc2, quantile(acc[[i]]$x, .99)) # take a value close to the max
     max.dens <- max(max.dens, acc[[i]]$y)
     accs <- accrate.depth(d[i], set, cmyr=cmyr)
     quants <- quantile(accs, c((1-prob)/2, 1-((1-prob)/2)))
@@ -312,7 +314,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
   if(rev.d)
     d.lim <- rev(d.lim)
   if(length(acc.lim) == 0)
-    acc.lim <- c(0, max.acc)
+    acc.lim <- c(0, max.acc2)
   if(rev.acc)
     acc.lim <- rev(acc.lim)
 
@@ -448,7 +450,8 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
   age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
     
   if(length(acc.lim) == 0) {
-    acc.lim <- c(0, 1.05*max(set$output[,2:(1+set$K)])) # maximum accrate in the output
+    acc.lim <- c(0, 1.05*quantile(unlist(set$output[,2:(1+set$K)]), .999, na.rm=TRUE)) # almost-maximum accrate in the output
+    #acc.lim <- c(0, 1.05*max(set$output[,2:(1+set$K)], na.rm=TRUE))
     if(cmyr)
       acc.lim <- 1/acc.lim
     acc.lim[is.infinite(acc.lim)] <- 0  
@@ -487,7 +490,8 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
     z <- z[,ncol(z):1] 
   if(flip.age)
     z <- z[nrow(z):1,]  
-  z <- z/(dark*max(z)) # normalise, set dark to black
+  #z <- z/(dark*max(z)) # normalise, set dark to black
+  z <- z /(dark*quantile(z, .999, na.rm=TRUE))
   z[z>1] <- 1 # avoid values > 1
   z[z<cutoff] <- NA # do not plot very small/light greyscale values  	
 
@@ -616,7 +620,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
 #'   flux.age.ghost(1)
 #' }
 #' @export
-flux.age.ghost <- function(column=1, flux=c(), set=get("info"), age.lab=c(), age.lim=c(), age.rev=FALSE, age.res=500, age.compress=-0.01, flux.lim=c(), flux.rev=FALSE, flux.lab="flux (proxy/yr)", flux.res=500, BCAD=set$BCAD, prob=0.95, clip.prob = 0.975, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, flux.cols=col.scales(256, "white", "black", darkest=darkest), dark=.9, darkest=1, rotate.axes=FALSE, use.raster=FALSE, xaxs="i", yaxs="i", bty="l") {
+flux.age.ghost <- function(column=1, flux=c(), set=get("info"), age.lab=c(), age.lim=c(), age.rev=FALSE, age.res=500, age.compress=-0.01, flux.lim=c(), flux.rev=FALSE, flux.lab="flux (proxy/yr)", flux.res=500, BCAD=set$BCAD, prob=0.95, clip.prob = 0.99, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, flux.cols=col.scales(256, "white", "black", darkest=darkest), dark=.9, darkest=1, rotate.axes=FALSE, use.raster=FALSE, xaxs="i", yaxs="i", bty="l") {
   if(is.null(flux)) {
     pf <- read.csv(file.path(set$coredir, set$core, paste0(set$core, "_flux.csv")))
     depths <- pf[,1]
@@ -625,14 +629,14 @@ flux.age.ghost <- function(column=1, flux=c(), set=get("info"), age.lab=c(), age
     proxy  <- pf[,column+1]
   } else { # then we assume that flux is provided as columns
      depths <- flux[,1]
-	 proxy <- flux[,column+1]  	
+    proxy <- flux[,column+1]
   }
   D <- length(depths) # number of depth and proxy slices
 
   if(is.null(age.lim))
     age.lim <- extendrange(set$ranges[,2:3], f=age.compress) # remove the top/bottom ends, as they often show strange fluxes
   if(age.rev)
-	age.lim <- rev(age.lim)  
+    age.lim <- rev(age.lim)
   age.breaks <- seq(min(age.lim), max(age.lim), length.out=age.res+1)
   age.mids <- 0.5 * (age.breaks[-1] + age.breaks[-length(age.breaks)])
   
@@ -671,9 +675,9 @@ flux.age.ghost <- function(column=1, flux=c(), set=get("info"), age.lab=c(), age
   rng.flux <- t(apply(flux.on.age, 2, quantile, probs=prob.edges, na.rm=TRUE))
 
   if(length(age.lab) == 0)
-	age.lab <- ifelse(BCAD, "BC/AD", "cal BP")
+    age.lab <- ifelse(BCAD, "BC/AD", "cal BP")
   if(length(flux.lab) == 0)
-	 flux.lab <- "flux (proxy/yr)"
+     flux.lab <- "flux (proxy/yr)"
   if(length(flux.lim) == 0)
     flux.lim <- c(0, clip.prob*flux.upper)
   if(flux.rev)
@@ -692,7 +696,7 @@ flux.age.ghost <- function(column=1, flux=c(), set=get("info"), age.lab=c(), age
     if(plot.range) {
       lines(rng.flux[,1], age.mids, col=range.col, lty=range.lty)
       lines(rng.flux[,2], age.mids, col=range.col, lty=range.lty)
-    }	
+    }
   } else {
     plot(0, type = "n", xaxs=xaxs, yaxs=yaxs, bty=bty, 
       xlim=age.lim, xlab=age.lab, ylim=flux.lim, ylab=flux.lab)

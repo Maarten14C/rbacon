@@ -3,28 +3,32 @@
 #################### user-invisible plot functions ####################
 
 # to plot greyscale/ghost graphs of the age-depth model
-agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, accordion=c(), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), from.col=NA, to.col="black", col.res=256, rgb.scale=c(0,0,0), cutoff=0.001, age.lim, use.raster=FALSE, flip.d=FALSE, flip.age=FALSE, verbose=TRUE, grid=FALSE, use.cpp=TRUE) {
+agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, accordion=c(), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), from.col=NA, to.col="black", col.res=256, rgb.scale=c(0,0,0), cutoff=0.001, age.lim=c(), use.raster=FALSE, flip.d=FALSE, flip.age=FALSE, verbose=TRUE, grid=FALSE, use.cpp=TRUE) {
   if(length(dseq) == 0)
-    d.seq <- seq(d.min, d.max, length=d.res)
+    dseq <- seq(d.min, d.max, length=d.res)
   # d.lim <- range(d.seq)
 
-  if(length(age.lim) == 0)
-    age.lim <- range(set$ranges[,2:3]) # 95% age ranges 
+  if(length(age.lim) == 0) {
+    ds <- max(1, min(which(set$ranges[,1] >= min(dseq)))) : 
+      min(nrow(set$ranges), max(which(set$ranges[,1] <= max(dseq))))
+    age.lim <- range(set$ranges[ds,2:3]) # 95% age ranges 
+  }
+  if((!set$BCAD && BCAD) || (set$BCAD && BCAD))
+    age.lim <- rice::BCADtocalBP(age.lim)
   age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
   
   if(set$isplum) # plum has a strange feature with a grey shape appearing
-    d.seq <- d.seq[-1] # at dmin. Thus removing the first depth
+    dseq <- dseq[-1] # at dmin. Thus removing the first depth
 
  if(length(accordion) == 2) # but will not work with image since constant bins required
-    d.seq <- squeeze(d.seq, accordion[1], accordion[2])
+    dseq <- squeeze(dseq, accordion[1], accordion[2])
 
   if(use.cpp) {
    tops <- set$output[,1]
    accs <- set$thick * rowSums(set$output[,1+(1:set$K)])
-   age.lim <- range(tops, tops+accs)
+   #age.lim <- range(tops, tops+accs)
    age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
-
-    d <- d.seq
+   d <- dseq
     hiatus <- set$hiatus.depths  
     if(length(set$slump) > 0) {
       d <- toslump(d, set$slump)
@@ -54,9 +58,9 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
     }
 
   } else {
-    hists <- Bacon.hist(d.seq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE, save.info=FALSE, verbose=verbose)
+    hists <- Bacon.hist(dseq, set, BCAD=BCAD, calc.range=FALSE, draw=FALSE, save.info=FALSE, verbose=verbose)
 
-    z <- array(0, dim=c(age.res, length(d.seq))) # ages in rows, depths in columns
+    z <- array(0, dim=c(age.res, length(dseq))) # ages in rows, depths in columns
     for(i in 1:length(hists)) { # was length(dseq)
     if(length(hists[[i]]) < 7)
         ages <- sort(unlist(hists[[i]])) else {
@@ -76,8 +80,10 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
       dark <- 10 * minmax/maxmax
   }
   
+  z <- z / quantile(z, .9999) # the maximum could occupy a very small space
+  z[z>1] <- 1
   z[z > dark] <- dark
-  z <- z/max(z) 
+  #z <- z/max(z)
   z[z<cutoff] <- NA # do not plot pixels with probs very close to 0
   z[is.na(z)] <- 0
   
@@ -87,15 +93,15 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
     z <- z[,ncol(z):1] 
   
   if(length(accordion) == 2)
-    d.seq <- stretch(d.seq, accordion[1], accordion[2]) # careful now!
+    dseq <- stretch(dseq, accordion[1], accordion[2]) # careful now!
   
   if(is.na(to.col))
     cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res)) else
       cols <- col.scales(col.res, zero.colour=from.col, max.colour=to.col)
 
   if(rotate.axes)
-    image(age.seq, d.seq, t(z), col=cols, add=TRUE, rev.y=rev.d, rev.x=rev.age, useRaster=use.raster) else
-      image(d.seq, age.seq, z, col=cols, add=TRUE, rev.x=rev.d, rev.y=rev.age, useRaster=use.raster)
+    image(age.seq, dseq, t(z), col=cols, add=TRUE, rev.y=rev.d, rev.x=rev.age, useRaster=use.raster) else
+      image(dseq, age.seq, z, col=cols, add=TRUE, rev.x=rev.d, rev.y=rev.age, useRaster=use.raster)
 }
 
 
@@ -295,7 +301,7 @@ PlotPhiPrior <- function(s, mn, set=get('info'), depth.unit=depth.unit, age.unit
 PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main="", depth.unit=set$depth.unit, age.unit=set$age.unit, ylab="Frequency", xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, acc.xlim=c(), acc.ylim=c(), acc.lab=c(), line.col=3, line.width=2, text.col=2, hist.col=rgb(0,0,0,0.2), hist.border=grey(0.4)) {
   hi.full <- 2:(set$K - 1) # the accrate columns of the MCMC output (.out file)
 
-  if(!is.na(set$hiatus.depths[1])) {
+  if(!is.na(set$hiatus.depths[1])) { # we are in fact dealing with hiatuses
     if(length(set$slump) > 0)
       hiatus <- set$slumphiatus else
         hiatus <- set$hiatus.depths
@@ -350,11 +356,15 @@ PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main=
     acc.ylim <- c(0, 1.05*max.y)
   if(length(acc.lab) == 0)
     acc.lab <- paste0("Acc. rate (", age.unit, "/", depth.unit, ")")
+  if(length(hist.border) == 1)
+    hist.border <- rep(hist.border, 1+length(set$hiatus.depths))
+  if(length(hist.col)== 1)
+    hist.col <- rep(hist.col, 1+length(set$hiatus.depths))
   plot(0, type="n", xlim=acc.xlim, xlab=acc.lab, ylim=acc.ylim, ylab="", xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
   if(is.na(set$hiatus.depths[1]))
     polygon(post, col=hist.col, border=hist.border) else
       for(i in 1:(ncol(post)-1))
-        polygon(cbind(post[,1], post[,i+1]), col=hist.col, border=hist.border)  
+        polygon(cbind(post[,1], post[,i+1]), col=hist.col[i], border=hist.border[i])
   PlotAccPrior(s, mn, add=TRUE, xlim=acc.xlim, xlab="", ylab=ylab, main=main, csize=prior.size, line.col=line.col, line.width=line.width, text.col=text.col)
   invisible(cbind(post.mn, post.shape))
 }
@@ -397,18 +407,34 @@ PlotHiatusPost <- function(set=get('info'), mn=set$hiatus.mean, main="", xlab=pa
   if(length(hiatus.xlim) == 0)
     hiatus.xlim <- c(0, 1.1*(max(3*mn, gaps)))
   max.y <- 1.1/mn
-  if(length(gaps) > 1) {
-    gaps <- density(gaps, from=0)
-    max.y <- max(max.y, gaps$y, na.rm=TRUE)
+#   if(length(gaps) > 1) {
+#     gaps <- density(gaps, from=0)
+#     max.y <- max(max.y, gaps$y, na.rm=TRUE)
+#   }
+
+  nhiatus <- ncol(gaps)
+  densities <- vector("list", nhiatus)
+  for(i in 1:nhiatus) {
+    densities[[i]] <- density(gaps[,i], from=0)
+    max.y <- max(max.y, densities[[i]]$y, na.rm=TRUE)
   }
+
   if(length(hiatus.ylim) == 0)
     hiatus.ylim <- c(0, max.y)
 
   plot(0, type="n", main="", xlab=xlab, xlim=hiatus.xlim, ylab=ylab, ylim=hiatus.ylim, xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
-  if(length(gaps) > 1)
-    polygon(cbind(c(min(gaps$x), gaps$x, max(gaps$x)), c(0,gaps$y,0)),
-      col=hist.col, border=hist.border)
-  PlotHiatusPrior(add=TRUE, xlab="", ylab=ylab, main=main, xlim=hiatus.xlim, csize=prior.size, line.col=line.col, line.width=line.width, text.col=text.col)
+#  if(length(gaps) > 1)
+#    polygon(cbind(c(min(gaps$x), gaps$x, max(gaps$x)), c(0,gaps$y,0)),
+#      col=hist.col, border=hist.border)
+
+  if(nhiatus > 0)
+    for(i in 1:nhiatus) # plot different hiatuses in individual distributions
+      polygon(c(min(densities[[i]]$x), densities[[i]]$x, max(densities[[i]]$x)),
+        c(0, densities[[i]]$y, 0),
+        col=hist.col[min(i,length(hist.col))],
+        border=hist.border[min(i,length(hist.border))])
+ PlotHiatusPrior(add=TRUE, xlab="", ylab=ylab, main=main, xlim=hiatus.xlim, csize=prior.size, line.col=line.col, line.width=line.width, text.col=text.col)
+
   invisible(list(post.mn=post.mn, post.shape=post.shape, gaps=raw.gaps))
 }
 
@@ -425,23 +451,25 @@ PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, supp.
   post.shape <- post.mn^2 / var(unlist(set$ps))
 
   if(set$nPs > 1) {
-    rng <- array(NA, dim=c(set$nPs, 22)) # 22 is the number of segments to draw. Always???
+    rng <- array(NA, dim=c(set$nPs, 22)) # from 0 to 1 by 0.05 (length 21) + mean
     for(i in 1:set$nPs) {
-      rng[i,1:21] <- quantile( set$ps[,i] , seq(0,2,0.1)/2)
-      rng[i,22] <- mean( set$ps[,i] )
+      rng[i,1:21] <- quantile(set$ps[,i], seq(0, 1, 0.05))
+      rng[i,22] <- mean(set$ps[,i])
     }
 
     if(length(supp.ylim) == 0)
       supp.ylim <- c(min( rng[,1]), max(rng[,21]))
-
     plot(0, type="n", ylim=supp.ylim, xlim=supp.xlim, main="", xlab="Depth (cm)", ylab=lab, yaxt=yaxt, cex.axis=panel.size)
     n = 21
     colorby = 1.0 / (n/2)
+    nsup <- 1:min(nrow(rng), nrow(set$detsplum))
+
     for(i in 1:(n/2)) {
-      segments(set$detsPlum[,4], rng[,i], set$detsPlum[,4], rng[,(i+1)], grey(1.0-colorby*i), lwd=3)
-      segments(set$detsPlum[,4], rng[,n-i], set$detsPlum[,4], rng[,n-(i-1)], grey(1.0-colorby*i), lwd=3)
+      segments(set$detsPlum[nsup,4], rng[nsup,i], set$detsPlum[nsup,4], rng[nsup,(i+1)], grey(1.0-colorby*i), lwd=3)
+      segments(set$detsPlum[nsup,4], rng[nsup,n-i], set$detsPlum[nsup,4], rng[nsup,n-(i-1)], grey(1.0-colorby*i), lwd=3)
     }
-    lines(set$detsPlum[,4], rng[,22], col="red", lty=12) # mean
+
+    lines(set$detsPlum[nsup,4], rng[nsup,22], col="red", lty=12) # mean
 
   } else {
     post <- density(set$ps)
@@ -465,7 +493,7 @@ PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, supp.
 
   if(legend)
     legend("topright", txt, bty="n", cex=prior.size, text.col=text.col, adj=c(0,.2))
-  
+
   invisible(c(post.mn, post.shape))
 }
 
