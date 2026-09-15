@@ -1,18 +1,6 @@
-# Bacon('Bao');accrate.depth.ghost(cmyr=T, acc.lim=c(0,1));accrate.age.ghost(cmyr=T, acc.lim=c(0,1)) shows very different means and acc axis limits 
-
-# consider adding BCE option. Then if all ages are negative, reduce to cal BCE, if all positive reduce to cal CE. Do same for BCAD? Or too much work, since one would have to remove - from negative ages...
-
-# accrate.age.ghost() doesn't work well when there are hiatuses
-
-# check that set$hiatus.end < set$hiatus.start, always (it isn't)
-
-# all accrate functions (in accrate.R) should deal with slumps and hiatuses/boundaries
+# internal_plots.R, PlotSuppPost assumes unimodal distribution to draw greyscales (using 21 quantiles). Replace with binned hist?
 
 # check many different combinations of slump, hiatus, plot, replot, d.min, d.max, BCAD, for different functions (Bacon, agedepth, proxy.ghost, ...)
-
-# do: check rplum bugs w youngest.age (is the bug in rbacon or in rplum?) and w larger-than-previous error sizes. ... not sure any more what this error was about
-
-# since a section containing a hiatus is modelled internally using a hiatus jump only, so, not adding the section's acc.rate as well, we now provide the hiatus.mean in the .bacon file as hiatus.mean+(acc.mean*set$thick) (i.e. the slope will be modelled to include the accumulation over the entire section as well as the hiatus jump itself). Note: we're not combining acc.shape and hiatus.shape - only the means are used to combine the two parameters.
 
 # check doi:10.1016/j.quageo.2016.01.001 as example of using strat to inform age-depth model
 # make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths. Should work in a new core directoy. And then, how to find the original depths? Needs a smoothing function as well.
@@ -92,9 +80,9 @@
 #' Its shape is set by acc.shape (default \code{acc.shape=1.5}; higher values result in more peaked shapes).
 #' @param acc.mean The accumulation rate prior consists of a gamma distribution with two parameters. Its mean is set by acc.mean (default \code{acc.mean=20} yr/cm (or whatever age or depth units are chosen),
 #' which can be changed to, e.g., 5, 10 or 50 for different kinds of deposits). Multiple values can be given in case of hiatuses or boundaries, e.g., Bacon(hiatus.depths=23, acc.mean=c(5,20))
-#' @param mem.strength The prior for the memory (dependence of accumulation rate between neighbouring depths) is a beta distribution, which looks much like the gamma distribution.
-#'  but its values are always between 0 (no assumed memory) and 1 (100\% memory). Its default settings of \code{mem.strength=10}
-#'  (higher values result in more peaked shapes) allow for a large range of posterior memory values. Please note that the default memory prior has been updated from rbacon version 2.5.1 on, to repair a bug. 
+#' @param mem.strength The prior for the memory (dependence of accumulation rate between neighbouring depths) is a beta distribution, which looks much like the gamma distribution,
+#' but its values are always between 0 (no assumed memory) and 1 (100\% memory). Its default settings of \code{mem.strength=10}
+#' (higher values result in more peaked shapes) allow for a large range of posterior memory values. Please note that the default memory prior has been updated from rbacon version 2.5.1 on, to repair a bug.
 #' @param mem.mean The prior for the memory is a beta distribution, which looks much like the gamma distribution but
 #' its values are always between 0 (no assumed memory) and 1 (100\% memory). Its default settings of \code{mem.mean=0.5}
 #' allow for a large range of posterior memory values. Please note that the default memory prior has been updated from rbacon version 2.5.1. on, to repair a bug. 
@@ -102,7 +90,7 @@
 #' @param hiatus.depths The assumed depths for any hiatus should be provided as, e.g.,
 #' \code{hiatus.depths=20} for one at 20 cm depth, and \code{hiatus.depths=c(20,40)} for two hiatuses at 20 and 40 cm depth.
 #' @param hiatus.mean The prior for the mean of the hiatus gamma prior. Defaults to 100 and should be >0. 
-#' @param hiatus.shape The prior for the shape of the hiatus gamma prior. Set to 0.5 (default) to favour short time gaps but enable larger ones. Set to 1 for an exponential prior distribution, and to >1 for a distribution that peaks around hiatus.mean. 
+#' @param hiatus.shape The prior for the shape of the hiatus gamma prior. Set to 0.5 (default) to favour short time gaps but enable larger ones. Set to 1 for an exponential prior distribution, and to >1 for a distribution that peaks around hiatus.mean. The influence of hiatus.mean on the posterior chronology depends on hiatus.shape. Larger values of hiatus.shape produce a more informative prior and thus constrain posterior hiatus estimates more strongly around hiatus.mean, whereas smaller values allow the dating evidence to dominate.
 #' @param hiatus.max The hiatus prior used to be a uniform distribution with hiatus.max as its limits. Please use hiatus.mean and hiatus.shape instead. Will be deprecated.
 #' @param add Add a value to the maximum hiatus length if a boundary is chosen. Defaults to 100 yr (or whatever other age unit is chosen). Can be adapted if Bacon complains that the parameters are out of support.
 #' @param after Sets a short section above and below hiatus.depths within which to calculate ages. For internal calculations - do not change.
@@ -114,8 +102,8 @@
 #' @param cc4 Provide the name of an alternative curve (3 columns: cal BP, 14C age, error, separated by white spaces and saved as a plain-text file). It is important here to first produce a tailor-made folder for your and the default calibration curves to live in. See \code{cc.dir}. Defaults to \code{cc4="mixed.14C"}. 
 #' @param cc.dir Directory where the calibration curves for C14 dates \code{cc} are located. By default uses the location of the rintcal package which provides the calibration curves. If you want to use custom-made calibration curves, first set up a new folder using the function new.ccdir() in the rintcal package, e.g., \code{new.ccdir="MyCurves"}, then place the custom curve in that folder using \code{rintcal::mix.ccurves(, cc.dir="MyCurves", save=TRUE)}.
 #' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages. \code{0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}
-#' @param F14C Radiocarbon ages can be provided as F14C values. If doing so, please indicate here which dates were entered as F14C (e.g., if the first 4 dates are in F14C, write \code{F14C=1:4}). The F14C values in your .csv file will then be replaced by their corresponding C14 ages.
-#' @param pMC Radiocarbon ages can be provided as pMC values. If doing so, please indicate here which dates were entered as pMC (e.g., if the first 4 dates are in pMC, write \code{pMC=1:4}). The pMC values in your .csv file will then be replaced by their corresponding C14 ages.
+#' @param F14C Radiocarbon ages can be provided as F14C values. If doing so (for example if some of your dates are modern/postbomb), please indicate here which dates were entered as F14C (e.g., if the first 4 dates are in F14C, write \code{F14C=1:4}). The F14C values in your core's .csv file will then be replaced by their corresponding C14 ages.
+#' @param pMC Radiocarbon ages can be provided as pMC values. If doing so, please indicate here which dates were entered as pMC (e.g., if the first 4 dates are in pMC, write \code{pMC=1:4}). The pMC values in your core's .csv file will then be replaced by their corresponding C14 ages.
 #' @param hot.stop Stop with a warning if provided F14C or pMC values (see above) are negative or above 3 resp. 300. Defaults to \code{hot.stop=TRUE}.
 #' @param delta.R Mean of core-wide age offsets (e.g., regional marine offsets).
 #' @param delta.STD Error of core-wide age offsets (e.g., regional marine offsets).
@@ -317,6 +305,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   info$save.info <- save.info
   if(save.info) 
     assign_to_global("info", info)
+  info$command <- paste(deparse(match.call()), collapse="")
 
   info$coredir <- coredir
   if(is.na(seed))
@@ -391,6 +380,8 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     ifelse(is.na(info$boundary[1]), hd <- info$hiatus.depths, hd <- info$boundary)
     if(min(hd) < info$d.min) # hiatus above core top
       stop("cannot have hiatus above the core's top depth. Adapt hiatus.depths or d.min.", call.=FALSE)
+    if(min(hd) < (info$d.min+thick))
+      stop("the hiatus is very close to the top of the core. Please adjust any of the parameters 'thick', 'd.min' or 'hiatus.depths'", call.=FALSE)
     if(max(hd)+info$thick > info$d.max)
       stop("the age-depth model should have at least one section below the one containing the deepest hiatus. Adapt thick or d.max?", call.=FALSE)
     if(length(hd) > 1) { # then check for how far separated hiatuses are
@@ -402,22 +393,22 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     }
   }
 
-   ans <- "n"
-    if(suggest)
-      if(length(reswarn) == 2)
-        if(info$K < min(reswarn)) {
-          sugg <- pretty(thick*(info$K/min(reswarn)), 10)
-          sugg <- min(sugg[sugg>0])
+  ans <- "n"
+  if(suggest)
+    if(length(reswarn) == 2)
+      if(info$K < min(reswarn)) {
+        sugg <- pretty(thick*(info$K/min(reswarn)), 10)
+        sugg <- min(sugg[sugg>0])
+        if(accept.suggestions) 
+          ans <- "y" else 
+            ans <- readline(message(" Warning, the current value for thick, ", thick, ", will result in very few age-model sections (", info$K, ", not very flexible). Suggested maximum value for thick: ", sugg, " OK? (y/n) "))
+      } else
+        if(info$K > max(reswarn)) {
+          sugg <- max(pretty(thick*(info$K/max(reswarn))))
           if(accept.suggestions) 
-            ans <- "y" else 
-              ans <- readline(message(" Warning, the current value for thick, ", thick, ", will result in very few age-model sections (", info$K, ", not very flexible). Suggested maximum value for thick: ", sugg, " OK? (y/n) "))
-        } else
-          if(info$K > max(reswarn)) {
-            sugg <- max(pretty(thick*(info$K/max(reswarn))))
-            if(accept.suggestions) 
-              ans <- "y" else
-                ans <- readline(message(" Warning, the current value for thick, ", thick, ", will result in very many age-model sections (", info$K, ", possibly hard to run). Suggested minimum value for thick: ", sugg, " OK? (y/n) "))
-          }
+            ans <- "y" else
+              ans <- readline(message(" Warning, the current value for thick, ", thick, ", will result in very many age-model sections (", info$K, ", possibly hard to run). Suggested minimum value for thick: ", sugg, " OK? (y/n) "))
+         }
     if(tolower(substr(ans, 1, 1)) == "y") {
       message(" Setting thick to ", sugg, "\n")
       thick <- sugg
@@ -438,7 +429,10 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     info$slump <- slump
 
     slumpdmax <- toslump(ceiling(max(info$elbows, info$d.max)), slump, remove=remove)
+    slumpdmax <- ceiling(max(info$elbows, info$d.max)) # redone since otherwise not enough elbows towards bottom core
+
     info$elbows <- seq(floor(min(info$elbows, info$d.min)), slumpdmax, by=thick)
+    message("max info$elbows:", max(info$elbows), ", d.max: ", info$d.max, ", slumpdmax:", slumpdmax )
     info$K <- length(info$elbows)
     info$cK <- info$d.min+(info$thick*info$K) # the maximum depth to be used by the bacon model
 

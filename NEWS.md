@@ -1,12 +1,14 @@
 # rbacon 4.0.0
 
 ## new features
-* hiatuses are now constrained by a gamma prior (as in the original Bacon paper, Blaauw & Christen 2011), no longer by a uniform prior. The parameters are hiatus.mean and hiatus.shape. 
+* hiatuses are now constrained by a gamma prior (as in the original Bacon paper, Blaauw & Christen 2011), no longer by a uniform prior. The parameters are hiatus.mean and hiatus.shape. In most cases, the data will be dominant steering the hiatus size. If you are very sure about the prior size of the hiatus, set hiatus.shape to high values such as 10 or 100.
 * calculations of age ranges and age-depth ghost plots are now much faster when using the default `use.cpp=TRUE` in the functions `Bacon`, `agedepth`, `proxy.ghost` and `ageranges`. This option causes the underlying calculations to be done in cpp, not R. This feature is experimental and can be deactivated using `use.cpp=FALSE` in the above functions.
 * colour gradients (ghost plots) in `agedepth` can now also be provided as `from.col` and `to.col`, to choose from one of the >600 colour names within R's function `colours()`. For example, `agedepth(from.col="papayawhip", to.col="saddlebrown")`.
 * when there are hiatuses or boundaries, the posterior accumulation rates below/above the hiatuses/boundaries are plotted as individual histograms - same for hiatuses. Multiple posteriors can also be given their colours, e.g., `agedepth(acc.post.col=c(rgb(1,0,0,.2), rgb(0,1,0,.2)))`.
 * new option `hot.stop` in the `Bacon` function that stops if any provided F14C or pMC values are either negative or above 3 or 300, respectively. Defaults to TRUE.
 * new function `Bacon_runs` which lists the cores available in the Bacon_runs directory. 
+* cleaned up the `flux.age.ghost` function, adding an option to plot ages as BC/AD (the default remains cal BP).
+* any arguments/options that the user provided within the `Bacon()` command can now be retrieved by typing `info$command`.
 
 ## improvements
 * `accrate.depth` and related functions now deal better with slumps. Upon invoking a slump, `accrate.depth` no longer reports NAs for the lowermost sections of the piece-wise age-depth model.
@@ -17,6 +19,7 @@
 * rewrote the function `flux.age.ghost` to make it much faster.
 * the check for `cairo` capabilities of macOS systems has been updated in the `Bacon` function.
 * `add.dates` now has options `BCAD`, `is.F` and `is.pMC`.
+* `agemodel.it` now deals better with hiatuses and slumps.
 * `proxy.ghost` gains the option to plot the median ages (mean ages were already an option).
 * when calculating what proportion of the dates fit within the age-depth model, this is now done by checking for each date if any of its hpd intervals fall within any of the model's hpds (default 95\% confidence ranges).
 * if boundaries or hiatuses are set, the acc.rate and (if present) hiatus panels of the main `agedepth` function now show the posteriors of the multiple sections separately. They can also be coloured separately using for example `post.col=c(3,5)`.

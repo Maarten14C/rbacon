@@ -265,7 +265,7 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
 
   if(file.exists(csv.file)) {
 
-    # first do some cleaning of the .csv file if necessary	  
+    # first do some cleaning of the .csv file if necessary
     txt <- readLines(csv.file, warn=FALSE)
     orig <- txt
     txt <- gsub('"', "", txt) # remove quotation marks
@@ -637,6 +637,7 @@ write.Bacon.file <- function(set=get('info'), younger.than=c(), older.than=c(), 
     if(save.info)
       assign_to_global("info", set)
     
+
     cat("\n\n### Depths and priors for fixed hiatuses, in descending order",
       "\n##### cm  alpha beta      ha     hb", file=fl)
     for(i in length(hiatus.depths):1) {
@@ -647,7 +648,6 @@ write.Bacon.file <- function(set=get('info'), younger.than=c(), older.than=c(), 
       piste <- set$hiatus.shape[i]/(set$hiatus.mean[i] + slope*set$thick) 
       cat("\nHiatus ", i-1, ":  ", hiatus.depths[i], ",  ", set$acc.shape[i+1],
         ",  ", set$acc.shape[i+1]/set$acc.mean[i+1], ",  ", set$hiatus.shape[i], 
-        #",  ", set$hiatus.shape[1]/set$hiatus.mean[i], ";", sep="", file=fl) # undoing piste approach, MB 12 May 2026
         ",  ", piste, ";", sep="", file=fl)
     }
   }

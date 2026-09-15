@@ -239,7 +239,7 @@ MCMC.diagnostics <- function(set=get("info"), ssize=nrow(set$output), talk=TRUE)
     }
 
     diag <- c(ess, z)
-    names(diag) <- c("effective sample size (ess)", "z")		  
+    names(diag) <- c("effective sample size (ess)", "z")
     invisible(diag)
   }
 }
@@ -289,7 +289,7 @@ MCMC.diagnostics <- function(set=get("info"), ssize=nrow(set$output), talk=TRUE)
 #   overl <- 100*mapply(function(date, modelled) {
 #    # rice::coverage(cbind(modelled$x, modelled$y), date,
 #    #   visualise = FALSE) # coverage is no longer a rice function
-# 	  rice::overlap(list(cbind(modelled$x, modelled$y), date), visualise=FALSE)
+#     rice::overlap(list(cbind(modelled$x, modelled$y), date), visualise=FALSE)
 #   }, dates, model.ages)
 #
 #   if(talk) {
@@ -398,7 +398,7 @@ overlap.intervals <- function(set=get('info'), digits=0, verbose=TRUE) {
 
 learning <- function(set=get('info'), decimals=2, talk=TRUE) {
   # accumulation rate
-  prioracc.mean <- set$acc.mean # can be multiple entries	
+  prioracc.mean <- set$acc.mean # can be multiple entries
   prioracc.shape <- set$acc.shape # can be multiple entries
   prioracc.sd <- sqrt(prioracc.mean^2 / prioracc.shape)
 
@@ -444,7 +444,7 @@ learning <- function(set=get('info'), decimals=2, talk=TRUE) {
     "; z-difference: ",
     paste(round(acc.z, decimals), collapse = " & "))
     
-  # memory	
+  # memory
   priormem.mean <- set$mem.mean
   priormem.strength <- set$mem.strength
   priormem.sd <- sqrt(abs(priormem.mean * (1 - priormem.mean)) / (priormem.strength + 1))
@@ -469,7 +469,7 @@ learning <- function(set=get('info'), decimals=2, talk=TRUE) {
     priorphi.shape <- set$phi.shape
     priorphi.sd <- sqrt(priorphi.mean^2 / priorphi.shape) 
     postphi.mean <- set$post.phi[1]
-    postphi.shape <- set$post.phi[2]	
+    postphi.shape <- set$post.phi[2]
    
     priorphi.precision <- 1 / (priorphi.mean^2 / priorphi.shape)
     postphi.precision <- 1 / (postphi.mean^2 / postphi.shape)
@@ -486,7 +486,7 @@ learning <- function(set=get('info'), decimals=2, talk=TRUE) {
     priorsup.shape <- set$s.shape
     priorsup.sd <- sqrt(priorsup.mean^2 / priorsup.shape) 
     postsup.mean <- set$post.supp[1]
-    postsup.shape <- set$post.supp[2]	
+    postsup.shape <- set$post.supp[2]
 
     priorsup.precision <- 1 / (priorsup.mean^2 / priorsup.shape)
     postsup.precision <- 1 / (postsup.mean^2 / postsup.shape)
@@ -496,7 +496,7 @@ learning <- function(set=get('info'), decimals=2, talk=TRUE) {
     sup.text <- paste0("Supported learning ratio: ",
       paste(round(sup.learned, decimals), collapse = ", "), 
       "; z-difference: ",
-      round(sup.z, decimals), collapse = ", ")	
+      round(sup.z, decimals), collapse = ", ")
   }
 
   if(talk) {

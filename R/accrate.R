@@ -13,6 +13,7 @@
 #' @param d The depth for which accumulation rates need to be returned.
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param cmyr Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm.
+#' @ param remove.hiatuses Any hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses. 
 #' @param na.rm Remove NA entries. These are NOT removed by default, ensuring that always the same amount of iterations is returned.
 #' @param inversion.threshold Very small accumulation rate values will become very large when their inverse is calculated. By default, any accumulation rate smaller than 1e-6 is set to 1e-6.
 #' @author Maarten Blaauw, J. Andres Christen
@@ -27,14 +28,35 @@
 #'   mean(d20)
 #' }
 #' @export
-accrate.depth <- function(d, set=get('info'), cmyr=FALSE, na.rm=FALSE, inversion.threshold=1e-6) {
-  if(length(set$slump) > 0) 
-    d <- toslump(d, set$slump, remove=na.rm)
+accrate.depth <- function(d, set=get('info'), cmyr=FALSE, remove.hiatuses=TRUE, na.rm=FALSE, inversion.threshold=1e-6) {
+  if(is.na(d))
+    return(NA)
+
+  d.hiatus <- set$hiatus.depths
+  if(length(set$slump) > 0) {
+    slump <- set$slump
+    d.hiatus <- set$slumphiatus
+    for(i in 1:nrow(slump))
+      if(d >= min(slump[i,]) && d < max(slump[i,]))
+        return(NA) # don't bother with depths within slumps
+    d <- toslump(d, slump) # work with slumpfree depths
+  }
 
   accs.elbows <- set$output[,2:(set$K+1)]
-  if(!is.na(d) && all(!is.na(set$elbows)) && min(set$elbows) <= d && d <= max(set$elbows))
+  if(all(!is.na(set$elbows)) && min(set$elbows) <= d && d <= max(set$elbows))
     accs <- unlist(accs.elbows[max(which(set$elbows <= d))]) else
       accs <- NA
+
+  if(!is.na(d.hiatus[1]))
+    if(remove.hiatuses)
+      for(i in 1:length(d.hiatus)) {
+        k <- max(which(set$elbows <= d.hiatus[i])) # elbow just above the hiatus
+        if(d >= set$elbows[k] && d < set$elbows[k+1]) # d is within a hiatus
+          if(d <= d.hiatus[i])
+            accs <- set$slope.above[,i] else
+              accs <- set$slope.below[,i]
+      }
+
   accs <- as.numeric(accs)
   if(na.rm)
     accs <- accs[!is.na(accs)]
@@ -84,7 +106,6 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
     if(age < min(ages) || age > max(ages))
       stop(" Warning, age outside the core's age range!\n")
 
-  # we do need to take into account hiatuses - this function doesn't yet
    hiatus.sections <- c()
    if(!is.na(set$hiatus.depths[1])) # was ... length==0
      for(i in 1:length(set$hiatus.depths))
@@ -130,7 +151,8 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
 #' @param d The depth for which accumulation rates need to be returned.
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param cmyr Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm.
-#' @param na.rm Remove NA entries. These are NOT removed by default, so that always the same amount of iterations is returned.
+#' @ param remove.hiatuses Hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses. 
+#' @param na.rm Remove NA entries. These are NOT removed by default, so that always the same amount of iterations is returned. NAs will however be removed if a core has slumps.
 #' @param probs The probability ranges to be returned. Defaults to the minima and maxima of the 95\% and 68\% ranges, as well as the median: \code{probs=c(.025, .16, .84, .975, .5)}.
 #' @author Maarten Blaauw
 #' @return A summary of the estimated accumulation rate of the chosen depth: minimum of the 95\% interval, minimum of the 68\% interval, maximum of the 68\% interval, maximum of the 95\% interval, median (i.e., 50\%) and mean.
@@ -141,10 +163,10 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
 #'   accrate.depth.summary(20)
 #' }
 #' @export
-accrate.depth.summary <- function(d, set=get('info'), cmyr=FALSE, na.rm=FALSE, probs=c(.025, .16, .84, .975, .5)) {
+accrate.depth.summary <- function(d, set=get('info'), cmyr=FALSE, remove.hiatuses=TRUE, na.rm=FALSE, probs=c(.025, .16, .84, .975, .5)) {
   if(length(d) > 1)
     stop("can handle one depth at a time only")
-  accs <- accrate.depth(d, set, cmyr, na.rm)
+  accs <- accrate.depth(d, set, cmyr, remove.hiatuses=remove.hiatuses, na.rm=na.rm)
   qu <- quantile(accs, probs, na.rm=na.rm)
   mn <- mean(accs, na.rm=na.rm)
   names(mn) <- "mean"
@@ -190,6 +212,7 @@ accrate.age.summary <- function(age, set=get('info'), cmyr=FALSE, na.rm=TRUE, pr
 #' @param dseq The sequence of depths for which accumulation rates need to be returned. Defaults to whatever info$dseq is, which most often is a sequence from the top to the bottom of the core at 1 cm increments.
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param cmyr Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm.
+#' @ param remove.hiatuses Any hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses. 
 #' @param na.rm Remove NA entries. These are NOT removed by default, so that always the same amount of iterations is returned.
 #' @param probs The probability ranges to be returned. Defaults to the minima and maxima of the 95\% and 68\% ranges, as well as the median: \code{probs=c(.025, .16, .84, .975, .5)}.
 #' @param round The number of decimals to report. Defaults to \code{round=2}.
@@ -204,11 +227,14 @@ accrate.age.summary <- function(age, set=get('info'), cmyr=FALSE, na.rm=TRUE, pr
 #'   myaccrates <- accrates.core()
 #' }
 #' @export
-accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, na.rm=TRUE, probs=c(.025, .16, .84, .975, .5), round=2, write=TRUE, sep="\t") {
+accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, remove.hiatuses=TRUE, na.rm=TRUE, probs=c(.025, .16, .84, .975, .5), round=2, write=TRUE, sep="\t") {
   if(length(dseq) == 0)
     dseq <- set$depths
+  
+  if(length(set$slump) > 0)
+    na.rm <- TRUE  
   mysummary <- function(dseq)
-    accrate.depth.summary(dseq, set, cmyr, na.rm, probs)
+    accrate.depth.summary(dseq, set, cmyr, remove.hiatuses=remove.hiatuses, na.rm, probs)
   allaccs <- t(sapply(dseq, mysummary))
   allaccs <- cbind(depths=dseq, round(allaccs, round))
   
@@ -262,6 +288,7 @@ accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, na.rm=TRUE, pro
 #' @param remove.laststep Add a white line to remove spurious lines at the extreme of the graph. Defaults to TRUE.
 #' @param use.raster Rasters can be aligned or not in the underlying image function. Setting \code{use.raster=FALSE, default} takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. However, the alternative of \code{use.raster=TRUE} causes greyscales on some devices (e.g., OSX quartz) to 'flip'. If this is the case, use 'flip.acc=TRUE'.
 #' @param flip.acc When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.acc=TRUE} solves this. 
+#' @ param remove.hiatuses Any hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses. 
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A grey-scale plot of accumulation rate against core depth, and (invisibly) the list of depths and their accumulation rates (ranges, medians, means).
 #' @examples
@@ -273,37 +300,54 @@ accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, na.rm=TRUE, pro
 #'   head(tmp)
 #' }
 #' @export
-accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, darkest=.8, cutoff=0.001, zero.col="white", max.col="black", rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE, xaxs="r", yaxs="r", bty="l", remove.laststep=TRUE, use.raster=FALSE, flip.acc=FALSE) {
+accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.lim=c(), d.lab=c(), cmyr=FALSE, acc.lab=c(), dark=1, darkest=.8, cutoff=0.001, zero.col="white", max.col="black", rgb.scale=c(0,0,0), rgb.res=100, prob=0.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, rotate.axes=FALSE, rev.d=FALSE, rev.acc=FALSE, xaxs="r", yaxs="r", bty="l", remove.laststep=TRUE, use.raster=FALSE, flip.acc=FALSE, remove.hiatuses=TRUE) {
 
   max.acc <- 0; max.dens <- 0; max.acc2 <- 0
-  acc <- list(); min.rng <- numeric(length(d)); max.rng <- numeric(length(d)); mean.rng <- numeric(length(d)); median.rng <- numeric(length(d))
-  for(i in 1:length(d))
-    if(length(acc.lim) == 0)
-      acc[[i]] <- density(accrate.depth(d[i], set, cmyr=cmyr), from=0) else
-        acc[[i]] <- density(accrate.depth(d[i], set, cmyr=cmyr), from=0, to=max(acc.lim))
+  acc <- list(); min.rng <- numeric(length(d)); max.rng <- numeric(length(d))
+  mean.rng <- numeric(length(d)); median.rng <- numeric(length(d))
+
+  slump <- set$slump
+  inslump <- integer(0)
+  if(length(slump) > 0) # remove depths within slump from the analysis
+    for(i in 1:nrow(slump))
+      inslump <- c(inslump, which(d >= min(slump[i,]) & d <= max(slump[i,])))
+  keep <- setdiff(seq_along(d), inslump) # only work with non-slump depths
+  d <- d[keep]
 
   for(i in 1:length(d)) {
-    max.acc <- max(max.acc, acc[[i]]$x)
-    max.acc2 <- max(max.acc2, quantile(acc[[i]]$x, .99)) # take a value close to the max
-    max.dens <- max(max.dens, acc[[i]]$y)
-    accs <- accrate.depth(d[i], set, cmyr=cmyr)
-    quants <- quantile(accs, c((1-prob)/2, 1-((1-prob)/2)))
+    d.acc <- accrate.depth(d[i], set, cmyr=cmyr, remove.hiatuses=remove.hiatuses)
+    if(length(acc.lim) == 0)
+      acc[[i]] <- density(accrate.depth(d[i], set, cmyr=cmyr, remove.hiatuses=remove.hiatuses), from=0, na.rm=TRUE) else
+        acc[[i]] <- density(accrate.depth(d[i], set, cmyr=cmyr, remove.hiatuses=remove.hiatuses), from=0, to=max(acc.lim, na.rm=TRUE), na.rm=TRUE)
+  }
+
+  for(i in 1:length(d)) {
+    max.acc <- max(max.acc, acc[[i]]$x, na.rm=TRUE)
+    max.acc2 <- max(max.acc2, quantile(acc[[i]]$x, .99, na.rm=TRUE)) # take a value close to the max
+    max.dens <- max(max.dens, acc[[i]]$y, na.rm=TRUE)
+    accs <- accrate.depth(d[i], set, cmyr=cmyr, remove.hiatuses=remove.hiatuses, na.rm=TRUE)
+    quants <- quantile(accs, c((1-prob)/2, 1-((1-prob)/2)), na.rm=TRUE)
     min.rng[i] <- quants[1]
     max.rng[i] <- quants[2]
     mean.rng[i] <- mean(accs)
     median.rng[i] <- median(accs)
   }
-  stored <- cbind(d, min.rng, max.rng, median.rng, mean.rng)
+
+#  if(length(inslump) > 0)
+#    stored <- cbind(d, min.rng[-inslump], max.rng[-inslump], median.rng[-inslump], mean.rng[-inslump]) else
+      stored <- cbind(d, min.rng[keep], max.rng[keep], median.rng[keep], mean.rng[keep])
+
+#  stored <- cbind(d, min.rng[-inslump], max.rng[-inslump], median.rng[-inslump], mean.rng[-inslump])
   colnames(stored) <- c("depth", "min.rng", "max.rng", "median", "mean")
 
-  for(i in 1:length(d)) {
+  for(i in 1:length(d)) {  
     acc[[i]]$y <- acc[[i]]$y/(dark*max.dens)
     acc[[i]]$y[acc[[i]]$y > 1] <- 1 # set "dark" to black
     acc[[i]]$y[acc[[i]]$y < cutoff] <- NA # do not plot too light/small values
   }
 
   if(length(d.lim) == 0)
-    d.lim <- range(d)
+    d.lim <- range(set$dets[,4], na.rm=TRUE) # avoiding any slump-based definitions of d
   if(length(d.lab) == 0)
     d.lab <- paste0("depth (", set$depth.unit, ")")
   if(length(acc.lab) == 0)
@@ -326,6 +370,8 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
     plot(0, type="n", xlab=acc.lab, ylab=d.lab, ylim=d.lim, xlim=acc.lim, bty="n", xaxs=xaxs, yaxs=yaxs)
     for(i in 2:length(d)) {
       accs <- acc[[i-1]]
+      #if(is.null(accs))
+      #  next
       z <- if (flip.acc) t(rev(accs$y)) else t(accs$y)
       if(deviceIsQuartz()) 
         if(use.raster)
@@ -355,24 +401,25 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
       abline(h=min(set$elbows), col="white", lwd=2)
   } else {
       plot(0, type="n", xlab=d.lab, ylab=acc.lab, xlim=d.lim, ylim=acc.lim, bty="n", xaxs=xaxs, yaxs=yaxs)
-      for(i in 2:length(d)) {
+      for(i in 2:length(d)) {  
         accs <- acc[[i-1]]
-       z <- if (flip.acc) t(rev(accs$y)) else t(accs$y)
-       if(deviceIsQuartz()) 
-         if(use.raster)
-           z <- t(z[length(z):1])
-
+        if(is.null(accs))
+          next
+        z <- if (flip.acc) t(rev(accs$y)) else t(accs$y)
+        if(deviceIsQuartz()) 
+          if(use.raster)
+            z <- t(z[length(z):1])
         image(d[c(i - 1, i)], accs$x, z, add=TRUE, col=col, useRaster=use.raster)
-    }
+      }
 
-      if(plot.range) {
-        lines(d, min.rng, type="s", col=range.col, lty=range.lty, pch=NA)
-        lines(d, max.rng, type="s", col=range.col, lty=range.lty, pch=NA)
-        }
+    if(plot.range) {
+      lines(d, min.rng[keep], type="s", col=range.col, lty=range.lty, pch=NA)
+      lines(d, max.rng[keep], type="s", col=range.col, lty=range.lty, pch=NA)
+    }
     if(plot.mean)
-      lines(d, mean.rng, type="s", col=mean.col, lty=mean.lty)
+      lines(d, mean.rng[keep], type="s", col=mean.col, lty=mean.lty)
     if(plot.median)
-      lines(d, median.rng, type="s", col=median.col, lty=median.lty)
+      lines(d, median.rng[keep], type="s", col=median.col, lty=median.lty)
     if(remove.laststep)
       abline(v=max(set$elbows), col="white", lwd=1.5)
     }
@@ -442,11 +489,11 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #'   head(tmp)
 #' }
 #' @export
-accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FALSE, age.res=400, acc.res=200, cutoff=.001, zero.col="white", max.col="black", dark=1, darkest=1, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, use.raster=FALSE, flip.acc=FALSE, flip.age=FALSE, xaxs="i", yaxs="i", bty="l") {
+accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), na.rm=TRUE, kcal=FALSE, age.res=400, acc.res=200, cutoff=.001, zero.col="white", max.col="black", dark=1, darkest=1, rgb.scale=c(0,0,0), rgb.res=100, prob=.95, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, acc.lim=c(), acc.lab=c(), BCAD=set$BCAD, cmyr=FALSE, rotate.axes=FALSE, rev.age=FALSE, rev.acc=FALSE, use.raster=FALSE, flip.acc=FALSE, flip.age=FALSE, xaxs="i", yaxs="i", bty="l") {
   if(length(age.lim) == 0) 
      age.lim <- extendrange(set$ranges[,5]) # just the mean ages, not the extremes
   if(set$BCAD) # was set$BCAD
-    age.lim <- BCADtocalBP(age.lim) # work with cal BP internally
+    age.lim <- rice::BCADtocalBP(age.lim) # work with cal BP internally
   age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
     
   if(length(acc.lim) == 0) {
@@ -472,7 +519,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
   pb <- txtProgressBar(min=0, max=max(1,length(age.seq)-1), style = 3)
   for(i in 1:age.res) {
     setTxtProgressBar(pb, i)
-    acc <- accrate.age(age.seq[i], set, cmyr=cmyr, ages=ages, silent=TRUE, BCAD=BCAD) # BCAD was F, June '25
+    acc <- accrate.age(age.seq[i], set, cmyr=cmyr, ages=ages, silent=TRUE, BCAD=BCAD, na.rm=na.rm) # BCAD was F, June '25
     acc <- acc[!is.na(acc)]
     if(length(acc) > 1) {
       z[,i] <- density(acc, from=acc_min, to=acc_max, n=acc.res)$y
@@ -493,7 +540,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
   #z <- z/(dark*max(z)) # normalise, set dark to black
   z <- z /(dark*quantile(z, .999, na.rm=TRUE))
   z[z>1] <- 1 # avoid values > 1
-  z[z<cutoff] <- NA # do not plot very small/light greyscale values  	
+  z[z<cutoff] <- NA # do not plot very small/light greyscale values
 
  # if(deviceIsQuartz()) 
  #   if(use.raster)
@@ -514,7 +561,7 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
 #     z <- z[nrow(z):1,]
 
   if(is.na(max.col))
-    cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res))	else
+    cols <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(0,1, length=rgb.res)) else
   cols <- col.scales(rgb.res, zero.colour=zero.col, max.colour=max.col, dark=dark, darkest=darkest)
 
   if(length(age.lab) == 0)
@@ -580,8 +627,9 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
 #'  within the R session (consisting of depths and their proxy concentrations in two columns). Then provide the name of this variable, e.g.: \code{flux.age.ghost(flux=flux1)}.
 #' See Bacon_runs/MSB2K/MSB2K_flux.csv for an example.
 #' @param column Which proxy to use (counting from the column number in the .csv file after the depths column).
-#' @param flux Instead of using a file, the data can also be provided as a variable. The first column should be the depths, and the variable 'column' should indicate which column (after the depth column) contains the proxy of interest.
+#' @param flux Instead of using a file, the data can also be provided as a variable. The first column should be the depths, and the variable 'column' should indicate which column (after the depth column) contains the proxy of interest. For example, if using Plum we could produce a greyscale of the mass accumulation rate: myflux <- info$detsPlum[,c(4,6)];
 #' @param set Detailed information of the current run, stored within this session's memory as variable info.
+#' @ param remove.hiatuses Hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses. 
 #' @param age.lab The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}).
 #' @param age.lim Minimum and maximum calendar age ranges, calculated automatically by default (\code{age.lim=c()}).
 #' @param age.rev The direction of the age axis can be reversed using \code{age.rev=TRUE}.
@@ -620,8 +668,10 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), kcal=FA
 #'   flux.age.ghost(1)
 #' }
 #' @export
-flux.age.ghost <- function(column=1, flux=c(), set=get("info"), age.lab=c(), age.lim=c(), age.rev=FALSE, age.res=500, age.compress=-0.01, flux.lim=c(), flux.rev=FALSE, flux.lab="flux (proxy/yr)", flux.res=500, BCAD=set$BCAD, prob=0.95, clip.prob = 0.99, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, flux.cols=col.scales(256, "white", "black", darkest=darkest), dark=.9, darkest=1, rotate.axes=FALSE, use.raster=FALSE, xaxs="i", yaxs="i", bty="l") {
+flux.age.ghost <- function(column=1, flux=c(), set=get("info"), coredir=set$coredir, remove.hiatuses=TRUE, age.lab=c(), age.lim=c(), age.rev=FALSE, age.res=500, age.compress=-0.01, flux.lim=c(), flux.rev=FALSE, flux.lab="flux (proxy/yr)", flux.res=500, BCAD=set$BCAD, prob=0.95, clip.prob = 0.99, plot.range=TRUE, range.col=grey(0.5), range.lty=2, plot.mean=TRUE, mean.col="red", mean.lty=2, plot.median=TRUE, median.col="blue", median.lty=2, flux.cols=col.scales(256, "white", "black", darkest=darkest), dark=.9, darkest=1, rotate.axes=FALSE, use.raster=FALSE, xaxs="i", yaxs="i", bty="l") {
   if(is.null(flux)) {
+    if(!dir.exists(file.path(set$coredir, set$core)))
+      stop("please provide the folder where the run's _flux.csv file can be found, e.g., coredir='~/Desktop/Bacon'")
     pf <- read.csv(file.path(set$coredir, set$core, paste0(set$core, "_flux.csv")))
     depths <- pf[,1]
     if(!is.numeric(column) || column < 1 || column > ncol(pf) - 1)
@@ -629,27 +679,29 @@ flux.age.ghost <- function(column=1, flux=c(), set=get("info"), age.lab=c(), age
     proxy  <- pf[,column+1]
   } else { # then we assume that flux is provided as columns
      depths <- flux[,1]
-    proxy <- flux[,column+1]
-  }
-  D <- length(depths) # number of depth and proxy slices
+     proxy <- flux[,column+1]
+     }
+  inside <- which(depths >= min(set$d.min) & depths <= max(set$d.max))
+  proxy <- proxy[inside] # remove values outside the core's depth range
+  depths <- depths[inside]
+  D <- length(depths) # number of remaining depth and proxy slices
 
   if(is.null(age.lim))
-    age.lim <- extendrange(set$ranges[,2:3], f=age.compress) # remove the top/bottom ends, as they often show strange fluxes
+    age.lim <- rev(extendrange(set$ranges[,2:3], f=age.compress)) # remove the top/bottom ends, as they often show strange fluxes
   if(age.rev)
     age.lim <- rev(age.lim)
   age.breaks <- seq(min(age.lim), max(age.lim), length.out=age.res+1)
   age.mids <- 0.5 * (age.breaks[-1] + age.breaks[-length(age.breaks)])
-  
+
   ages.matrix <- sapply(depths, Bacon.Age.d) # ages of depths d
   acc.matrix <- vapply(depths,
-    function(d) accrate.depth(d, set=set), numeric(set$Tr)) # accs of d
-  flux.matrix <- sweep(acc.matrix, 2, proxy, FUN = function(a, p) p / a) # g / yr/cm
+    function(d) accrate.depth(d, set=set, remove.hiatuses=remove.hiatuses), numeric(set$Tr)) # accs of d
+  flux.matrix <- sweep(acc.matrix, 2, proxy, FUN=function(a, p) p/a) # g / yr/cm
 
   flux.on.age <- t(apply( # left half of matrix contains the ages, right half fluxes
     cbind(ages.matrix, flux.matrix), 1,
       function(row) approx(row[1:D], row[(D + 1):(2 * D)],
-      xout=age.mids, rule=1, yleft=NA, yright=NA)$y
-  ))
+      xout=age.mids, rule=1, yleft=NA, yright=NA)$y))
 
   flux.upper <- quantile(flux.on.age, clip.prob, na.rm=TRUE) # remove very high flux values
   flux.on.age[] <- pmin(flux.on.age, flux.upper) # retain the values on the limit
@@ -683,8 +735,25 @@ flux.age.ghost <- function(column=1, flux=c(), set=get("info"), age.lab=c(), age
   if(flux.rev)
     flux.lim <- rev(flux.lim)
   
+  if(BCAD && !set$BCAD) {
+    age.lim <- rev(rice::calBPtoBCAD(age.lim))
+    age.mids <- rev(rice::calBPtoBCAD(age.mids))
+    fluxes <- fluxes[,ncol(fluxes):1]
+    mean.flux <- rev(mean.flux)
+    median.flux <- rev(median.flux)
+    rng.flux <- rng.flux[nrow(rng.flux):1,]
+  }
+  if(!BCAD && set$BCAD) {
+    age.lim <- rev(rice::BCADtocalBP(age.lim))
+    age.mids <- rev(rice::BCADtocalBP(age.mids))
+    fluxes <- fluxes[,ncol(fluxes):1]
+    mean.flux <- rev(mean.flux)
+    median.flux <- rev(median.flux)
+    rng.flux <- rng.flux[nrow(rng.flux):1,]
+  }
+
   if(rotate.axes) {
-    plot(0, type = "n", xaxs=xaxs, yaxs=yaxs, bty=bty, 
+    plot(0, type="n", xaxs=xaxs, yaxs=yaxs, bty=bty, 
       ylim=age.lim, ylab=age.lab, xlim=flux.lim, xlab=flux.lab)
     image(flux.mids, age.mids, t(t(fluxes)), add=TRUE,
       useRaster=use.raster, col=flux.cols)
@@ -698,7 +767,7 @@ flux.age.ghost <- function(column=1, flux=c(), set=get("info"), age.lab=c(), age
       lines(rng.flux[,2], age.mids, col=range.col, lty=range.lty)
     }
   } else {
-    plot(0, type = "n", xaxs=xaxs, yaxs=yaxs, bty=bty, 
+    plot(0, type="n", xaxs=xaxs, yaxs=yaxs, bty=bty, 
       xlim=age.lim, xlab=age.lab, ylim=flux.lim, ylab=flux.lab)
     image(age.mids, flux.mids, t(fluxes), add=TRUE,
       useRaster=use.raster, col=flux.cols)

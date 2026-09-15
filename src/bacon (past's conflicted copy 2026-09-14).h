@@ -138,7 +138,9 @@ class BaconFix: public Bacon {
 
 			double *ha, *hb; //a priori pars (ha hiatus.shape, hb hiatus.shape/hiatus.mean = rate) for the gamma prior on hiatus jumps in each inter hiatus.
 			double priorHU(int i, const double x) { return (1.0-ha[i])*log(x) + hb[i]*Dc*x; } // old prior, back 8 Aug 2025
-			//double priorHU(int i, const double x) { return 1.0; } //Uniform. Commented June 2025. And uncommented again. commented out 8 Aug 2025. MB Activated again March 2026. And commented out again
+			//double priorHU(int i, const double x) { return 1.0; } //Uniform. Commented June 2025. And uncommented again. commented out 8 Aug 2025. MB Activated again March 2026
+
+			// perhaps best to return to a gamma, since some users do prefer providing info that shorter hiatuses are more likely than longer ones
 
 			int WarnBeyondLimits;
 			//Sets the thetas and verifies correct limits
@@ -605,8 +607,8 @@ class BaconFix: public Bacon {
 				Uprior += priorwU(w); //prior for w
 				//printf(" priorw=%f", Uprior);
 
-				int first_sec_after_hiatus = 0; // jac sep 2026
 
+				int first_sec_after_hiatus = 0; //  jac sep 2026
 				//Set the prior for all accumulation rates
 				Uprior += prioracU( 0, x[K]); //prior for alpha_K
 				if (H == 0) {
@@ -623,9 +625,10 @@ class BaconFix: public Bacon {
 					int l=0;
 
 					for (int k=K-1; k>0; k--) {
-						if ((fcmp( c(k-1), h[l]) == -1) && (fcmp( h[l], c(k)) != 1)) { // within hiatus, forgets
-							//printf("hb= %f", ha[l]/hb[l]);
-							Uprior += priorHU( l, x[k]);
+						if ((fcmp( c(k-1), h[l]) == -1) && (fcmp( h[l], c(k)) != 1)) { //forgets
+							//Uprior += priorHU( l, hb[k]); //MB April 2025
+							//printf("x= %f", x[k]);
+							Uprior += priorHU( l, x[k]); //prior for the hiatus jump in hiatus l
 							
 							l++; //jump to next hiatus, but max one hiatus in each section.
 							first_sec_after_hiatus = 1; // Sep 2026
@@ -637,6 +640,7 @@ class BaconFix: public Bacon {
 							}
 							else
 								Uprior += prioracU( l, (x[k]-w*x[k+1])/(1.0-w)); //prior for e_k in section l
+							// pero debe de depender de x[k] nada mas. x[k+1] es la accrate del salto; Uprior += prioracU(l, x[k]);
 					}
 
 				}

@@ -186,7 +186,7 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
     mtext(pb.lab, this, 2.5, col=pbmeasured.col, cex=.8)
 
     for(i in 1:length(depths)) {
-    #for(i in 1:min(length(depths), length(Ai$x), na.rm=TRUE)) {		
+    #for(i in 1:min(length(depths), length(Ai$x), na.rm=TRUE)) {
       ages <- pb2bp(Ai$x[[i]], AD=BCAD)
       if(BCAD) 
         ages <- rev(ages)
@@ -198,7 +198,7 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
 
       # we're not using ghost.mirror, because of BC/AD axis reversal issues
       if(rotate.axes) {
-        if(BCAD)	  
+        if(BCAD)
           image(ages, d_slice, z, add=TRUE, col=modelled_col, useRaster=FALSE) else
             image(ages, d_slice, z, add=TRUE, col=modelled_col, useRaster=FALSE)
         } else {
@@ -210,7 +210,7 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
   }
 
   if(plot.measured)
-    draw.pbmeasured(set=set, newplot=FALSE, rotate.axes=rotate.axes, BCAD=BCAD, on.agescale=TRUE, pb.lim=pb.lim, age.lim=age.lim, supp.col=supp.col)	
+    draw.pbmeasured(set=set, newplot=FALSE, rotate.axes=rotate.axes, BCAD=BCAD, on.agescale=TRUE, pb.lim=pb.lim, age.lim=age.lim, supp.col=supp.col)
   
   invisible(set)
 }

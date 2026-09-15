@@ -13,7 +13,7 @@ using namespace Rcpp;
 
 // to calculate quantiles with interpolation as done in R
 // (R offers 9 types of quantile calculations, with default type 7)
-double quantile_type7(const NumericVector& x, double p) {
+double quantileR(const NumericVector& x, double p) {
     int n = x.size();
     if (n == 0) return NA_REAL;
 
@@ -82,9 +82,9 @@ NumericMatrix depths_ageranges(
 
     std::sort(age_vec.begin(), age_vec.end()); // place in order
 
-    double qmin = quantile_type7(age_vec, lower);
-    double qmax = quantile_type7(age_vec, upper);
-    double median = quantile_type7(age_vec, 0.5);
+    double qmin = quantileR(age_vec, lower);
+    double qmax = quantileR(age_vec, upper);
+    double median = quantileR(age_vec, 0.5);
     double mean = std::accumulate(age_vec.begin(), age_vec.end(), 0.0) / n_rows;
 
     quantiles(i, 0) = depths[i];
@@ -105,11 +105,11 @@ NumericMatrix depths_ageranges_hiatus(
   const NumericVector& depths,
   const NumericMatrix& out,
   const NumericVector& elbows, // elbow depths: length K+1
-  const NumericVector& hiatus_depths,        // length H
-  const NumericMatrix& slopes_above,          // n_rows × H
-  const NumericMatrix& slopes_below,          // n_rows × H
-  const NumericMatrix& elbow_above_hiatus,    // n_rows × H
-  const NumericMatrix& elbow_below_hiatus,     // n_rows × H
+  const NumericVector& hiatus_depths,      // length H
+  const NumericMatrix& slopes_above,       // n_rows × H
+  const NumericMatrix& slopes_below,       // n_rows × H
+  const NumericMatrix& elbow_above_hiatus, // n_rows × H
+  const NumericMatrix& elbow_below_hiatus, // n_rows × H
   int n_rows = 4000,
   double prob = 0.95) {
 
@@ -162,17 +162,14 @@ NumericMatrix depths_ageranges_hiatus(
     NumericVector age_vec(n_rows);
 
     for (int r = 0; r < n_rows; r++) {
-
       double age;
       bool in_hiatus = false;
 
       for (int h = 0; h < H; h++) {
-
         double z0 = elbows[k];
         double z1 = elbows[k + 1];
 
         if (k == hiatus_section[h] && d > z0 && d <= z1) {
-
           double hd = hiatus_depths[h];
 
           if (d > hd) {
@@ -201,9 +198,9 @@ NumericMatrix depths_ageranges_hiatus(
 
     std::sort(age_vec.begin(), age_vec.end()); // place in order
 
-    double qmin = quantile_type7(age_vec, lower);
-    double qmax = quantile_type7(age_vec, upper);
-    double median = quantile_type7(age_vec, 0.5);
+    double qmin = quantileR(age_vec, lower);
+    double qmax = quantileR(age_vec, upper);
+    double median = quantileR(age_vec, 0.5);
     double mean = std::accumulate(age_vec.begin(), age_vec.end(), 0.0) / n_rows;
 
     quantiles(i, 0) = depths[i];
@@ -287,9 +284,9 @@ List depths_agegrid(
   }
 
   return List::create(
-      Named("density")   = densities,
-      Named("breaks")    = breaks,
-      Named("depths")    = depths);
+    Named("density")   = densities,
+    Named("breaks")    = breaks,
+    Named("depths")    = depths);
 }
 
 
@@ -299,11 +296,11 @@ List depths_agegrid_hiatus(
   const NumericVector& depths,
   const NumericMatrix& out,
   const NumericVector& elbows, // elbow depths: length K+1
-  const NumericVector& hiatus_depths,        // length H
-  const NumericMatrix& slopes_above,          // n_rows × H
-  const NumericMatrix& slopes_below,          // n_rows × H
-  const NumericMatrix& elbow_above_hiatus,    // n_rows × H
-  const NumericMatrix& elbow_below_hiatus,     // n_rows × H
+  const NumericVector& hiatus_depths,      // length H
+  const NumericMatrix& slopes_above,       // n_rows × H
+  const NumericMatrix& slopes_below,       // n_rows × H
+  const NumericMatrix& elbow_above_hiatus, // n_rows × H
+  const NumericMatrix& elbow_below_hiatus, // n_rows × H
   int hist_n = 512,
   double min_age = 0.0,
   double max_age = 55000.0,
@@ -355,7 +352,6 @@ List depths_agegrid_hiatus(
   }
 
   for (int i = 0; i < n_depths; i++) { // for each depth...
-
     double d = depths[i];
     int k = depth_section[i];
     double z0 = elbows[k]; // elbow above
@@ -364,17 +360,14 @@ List depths_agegrid_hiatus(
     NumericVector dens(n_bins);
 
     for (int r = 0; r < n_rows; r++) {
-
       double age;
       bool in_hiatus = false;
 
       for (int h = 0; h < H; h++) {
-
         double z0 = elbows[k];
         double z1 = elbows[k + 1];
 
         if (k == hiatus_section[h] && d > z0 && d <= z1) {
-
           double hd = hiatus_depths[h];
 
           if (d > hd) {

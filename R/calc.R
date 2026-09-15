@@ -24,6 +24,11 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
   if(length(its) == 0)
     stop("core's data not yet in memory. Please run agedepth first\n", call.=FALSE)
 
+  nr <- nrow(its)
+  if(nr==nrow(set$output))
+    rows <- seq_len(nr) else
+      rows <- match(its[,1], set$output[,1])
+
   hiatus.depths <- set$hiatus.depths
   elbows <- set$elbows
   if(length(set$slump) > 0) {
@@ -46,10 +51,10 @@ Bacon.Age.d <- function(d, set=get('info'), its=set$output, BCAD=set$BCAD, na.rm
         for(i in 1:length(hiatus.depths)) {
           above <- max(which(elbows < hiatus.depths[i]), 1)[1]
           below <- above + 1
-          if(d > elbows[above] && d <= elbows[below]) { # adapt ages for sections with hiatus
+          if(d > elbows[above] && d < elbows[below]) { # adapt ages for sections with hiatus; was && d <=
             if(d > hiatus.depths[i]) 
-              ages <- set$elbow.below[,i] - (set$slope.below[,i] * (elbows[below] - d)) else
-                ages <- set$elbow.above[,i] + (set$slope.above[,i] * (d - elbows[above]))
+              ages <- set$elbow.below[rows,i] - (set$slope.below[rows,i] * (elbows[below] - d)) else
+                ages <- set$elbow.above[rows,i] + (set$slope.above[rows,i] * (d - elbows[above]))
             }
         }
     } else
@@ -247,6 +252,7 @@ hiatus.slopes <- function(set=get('info')) {
     slope.below <- accs[,k+1]
     slope.above <- accs[,k-1]
     slope.orig <- accs[,k]
+    age.h <- elbow.above + slope.orig * (hiatus.depths[i] - elbows[k])
 
     if(ishiatus) { # extrapolate using the slopes of the surrounding sections
       hiatus.start <- elbow.below - slope.below*(elbows[k+1] - hiatus.depths[i])
@@ -257,6 +263,8 @@ hiatus.slopes <- function(set=get('info')) {
       slope.above[ok] <- (hiatus.end[ok] - elbow.above[ok]) / (hiatus.depths[i] - elbows[k])
       slope.above[!ok] <- slope.orig[!ok]
       slope.below[!ok] <- slope.orig[!ok]
+      hiatus.start[!ok] <- age.h[!ok] # new Sep '26
+      hiatus.end[!ok] <- age.h[!ok] # new Sep '26
       hiatus.duration[!ok] <- 0
     } else { # it's a boundary, and we interpolate to and from hiatus.end
         boundary.age <- elbow.below - slope.below * (elbows[k+1] - set$boundary[i])
@@ -354,7 +362,8 @@ Bacon.hist <- function(d, set=get('info'), BCAD=set$BCAD, age.lab=c(), age.lim=c
         n <- length(hst$x)
         counts <- hst$y
         ds <- d[i]
-        hsts <- append(hsts, pairlist(list(d=ds, th0=th0, th1=th1, n=n, counts=counts, max=maxhist, min=minhist)))
+        hsts <- append(hsts, pairlist(list(d=ds, th0=th0, th1=th1, 
+          n=n, counts=counts, max=maxhist, min=minhist)))
       } else hsts$d[[i]] <- d[i]
     }
     return(hsts)
@@ -440,6 +449,7 @@ Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob, verbose=
 #' @title extract one age-model iteration
 #' @description For one MCMC iteration (it), extract the corresponding age-depth model.
 #' @param it The MCMC iteration of which the age-model should be calculated.
+#' @param depths The depths for which the age estimates are to be returned.
 #' @param set Detailed information of the current run, stored within this session's memory as variable info.
 #' @param BCAD The calendar scale of graphs and age output-files is in \code{cal BP} by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
 #' @param save.info If TRUE, a variable called `info' with relevant information about the run (e.g., core name, priors, settings, ages, output) is saved into the working directory. Note that this will overwrite any existing variable with the same name.
@@ -452,20 +462,28 @@ Bacon.rng <- function(d, set=get('info'), BCAD=set$BCAD, prob=set$prob, verbose=
 #'   lines(agemodel.it(5), col="red")
 #' }
 #' @export
-agemodel.it <- function(it, set=get('info'), BCAD=set$BCAD, save.info=set$save.info) {
+agemodel.it <- function(it, depths=c(), set=get('info'), BCAD=set$BCAD, save.info=set$save.info) {
+  if(it <1 || length(it) > 1)
+    stop("can only handle one iteration at a time", call.=FALSE)
   outfile <- paste0(set$prefix, ".out")
   if(length(set$output) == 0 || length(set$Tr) == 0) {
     set <- Bacon.AnaOut(outfile, set, MCMC.resample=FALSE)
     if(save.info)
       assign_to_global("info", set) # changed 'set' to 'info'
   }
-  # does this function work in cores with slumps? also doesn't take into account hiatuses.
-  if(length(set$hiatus.depths) > 0)
-    age <- sort(c(set$d, set$hiatus.depths+.001, set$hiatus.depths))
-  age <- c()
-  for(i in 1:length(set$elbows))
-    age[i] <- Bacon.Age.d(set$elbows[i], set, BCAD=BCAD)[it]
-  cbind(set$elbows, age)
+  out <- set$output
+  if(!it %in% 1:nrow(out))
+    stop(paste0("You asked for iteration number ", it, ", but the run has only ", nrow(out), " iterations"), call.=FALSE)
+
+  if(length(depths) == 0)
+    depths <- set$depths
+
+  ages <- sapply(depths, function(d) {
+    a <- Bacon.Age.d(d, set, BCAD=BCAD, its=set$output[it,,drop=FALSE])
+    if(length(a) > 1) NA else a # slumps can cause havoc
+  })
+
+  return(cbind(depths=depths, ages=ages))
 }
 
 

@@ -303,7 +303,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(length(rounded) == 0)
     rounded <- ifelse(set$isplum, 1, 0) # plum tends to need higher precision
   ranges <- ageranges(d, paste0(set$prefix, "_ages.txt"), verbose=verbose,
-    set=set, BCAD=BCAD, prob=prob, roundby=rounded, use.cpp=use.cpp)	
+    set=set, BCAD=BCAD, prob=prob, roundby=rounded, use.cpp=use.cpp)
   d.rng <- d
 
   modelranges <- range(ranges[,-1], na.rm=TRUE)
@@ -374,7 +374,8 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(length(d.lab) == 0)
     d.lab <- paste0("Depth (", depth.unit, ")")
   if(length(age.lab) == 0)
-    age.lab <- ifelse(BCAD, "cal BC/AD", ifelse(kcal, "kcal BP", paste("cal", age.unit, "BP")))
+    age.lab <- ifelse(BCAD, ifelse(min(age.limits >= 0), "cal AD", "cal BC/AD"),
+      ifelse(kcal, "kcal BP", paste("cal", age.unit, "BP")))
 
   if(kcal)
     ifelse(rotate.axes, xaxt <- "n", yaxt <- "n")
@@ -480,7 +481,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     hi.d <- c()
     for(i in set$hiatus.depths)
       hi.d <- c(hi.d, max(which(d <= i)))
-    th <- array(sort(c(1, nrow(ranges), hi.d-1, hi.d)), dim=c(2,length(hi.d)+1))
+    th <- array(sort(c(1, nrow(ranges), hi.d, hi.d)), dim=c(2,length(hi.d)+1))
   }
 
   if(length(accordion) == 2)
@@ -504,8 +505,17 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
   set$ranges <- ranges
 
-  if(plot.pdf)
-    ifelse(dev.interactive(), grDevices::dev.copy2pdf(file=pdf.fl), dev.off())
+  opened.device <- FALSE
+  if(!dev.interactive() && !isTRUE(getOption("knitr.in.progress"))) {
+    pdf(file=pdf.fl)
+    opened.device <- TRUE
+  }
+  if(plot.pdf) {
+    if(dev.interactive())
+      grDevices::dev.copy2pdf(file=pdf.fl) else
+        if(opened.device)
+         dev.off()
+  }
 
   rng <- abs(ranges[,3]-ranges[,2])
   min.rng <- d[which(rng==min(rng, na.rm=TRUE))]

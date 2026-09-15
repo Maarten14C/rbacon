@@ -206,7 +206,7 @@ calib.plot <- function(set=get('info'), dets=set$dets, accordion=c(), BCAD=set$B
          border <- dates.col
        } else {
             if(length(dates.col) != length(set$calib$probs))
-              stop("dates.col has to be 1 value or have a value for each date")	
+              stop("dates.col has to be 1 value or have a value for each date")
             col <- dates.col[i]
             border <- dates.col[i]
           }  
