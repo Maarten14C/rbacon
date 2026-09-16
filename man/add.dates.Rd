@@ -9,8 +9,7 @@ add.dates(
   sdev,
   depth,
   cc = 1,
-  set = get("info"),
-  BCAD = set$BCAD,
+  BCAD = FALSE,
   above = 1e-06,
   postbomb = 0,
   normal = TRUE,
@@ -18,8 +17,8 @@ add.dates(
   is.pMC = FALSE,
   delta.R = 0,
   delta.STD = 0,
-  t.a = set$t.a,
-  t.b = set$t.b,
+  t.a = 3,
+  t.b = 4,
   date.res = 100,
   height = 1,
   calheight = 1,
@@ -42,8 +41,6 @@ add.dates(
 \item{depth}{Depth of the date.}
 
 \item{cc}{The calibration curve to use: \code{cc=1} for IntCal20 (northern hemisphere terrestrial), \code{cc=2} for Marine20 (marine), \code{cc=0} for none (dates that are already on the cal BP scale).}
-
-\item{set}{Detailed information of the current run, stored within this session's memory as variable \code{info}.}
 
 \item{BCAD}{The calendar scale is in cal BP by default, but can be changed to BC/AD using \code{BCAD=TRUE}.}
 
@@ -106,8 +103,7 @@ Sometimes it is useful to add additional dating information to age-depth plots, 
 }
 \examples{
 \donttest{
-  Bacon(run=FALSE, coredir=tempfile())
-  agedepth()
+  plot(0, type="n", xlim=c(0, 100), ylim=c(0, 8000))
   add.dates(5000, 100, 60)
 }
 }

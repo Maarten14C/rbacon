@@ -37,7 +37,8 @@ accrate.depth.ghost(
   bty = "l",
   remove.laststep = TRUE,
   use.raster = FALSE,
-  flip.acc = FALSE
+  flip.acc = FALSE,
+  remove.hiatuses = TRUE
 )
 }
 \arguments{
@@ -106,6 +107,8 @@ accrate.depth.ghost(
 \item{use.raster}{Rasters can be aligned or not in the underlying image function. Setting \code{use.raster=FALSE, default} takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. However, the alternative of \code{use.raster=TRUE} causes greyscales on some devices (e.g., OSX quartz) to 'flip'. If this is the case, use 'flip.acc=TRUE'.}
 
 \item{flip.acc}{When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.acc=TRUE} solves this.}
+
+\item{remove.hiatuses}{Any hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses.}
 }
 \value{
 A grey-scale plot of accumulation rate against core depth, and (invisibly) the list of depths and their accumulation rates (ranges, medians, means).

@@ -8,6 +8,7 @@ accrate.age.ghost(
   set = get("info"),
   age.lim = c(),
   age.lab = c(),
+  na.rm = TRUE,
   kcal = FALSE,
   age.res = 400,
   acc.res = 200,
@@ -49,6 +50,8 @@ accrate.age.ghost(
 \item{age.lim}{Minimum and maximum calendar age ranges, calculated automatically by default (\code{age.lim=c()}).}
 
 \item{age.lab}{The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}).}
+
+\item{na.rm}{Remove NA entries. These are NOT removed by default, ensuring that always the same amount of iterations is returned.}
 
 \item{kcal}{Use kcal BP. Default is \code{kcal=FALSE}.}
 

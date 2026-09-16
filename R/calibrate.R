@@ -9,7 +9,6 @@
 #' @param sdev Reported error of the date. Can be multiple dates.
 #' @param depth Depth of the date.
 #' @param cc The calibration curve to use: \code{cc=1} for IntCal20 (northern hemisphere terrestrial), \code{cc=2} for Marine20 (marine), \code{cc=0} for none (dates that are already on the cal BP scale).
-#' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param BCAD The calendar scale is in cal BP by default, but can be changed to BC/AD using \code{BCAD=TRUE}.
 #' @param above Threshold for plotting of probability values. Defaults to \code{above=1e-3}.
 #' @param postbomb Use a postbomb curve for negative (i.e. postbomb) 14C ages. \code{0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}
@@ -42,14 +41,13 @@
 #' @return A date's distribution, added to an age-depth plot.
 #' @examples
 #' \donttest{
-#'   Bacon(run=FALSE, coredir=tempfile())
-#'   agedepth()
+#'   plot(0, type="n", xlim=c(0, 100), ylim=c(0, 8000))
 #'   add.dates(5000, 100, 60)
 #' }
 #' @export
-add.dates <- function(mn, sdev, depth, cc=1, set=get('info'), BCAD=set$BCAD, above=1e-6, postbomb=0, normal=TRUE, is.F=FALSE, is.pMC=FALSE, delta.R=0, delta.STD=0, t.a=set$t.a, t.b=set$t.b, date.res=100, height=1, calheight=1, agesteps=1, cutoff=0.005, col=rgb(1,0,0,.5), border=rgb(1,0,0,.5), rotate.axes=FALSE, mirror=TRUE, up=TRUE, pch=4, cc.dir=c()) {
+add.dates <- function(mn, sdev, depth, cc=1, BCAD=FALSE, above=1e-6, postbomb=0, normal=TRUE, is.F=FALSE, is.pMC=FALSE, delta.R=0, delta.STD=0, t.a=3, t.b=4, date.res=100, height=1, calheight=1, agesteps=1, cutoff=0.005, col=rgb(1,0,0,.5), border=rgb(1,0,0,.5), rotate.axes=FALSE, mirror=TRUE, up=TRUE, pch=4, cc.dir=c()) {
 
-  dists <- draw.dates(mn-delta.R, sqrt(sdev^2+delta.STD^2), depth, cc=cc, BCAD=BCAD, is.F=is.F, is.pMC=is.pMC, postbomb=postbomb, normal=normal, t.a=t.a, t.b=t.b, dist.res=date.res, ex=height, threshold=cutoff, col=col, border=border, draw.hpd=FALSE, rotate.axes=!rotate.axes, mirror=mirror, up=up, cc.dir=cc.dir, add=TRUE)
+  dists <- rice::draw.dates(mn-delta.R, sqrt(sdev^2+delta.STD^2), depth, cc=cc, BCAD=BCAD, is.F=is.F, is.pMC=is.pMC, postbomb=postbomb, normal=normal, t.a=t.a, t.b=t.b, dist.res=date.res, ex=height, threshold=cutoff, col=col, border=border, draw.hpd=FALSE, rotate.axes=!rotate.axes, mirror=mirror, up=up, cc.dir=cc.dir, add=TRUE)
 
   if(length(pch) > 0) {
     best <- c()

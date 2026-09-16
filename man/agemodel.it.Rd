@@ -4,10 +4,18 @@
 \alias{agemodel.it}
 \title{extract one age-model iteration}
 \usage{
-agemodel.it(it, set = get("info"), BCAD = set$BCAD, save.info = set$save.info)
+agemodel.it(
+  it,
+  depths = c(),
+  set = get("info"),
+  BCAD = set$BCAD,
+  save.info = set$save.info
+)
 }
 \arguments{
 \item{it}{The MCMC iteration of which the age-model should be calculated.}
+
+\item{depths}{The depths for which the age estimates are to be returned.}
 
 \item{set}{Detailed information of the current run, stored within this session's memory as variable info.}
 

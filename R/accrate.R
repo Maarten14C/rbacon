@@ -13,7 +13,7 @@
 #' @param d The depth for which accumulation rates need to be returned.
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param cmyr Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm.
-#' @ param remove.hiatuses Any hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses. 
+#' @param remove.hiatuses Any hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses.
 #' @param na.rm Remove NA entries. These are NOT removed by default, ensuring that always the same amount of iterations is returned.
 #' @param inversion.threshold Very small accumulation rate values will become very large when their inverse is calculated. By default, any accumulation rate smaller than 1e-6 is set to 1e-6.
 #' @author Maarten Blaauw, J. Andres Christen
@@ -151,7 +151,7 @@ accrate.age <- function(age, set=get('info'), cmyr=FALSE, ages=c(), BCAD=set$BCA
 #' @param d The depth for which accumulation rates need to be returned.
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param cmyr Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm.
-#' @ param remove.hiatuses Hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses. 
+#' @param remove.hiatuses Hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses.
 #' @param na.rm Remove NA entries. These are NOT removed by default, so that always the same amount of iterations is returned. NAs will however be removed if a core has slumps.
 #' @param probs The probability ranges to be returned. Defaults to the minima and maxima of the 95\% and 68\% ranges, as well as the median: \code{probs=c(.025, .16, .84, .975, .5)}.
 #' @author Maarten Blaauw
@@ -212,7 +212,7 @@ accrate.age.summary <- function(age, set=get('info'), cmyr=FALSE, na.rm=TRUE, pr
 #' @param dseq The sequence of depths for which accumulation rates need to be returned. Defaults to whatever info$dseq is, which most often is a sequence from the top to the bottom of the core at 1 cm increments.
 #' @param set Detailed information of the current run, stored within this session's memory as variable \code{info}.
 #' @param cmyr Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm.
-#' @ param remove.hiatuses Any hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses. 
+#' @param remove.hiatuses Any hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses.
 #' @param na.rm Remove NA entries. These are NOT removed by default, so that always the same amount of iterations is returned.
 #' @param probs The probability ranges to be returned. Defaults to the minima and maxima of the 95\% and 68\% ranges, as well as the median: \code{probs=c(.025, .16, .84, .975, .5)}.
 #' @param round The number of decimals to report. Defaults to \code{round=2}.
@@ -288,7 +288,7 @@ accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, remove.hiatuses
 #' @param remove.laststep Add a white line to remove spurious lines at the extreme of the graph. Defaults to TRUE.
 #' @param use.raster Rasters can be aligned or not in the underlying image function. Setting \code{use.raster=FALSE, default} takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. However, the alternative of \code{use.raster=TRUE} causes greyscales on some devices (e.g., OSX quartz) to 'flip'. If this is the case, use 'flip.acc=TRUE'.
 #' @param flip.acc When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.acc=TRUE} solves this. 
-#' @ param remove.hiatuses Any hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses. 
+#' @param remove.hiatuses Any hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses.
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A grey-scale plot of accumulation rate against core depth, and (invisibly) the list of depths and their accumulation rates (ranges, medians, means).
 #' @examples
@@ -445,6 +445,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' @param set Detailed information of the current run, stored within this session's memory as variable info.
 #' @param age.lim Minimum and maximum calendar age ranges, calculated automatically by default (\code{age.lim=c()}).
 #' @param age.lab The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}).
+#' @param na.rm Remove NA entries. These are NOT removed by default, ensuring that always the same amount of iterations is returned.
 #' @param kcal Use kcal BP. Default is \code{kcal=FALSE}.
 #' @param age.res Resolution or amount of greyscale pixels to cover the age scale of the plot. Default \code{age.res=400}.
 #' @param acc.res Resolution or amount of greyscale pixels to cover the accumulation rate scale plot. Default \code{age.res=400}.
@@ -629,7 +630,8 @@ accrate.age.ghost <- function(set=get('info'), age.lim=c(), age.lab=c(), na.rm=T
 #' @param column Which proxy to use (counting from the column number in the .csv file after the depths column).
 #' @param flux Instead of using a file, the data can also be provided as a variable. The first column should be the depths, and the variable 'column' should indicate which column (after the depth column) contains the proxy of interest. For example, if using Plum we could produce a greyscale of the mass accumulation rate: myflux <- info$detsPlum[,c(4,6)];
 #' @param set Detailed information of the current run, stored within this session's memory as variable info.
-#' @ param remove.hiatuses Hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses. 
+#' @param coredir Folder where the core's files \code{core} are and/or will be located. This will be a folder with the core's name, within either the folder \code{coredir='Bacon_runs/'}, or the folder Cores/ if it already exists within R's working directory, or a custom-built folder. For example, use \code{coredir="."} to place the core's folder within the current working directory, or \code{coredir="F:"} if you want to put the core's folder and files on a USB drive loaded under F:.
+#' @param remove.hiatuses Hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses.
 #' @param age.lab The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}).
 #' @param age.lim Minimum and maximum calendar age ranges, calculated automatically by default (\code{age.lim=c()}).
 #' @param age.rev The direction of the age axis can be reversed using \code{age.rev=TRUE}.

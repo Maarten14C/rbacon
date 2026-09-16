@@ -8,6 +8,7 @@ accrate.depth(
   d,
   set = get("info"),
   cmyr = FALSE,
+  remove.hiatuses = TRUE,
   na.rm = FALSE,
   inversion.threshold = 1e-06
 )
@@ -18,6 +19,8 @@ accrate.depth(
 \item{set}{Detailed information of the current run, stored within this session's memory as variable \code{info}.}
 
 \item{cmyr}{Accumulation rates can be calculated in cm/year or year/cm. By default \code{cmyr=FALSE} and accumulation rates are calculated in year per cm.}
+
+\item{remove.hiatuses}{Any hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses.}
 
 \item{na.rm}{Remove NA entries. These are NOT removed by default, ensuring that always the same amount of iterations is returned.}
 

@@ -23,6 +23,7 @@
 * `proxy.ghost` gains the option to plot the median ages (mean ages were already an option).
 * when calculating what proportion of the dates fit within the age-depth model, this is now done by checking for each date if any of its hpd intervals fall within any of the model's hpds (default 95\% confidence ranges).
 * if boundaries or hiatuses are set, the acc.rate and (if present) hiatus panels of the main `agedepth` function now show the posteriors of the multiple sections separately. They can also be coloured separately using for example `post.col=c(3,5)`.
+* supported 210Pb values are now plotted better when `ra.case=2`.
 
 ## bug fixes
 * if a depth above/smaller than d.min is provided in 'Bacon.hist', this now fails with a more informative error message. 

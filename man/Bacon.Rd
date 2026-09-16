@@ -126,7 +126,7 @@ Its shape is set by acc.shape (default \code{acc.shape=1.5}; higher values resul
 \item{acc.mean}{The accumulation rate prior consists of a gamma distribution with two parameters. Its mean is set by acc.mean (default \code{acc.mean=20} yr/cm (or whatever age or depth units are chosen),
 which can be changed to, e.g., 5, 10 or 50 for different kinds of deposits). Multiple values can be given in case of hiatuses or boundaries, e.g., Bacon(hiatus.depths=23, acc.mean=c(5,20))}
 
-\item{mem.strength}{The prior for the memory (dependence of accumulation rate between neighbouring depths) is a beta distribution, which looks much like the gamma distribution.
+\item{mem.strength}{The prior for the memory (dependence of accumulation rate between neighbouring depths) is a beta distribution, which looks much like the gamma distribution,
 but its values are always between 0 (no assumed memory) and 1 (100\% memory). Its default settings of \code{mem.strength=10}
 (higher values result in more peaked shapes) allow for a large range of posterior memory values. Please note that the default memory prior has been updated from rbacon version 2.5.1 on, to repair a bug.}
 
@@ -141,7 +141,7 @@ allow for a large range of posterior memory values. Please note that the default
 
 \item{hiatus.mean}{The prior for the mean of the hiatus gamma prior. Defaults to 100 and should be >0.}
 
-\item{hiatus.shape}{The prior for the shape of the hiatus gamma prior. Set to 0.5 (default) to favour short time gaps but enable larger ones. Set to 1 for an exponential prior distribution, and to >1 for a distribution that peaks around hiatus.mean.}
+\item{hiatus.shape}{The prior for the shape of the hiatus gamma prior. Set to 0.5 (default) to favour short time gaps but enable larger ones. Set to 1 for an exponential prior distribution, and to >1 for a distribution that peaks around hiatus.mean. The influence of hiatus.mean on the posterior chronology depends on hiatus.shape. Larger values of hiatus.shape produce a more informative prior and thus constrain posterior hiatus estimates more strongly around hiatus.mean, whereas smaller values allow the dating evidence to dominate.}
 
 \item{hiatus.max}{The hiatus prior used to be a uniform distribution with hiatus.max as its limits. Please use hiatus.mean and hiatus.shape instead. Will be deprecated.}
 
@@ -164,9 +164,9 @@ allow for a large range of posterior memory values. Please note that the default
 
 \item{postbomb}{Use a postbomb curve for negative (i.e. postbomb) 14C ages. \code{0 = none, 1 = NH1, 2 = NH2, 3 = NH3, 4 = SH1-2, 5 = SH3}}
 
-\item{F14C}{Radiocarbon ages can be provided as F14C values. If doing so, please indicate here which dates were entered as F14C (e.g., if the first 4 dates are in F14C, write \code{F14C=1:4}). The F14C values in your .csv file will then be replaced by their corresponding C14 ages.}
+\item{F14C}{Radiocarbon ages can be provided as F14C values. If doing so (for example if some of your dates are modern/postbomb), please indicate here which dates were entered as F14C (e.g., if the first 4 dates are in F14C, write \code{F14C=1:4}). The F14C values in your core's .csv file will then be replaced by their corresponding C14 ages.}
 
-\item{pMC}{Radiocarbon ages can be provided as pMC values. If doing so, please indicate here which dates were entered as pMC (e.g., if the first 4 dates are in pMC, write \code{pMC=1:4}). The pMC values in your .csv file will then be replaced by their corresponding C14 ages.}
+\item{pMC}{Radiocarbon ages can be provided as pMC values. If doing so, please indicate here which dates were entered as pMC (e.g., if the first 4 dates are in pMC, write \code{pMC=1:4}). The pMC values in your core's .csv file will then be replaced by their corresponding C14 ages.}
 
 \item{hot.stop}{Stop with a warning if provided F14C or pMC values (see above) are negative or above 3 resp. 300. Defaults to \code{hot.stop=TRUE}.}
 

@@ -8,6 +8,8 @@ flux.age.ghost(
   column = 1,
   flux = c(),
   set = get("info"),
+  coredir = set$coredir,
+  remove.hiatuses = TRUE,
   age.lab = c(),
   age.lim = c(),
   age.rev = FALSE,
@@ -19,7 +21,7 @@ flux.age.ghost(
   flux.res = 500,
   BCAD = set$BCAD,
   prob = 0.95,
-  clip.prob = 0.975,
+  clip.prob = 0.99,
   plot.range = TRUE,
   range.col = grey(0.5),
   range.lty = 2,
@@ -42,9 +44,13 @@ flux.age.ghost(
 \arguments{
 \item{column}{Which proxy to use (counting from the column number in the .csv file after the depths column).}
 
-\item{flux}{Instead of using a file, the data can also be provided as a variable. The first column should be the depths, and the variable 'column' should indicate which column (after the depth column) contains the proxy of interest.}
+\item{flux}{Instead of using a file, the data can also be provided as a variable. The first column should be the depths, and the variable 'column' should indicate which column (after the depth column) contains the proxy of interest. For example, if using Plum we could produce a greyscale of the mass accumulation rate: myflux <- info$detsPlum[,c(4,6)];}
 
 \item{set}{Detailed information of the current run, stored within this session's memory as variable info.}
+
+\item{coredir}{Folder where the core's files \code{core} are and/or will be located. This will be a folder with the core's name, within either the folder \code{coredir='Bacon_runs/'}, or the folder Cores/ if it already exists within R's working directory, or a custom-built folder. For example, use \code{coredir="."} to place the core's folder within the current working directory, or \code{coredir="F:"} if you want to put the core's folder and files on a USB drive loaded under F:.}
+
+\item{remove.hiatuses}{Hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses.}
 
 \item{age.lab}{The labels for the calendar axis (default \code{age.lab="cal BP"} or \code{"BC/AD"} if \code{BCAD=TRUE}).}
 

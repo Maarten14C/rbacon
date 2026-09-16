@@ -451,26 +451,18 @@ PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, supp.
   post.shape <- post.mn^2 / var(unlist(set$ps))
 
   if(set$nPs > 1) {
-    rng <- array(NA, dim=c(set$nPs, 22)) # from 0 to 1 by 0.05 (length 21) + mean
-    for(i in 1:set$nPs) {
-      rng[i,1:21] <- quantile(set$ps[,i], seq(0, 1, 0.05))
-      rng[i,22] <- mean(set$ps[,i])
-    }
-
+    supp.rng <- seq(min(set$ps, na.rm=TRUE), max(set$ps, na.rm=TRUE), length=51)
+	rng <- array(NA, dim=c(50, set$nPs)) 
+    for(i in 1:set$nPs) 
+      rng[,i] <- density(set$ps[,i], from=min(supp.rng), to=max(supp.rng), n=50)$y
+	rng <- rng / max(rng)
     if(length(supp.ylim) == 0)
-      supp.ylim <- c(min( rng[,1]), max(rng[,21]))
+      supp.ylim <- range(supp.rng)
     plot(0, type="n", ylim=supp.ylim, xlim=supp.xlim, main="", xlab="Depth (cm)", ylab=lab, yaxt=yaxt, cex.axis=panel.size)
-    n = 21
-    colorby = 1.0 / (n/2)
-    nsup <- 1:min(nrow(rng), nrow(set$detsplum))
-
-    for(i in 1:(n/2)) {
-      segments(set$detsPlum[nsup,4], rng[nsup,i], set$detsPlum[nsup,4], rng[nsup,(i+1)], grey(1.0-colorby*i), lwd=3)
-      segments(set$detsPlum[nsup,4], rng[nsup,n-i], set$detsPlum[nsup,4], rng[nsup,n-(i-1)], grey(1.0-colorby*i), lwd=3)
-    }
-
-    lines(set$detsPlum[nsup,4], rng[nsup,22], col="red", lty=12) # mean
-
+	for(i in 1:set$nPs)
+      image(set$detsPlum[i,4]+c(0, set$detsPlum[i,5]), 
+	    supp.rng, matrix(rng[,i], nrow=1), col=rgb(0,0,0,seq(0, 1, length=20)), add=TRUE)
+    lines(set$detsPlum[,4], colMeans(set$ps), col="red", lty=12) # mean
   } else {
     post <- density(set$ps)
     suppdata <- set$supportedData[,1:2]
