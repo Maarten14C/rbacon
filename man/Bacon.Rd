@@ -25,7 +25,7 @@ Bacon(
   mem.mean = 0.5,
   boundary = NA,
   hiatus.depths = NA,
-  hiatus.mean = 100,
+  hiatus.mean = 1000,
   hiatus.shape = 0.5,
   hiatus.max = 10000,
   add = c(),
@@ -139,7 +139,7 @@ allow for a large range of posterior memory values. Please note that the default
 \item{hiatus.depths}{The assumed depths for any hiatus should be provided as, e.g.,
 \code{hiatus.depths=20} for one at 20 cm depth, and \code{hiatus.depths=c(20,40)} for two hiatuses at 20 and 40 cm depth.}
 
-\item{hiatus.mean}{The prior for the mean of the hiatus gamma prior. Defaults to 100 and should be >0.}
+\item{hiatus.mean}{The prior for the mean of the hiatus gamma prior. Defaults to 1000 and should be >0.}
 
 \item{hiatus.shape}{The prior for the shape of the hiatus gamma prior. Set to 0.5 (default) to favour short time gaps but enable larger ones. Set to 1 for an exponential prior distribution, and to >1 for a distribution that peaks around hiatus.mean. The influence of hiatus.mean on the posterior chronology depends on hiatus.shape. Larger values of hiatus.shape produce a more informative prior and thus constrain posterior hiatus estimates more strongly around hiatus.mean, whereas smaller values allow the dating evidence to dominate.}
 
