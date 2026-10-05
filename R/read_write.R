@@ -242,7 +242,7 @@ assign_coredir <- function(coredir, core, ask=TRUE, isPlum=FALSE) {
 
 
 # read the dets file, converting old formats to new ones if so required
-read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", dec=".", cc=1) {
+read.dets <- function(core, coredir, othername=c(), set=get('info'), fast=TRUE, sep=",", dec=".", cc=1) {
   # if a .csv file exists, read it (checking that it is more recent than any .dat file in the folder). Otherwise, read the .dat file, check the columns, report back if >4 (>5?) columns, and convert to .csv (report this also)
   if(length(othername) > 0) {
     csv.file <- paste0(coredir, core, "/", othername)
@@ -264,13 +264,18 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
     message("Warning, sep should be 1 character only, please adapt")
 
   if(file.exists(csv.file)) {
-
     # first do some cleaning of the .csv file if necessary
     txt <- readLines(csv.file, warn=FALSE)
     orig <- txt
+    # normalise legacy encodings (happens in Scandinavian computers)
+    txt <- iconv(txt, from="latin1", to="ASCII", sub=" ")
+    #txt <- iconv(txt, from="latin1", to="UTF-8")
     txt <- gsub('"', "", txt) # remove quotation marks
+
     txt <- gsub("\u00A0", " ", txt) # and invisible spaces
     txt <- gsub(" *,", ",", txt) # and spaces before commas
+    txt <- gsub(";;", "", txt) # and double ;
+    txt <- gsub(",,", "", txt) # and double ,
     lastline <- txt[length(txt)]
     if(nchar(lastline) > 0 && !grepl("\n$", lastline))
       txt <- c(txt, "") # the last line should be empty
@@ -278,7 +283,7 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
       changed <- 1
 
     # now actually read the .csv file
-    dets <- fastread(text = txt, header = TRUE, sep = sep)
+    dets <- fastread(text=txt, fast=fast, header=TRUE, sep=sep)
 
     if(file.exists(dat.file)) # deal with old .dat files
       if(file.mtime(csv.file) < file.mtime(dat.file))
@@ -294,6 +299,9 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), sep=",", de
         changed <- 1
         }
     }
+  if(changed == 1)
+    message(paste("I cleaned up ", csv.file))
+
   name <- tolower(names(dets))
   commas <- grep(",,", readLines(csv.file)) # check if there are too many commas (e.g., lines with just commas)
   if(length(!is.na(commas)) > 0) # often an artefact of spreadsheet programs
@@ -677,15 +685,15 @@ write.Bacon.file <- function(set=get('info'), younger.than=c(), older.than=c(), 
 
 
 # internal functions to speed up reading and writing files, using the data.table R package if present
-fastread <- function(fnam, ...)
-  if("data.table" %in% (.packages()))
+fastread <- function(fnam, fast=TRUE, ...)
+  if(fast && "data.table" %in% (.packages()))
     as.data.frame(fread(fnam, ...)) else
       read.table(fnam, ...)
 
 
 
-fastwrite <- function(out, fnam, ...)
-  if("data.table" %in% (.packages()))
+fastwrite <- function(out, fnam, fast=TRUE, ...)
+  if(fast && "data.table" %in% (.packages()))
     fwrite(as.data.frame(out), fnam, ...) else
       write.table(out, fnam, ...)
 
@@ -693,12 +701,12 @@ fastwrite <- function(out, fnam, ...)
 
 # function to read output files into memory
 Bacon.AnaOut <- function(fnam, set=get('info'), MCMC.resample=TRUE) {
-  out <- fastread(fnam) # was read.table
+  out <- fastread(fnam, fast=TRUE) # was read.table
   if(MCMC.resample)
     if(set$ssize < nrow(out)) { # MB Aug 2022
       ss <- (nrow(out) - set$ssize + 1):nrow(out) # select the last ssize its only
       out <- out[ss,] # MB Aug 2022
-      fastwrite(out, fnam, col.names=FALSE, row.names=FALSE) # MB Dec 2022
+      fastwrite(out, fnam, fast=TRUE, col.names=FALSE, row.names=FALSE) # MB Dec 2022
     }
   n <- ncol(out)-1
   set$n <- n

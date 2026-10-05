@@ -148,7 +148,11 @@ agedepth(
   save.info = set$save.info,
   write.summary = TRUE,
   ssize = 4000,
-  use.cpp = TRUE
+  use.cpp = TRUE,
+  version.legend = TRUE,
+  version.location = c(),
+  version.cex = 0.7,
+  version.col = grey(0.5)
 )
 }
 \arguments{
@@ -442,6 +446,14 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 \item{ssize}{Number of MCMC iterations to use.}
 
 \item{use.cpp}{Whether or not to use a cpp function to calculate the ages. Defaults to TRUE, but can be set to FALSE (much slower but less experimental)}
+
+\item{version.legend}{Whether to print version information (including calibration curves used) inside the main panel}
+
+\item{version.location}{Location of the version information. Defaults to bottom right for rbacon, top right for rplum.}
+
+\item{version.cex}{Size of the version legend. Defaults to small, cex=0.7.}
+
+\item{version.col}{Colour of the version legend. Defaults to light grey.}
 }
 \value{
 A plot of the age-depth model, and estimated ages incl. confidence ranges for each depth.

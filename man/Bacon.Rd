@@ -55,6 +55,7 @@ Bacon(
   defaults = "defaultBacon_settings.txt",
   sep = ",",
   dec = ".",
+  fast = TRUE,
   runname = "",
   slump = c(),
   remove = FALSE,
@@ -210,6 +211,8 @@ try running your core again with \code{remember=FALSE}, or, start cleanly by typ
 \item{sep}{Separator between the fields of the plain text file containing the dating information. Default \code{sep=","}.}
 
 \item{dec}{Character for decimal points. Default to \code{dec="."}.}
+
+\item{fast}{Whether or not to use the fread function to read files quickly. Set to FALSE if there are problems with your core's .csv file (e.g. unexpected encoding).}
 
 \item{runname}{Text to add to the corename for specific runs, e.g., \code{runname="MyCore_Test1"}.}
 

@@ -1,7 +1,7 @@
 Package: rbacon
 Type: Package
 Title: Age-Depth Modelling using Bayesian Statistics
-Version: 4.0.0
+Version: 4.0.1
 Authors@R: 
     c(person(given = "Maarten",
              family = "Blaauw",

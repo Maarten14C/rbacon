@@ -1,3 +1,8 @@
+# consider setting use.raster to TRUE per default (much smaller pdfs)
+
+# added a version legend to the bottom right of the main panel. But it doesn't yet correctly reposition itself in all Plum runs
+
+# new option `fast` that enables a user not to use fread (which can cause issues with unexpected characters within .csv files)
 
 # check if cc4 can be hacked to build a tailor-made curve that contains potentially asymmetric, multimodal age distributions (e.g., tephra ages). (column 3 can be set to 0)
 
@@ -130,6 +135,7 @@
 #' @param defaults Name of the file containing settings for the core. For internal use only - do not change.
 #' @param sep Separator between the fields of the plain text file containing the dating information. Default \code{sep=","}.
 #' @param dec Character for decimal points. Default to \code{dec="."}.
+#' @param fast Whether or not to use the fread function to read files quickly. Set to FALSE if there are problems with your core's .csv file (e.g. unexpected encoding).
 #' @param runname Text to add to the corename for specific runs, e.g., \code{runname="MyCore_Test1"}.
 #' @param slump Upper and lower depths of any sections of assumed abrupt accumulation, that require excising before age-modelling (and adding after age-modelling). Requires pairs of depths, e.g., \code{slump=c(10,15,60,67)} for slumps at 67-60 and 15-10 cm core depth.
 #' @param remove Whether or not to remove depths within slumps. Defaults to \code{remove=FALSE}.
@@ -186,7 +192,7 @@
 #' Journal of Ecology 77: 1-23.
 #'
 #' @export
-Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=10, mem.mean=0.5, boundary=NA, hiatus.depths=NA, hiatus.mean=1000, hiatus.shape=0.5, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", cc.dir=c(), postbomb=0, F14C=c(), pMC=c(), hot.stop=TRUE, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, adjust.dby=TRUE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", runname="", slump=c(), remove=FALSE, BCAD=FALSE, ssize=4000, th0=c(), burnin=min(500, ssize), youngest.age=c(), oldest.age=c(), MinAge=c(), MaxAge=c(), cutoff=.01, plot.pdf=TRUE, quartz=FALSE, cairo=FALSE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, save.info=TRUE, older.than=c(), younger.than=c(), save.elbowages=FALSE, verbose=TRUE, use.cpp=TRUE, ...) {
+Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=NA, add.bottom=TRUE, d.by=1, seed=NA, depths.file=FALSE, depths=c(), depth.unit="cm", age.unit="yr", unit=depth.unit, acc.shape=1.5, acc.mean=20, mem.strength=10, mem.mean=0.5, boundary=NA, hiatus.depths=NA, hiatus.mean=1000, hiatus.shape=0.5, hiatus.max=10000, add=c(), after=.0001/thick, cc=1, cc1="IntCal20", cc2="Marine20", cc3="SHCal20", cc4="ConstCal", cc.dir=c(), postbomb=0, F14C=c(), pMC=c(), hot.stop=TRUE, delta.R=0, delta.STD=0, t.a=3, t.b=4, normal=FALSE, suggest=TRUE, accept.suggestions=FALSE, adjust.dby=TRUE, reswarn=c(10,200), remember=TRUE, ask=TRUE, run=TRUE, defaults="defaultBacon_settings.txt", sep=",", dec=".", fast=TRUE, runname="", slump=c(), remove=FALSE, BCAD=FALSE, ssize=4000, th0=c(), burnin=min(500, ssize), youngest.age=c(), oldest.age=c(), MinAge=c(), MaxAge=c(), cutoff=.01, plot.pdf=TRUE, quartz=FALSE, cairo=FALSE, dark=1, date.res=100, age.res=200, yr.res=age.res, close.connections=TRUE, save.info=TRUE, older.than=c(), younger.than=c(), save.elbowages=FALSE, verbose=TRUE, use.cpp=TRUE, ...) {
   # Check coredir and if required, copy example files into core directory
   coredir <- assign_coredir(coredir, core, ask, isPlum=FALSE)
   csv.file <- paste0(coredir, core, "/", core, ".csv")
@@ -208,7 +214,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
   # default_settings.txt is located within system.file
   defaults <- system.file("extdata", defaults, package=packageName())
   # read in the data, adapt settings from defaults if needed
-  dets <- read.dets(core, coredir, sep=sep, dec=dec, cc=cc)
+  dets <- read.dets(core, coredir, fast=fast, sep=sep, dec=dec, cc=cc)
   # give feedback about calibration curves used
   if(ncol(dets) > 4 && length(cc) > 0) {
     cc.csv <- unique(dets[,5])
@@ -358,7 +364,7 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     dfile <- paste0(info$coredir, info$core, "/", info$core, "_depths.txt")
     if(!file.exists(dfile))
       stop("I cannot find the file ", paste0(info$coredir, info$core, "/", info$core, "_depths.txt"), call.=FALSE)
-    depths <- fastread(dfile, header=FALSE)[,1]
+    depths <- fastread(dfile, fast=fast, header=FALSE)[,1]
     if(!is.numeric(depths[1]))
       stop("File should contain numbers only, no headers", call.=FALSE)
   }

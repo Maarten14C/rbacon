@@ -152,6 +152,10 @@
 #' @param write.summary Whether or not to write a file to the core's folder, which summarizes the run (MCMC, model fit, priors, posteriors, learning).
 #' @param ssize Number of MCMC iterations to use.
 #' @param use.cpp Whether or not to use a cpp function to calculate the ages. Defaults to TRUE, but can be set to FALSE (much slower but less experimental)
+#' @param version.legend Whether to print version information (including calibration curves used) inside the main panel
+#' @param version.location Location of the version information. Defaults to bottom right for rbacon, top right for rplum.
+#' @param version.cex Size of the version legend. Defaults to small, cex=0.7.
+#' @param version.col Colour of the version legend. Defaults to light grey.
 #' @author Maarten Blaauw, J. Andres Christen
 #' @return A plot of the age-depth model, and estimated ages incl. confidence ranges for each depth.
 #' @examples
@@ -160,7 +164,7 @@
 #'   agedepth()
 #' }
 #' @export
-agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), mem.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, accordion=c(), plotatthesedepths=c(), age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=1, darkest=1, prob=set$prob, rounded=c(), d.res=500, age.res=500, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, use.raster=FALSE, flip.age=FALSE, flip.d=FALSE, maxcalc=500, height=1, calheight=1, ex=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, range.col=grey(.5), range.lty="12", range.lwd=1, mn.col="red", mn.lty="12", mn.lwd=1, med.col=NA, med.lty="12", med.lwd=1, C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pb.background=.5, pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), supp.col=rgb(.5,0,.5,.5), remove.tail=TRUE, MCMC.resample=TRUE, hiatus.col=grey(0.5), hiatus.lty="12", from.col="white", to.col="black", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, plot.labels=FALSE, labels=c(), label.age=1, label.size=0.8, label.col="black", label.offset=c(0,0), label.adj=c(0.5,0), label.rot=0, after=set$after, bty="l", mar.left=c(3,3,1,.5), mar.middle=c(3,0,1,.5), mar.right=c(3,0,1,.5), mar.main=c(3,3,1,1), righthand=3, mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", MCMC.col=grey(.4), post.col=rgb(0,0,0,.2), post.border=rgb(0,0,0,.4), acc.post.col=c(), acc.post.border=c(), mem.post.col=c(), mem.post.border=c(), hiatus.post.col=c(), hiatus.post.border=c(), phi.post.col=c(), phi.post.border=c(), s.post.col=c(), s.post.border=c(), prior.col=3, prior.lwd=2, prior.fontcol=2, prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, mainpanel.tickfontsize=1, mainpanel.labelfontsize=1, acc.xlim=c(), acc.ylim=c(), mem.xlim=c(), mem.ylim=c(), hiatus.xlim=c(), hiatus.ylim=c(), phi.xlim=c(), phi.ylim=c(), supp.xlim=c(), supp.ylim=c(), xaxt="s", yaxt="s", plot.pb=TRUE, pb.lty=1, plot.pdf=FALSE, quartz=FALSE, cairo=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE, roundby=2, save.info=set$save.info, write.summary=TRUE, ssize=4e3, use.cpp=TRUE) {
+agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), mem.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, accordion=c(), plotatthesedepths=c(), age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=1, darkest=1, prob=set$prob, rounded=c(), d.res=500, age.res=500, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, use.raster=FALSE, flip.age=FALSE, flip.d=FALSE, maxcalc=500, height=1, calheight=1, ex=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, range.col=grey(.5), range.lty="12", range.lwd=1, mn.col="red", mn.lty="12", mn.lwd=1, med.col=NA, med.lty="12", med.lwd=1, C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pb.background=.5, pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), supp.col=rgb(.5,0,.5,.5), remove.tail=TRUE, MCMC.resample=TRUE, hiatus.col=grey(0.5), hiatus.lty="12", from.col="white", to.col="black", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, plot.labels=FALSE, labels=c(), label.age=1, label.size=0.8, label.col="black", label.offset=c(0,0), label.adj=c(0.5,0), label.rot=0, after=set$after, bty="l", mar.left=c(3,3,1,.5), mar.middle=c(3,0,1,.5), mar.right=c(3,0,1,.5), mar.main=c(3,3,1,1), righthand=3, mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", MCMC.col=grey(.4), post.col=rgb(0,0,0,.2), post.border=rgb(0,0,0,.4), acc.post.col=c(), acc.post.border=c(), mem.post.col=c(), mem.post.border=c(), hiatus.post.col=c(), hiatus.post.border=c(), phi.post.col=c(), phi.post.border=c(), s.post.col=c(), s.post.border=c(), prior.col=3, prior.lwd=2, prior.fontcol=2, prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, mainpanel.tickfontsize=1, mainpanel.labelfontsize=1, acc.xlim=c(), acc.ylim=c(), mem.xlim=c(), mem.ylim=c(), hiatus.xlim=c(), hiatus.ylim=c(), phi.xlim=c(), phi.ylim=c(), supp.xlim=c(), supp.ylim=c(), xaxt="s", yaxt="s", plot.pb=TRUE, pb.lty=1, plot.pdf=FALSE, quartz=FALSE, cairo=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE, roundby=2, save.info=set$save.info, write.summary=TRUE, ssize=4e3, use.cpp=TRUE, version.legend=TRUE, version.location=c(), version.cex=0.7, version.col=grey(.5)) {
 # Load the output, if it exists
   outp <- paste0(set$prefix, ".out")
   if(file.exists(outp))
@@ -502,6 +506,38 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
           lines(d[h], ranges[h,5], col=mn.col, lty=mn.lty, lwd=mn.lwd) # mean
         }
     }
+
+  if(version.legend) {
+    cc.used <- c(); pb.used <- 0; cc.label <- c()
+    if(ncol(set$dets) > 4)
+      cc.used <- unique(set$dets[which(set$dets[,5]>0),5]) else
+        cc.used <- cc
+    if(set$postbomb > 0)
+      pb.used <- postbomb
+    if(1 %in% cc.used)
+      cc.label <- c(cc.label, "IntCal20 (Reimer et al. 2020)")
+    if(2 %in% cc.used)
+      cc.label <- c(cc.label, "Marine20 (Heaton et al. 2020)")
+    if(3 %in% cc.used)
+      cc.label <- c(cc.label, "SHCal20 (Hogg et al. 2020)")
+    if(pb.used > 0)
+      cc.label <- c(cc.label, "postbomb (Hua et al. 2022)")
+
+    if(length(version.location) == 0)
+      version.location <- "bottomright"
+    if(set$isplum) {
+      if(set$hasBaconData)
+        lg <- paste0("rplum ", packageVersion('rplum'), ", ",
+          paste(cc.label, collapse=", ")) else {
+            lg <- paste0("rplum version ", packageVersion('rplum'))
+            if(length(version.location) == 0)
+              version.location <- "topright"
+        }
+    } else
+      lg <- paste0("rbacon ", packageVersion('rbacon'), " (Blaauw & Christen 2011), ",
+        paste(cc.label, collapse=", "))
+    legend(version.location, legend=lg, cex=version.cex, bty="n", text.col=version.col)
+  }
 
   set$ranges <- ranges
 
