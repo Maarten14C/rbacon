@@ -451,17 +451,17 @@ PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, supp.
   post.shape <- post.mn^2 / var(unlist(set$ps))
 
   if(set$nPs > 1) {
-    supp.rng <- seq(min(set$ps, na.rm=TRUE), max(set$ps, na.rm=TRUE), length=51)
-	rng <- array(NA, dim=c(50, set$nPs)) 
+    supp.rng <- seq(min(set$ps, na.rm=TRUE), max(set$ps, na.rm=TRUE), length=201)
+    rng <- array(NA, dim=c(200, set$nPs))
     for(i in 1:set$nPs) 
-      rng[,i] <- density(set$ps[,i], from=min(supp.rng), to=max(supp.rng), n=50)$y
-	rng <- rng / max(rng)
+      rng[,i] <- density(set$ps[,i], from=min(supp.rng), to=max(supp.rng), n=200)$y
+    rng <- rng / max(rng)
     if(length(supp.ylim) == 0)
       supp.ylim <- range(supp.rng)
     plot(0, type="n", ylim=supp.ylim, xlim=supp.xlim, main="", xlab="Depth (cm)", ylab=lab, yaxt=yaxt, cex.axis=panel.size)
-	for(i in 1:set$nPs)
+    for(i in 1:set$nPs)
       image(set$detsPlum[i,4]+c(0, set$detsPlum[i,5]), 
-	    supp.rng, matrix(rng[,i], nrow=1), col=rgb(0,0,0,seq(0, 1, length=20)), add=TRUE)
+        supp.rng, matrix(rng[,i], nrow=1), col=rgb(0,0,0,seq(0, max(rng[,i]), length=50)), add=TRUE)
     lines(set$detsPlum[,4], colMeans(set$ps), col="red", lty=12) # mean
   } else {
     post <- density(set$ps)
