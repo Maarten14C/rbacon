@@ -197,15 +197,9 @@ draw.pbmodelled <- function(set=get('info'), BCAD=set$BCAD, rotate.axes=FALSE, r
       modelled_col <- pbmodelled.col(seq(0, 1-max(z), length=50)) 
 
       # we're not using ghost.mirror, because of BC/AD axis reversal issues
-      if(rotate.axes) {
-        if(BCAD)
-          image(ages, d_slice, z, add=TRUE, col=modelled_col, useRaster=FALSE) else
-            image(ages, d_slice, z, add=TRUE, col=modelled_col, useRaster=FALSE)
-        } else {
-          if(BCAD)
-            image(d_slice, ages, z, add=TRUE, col=modelled_col, useRaster=FALSE) else
-              image(d_slice, ages, z, add=TRUE, col=modelled_col, useRaster=FALSE)
-        }
+      if(rotate.axes)
+        image(ages, d_slice, t(z), add=TRUE, col=modelled_col, useRaster=FALSE) else
+          image(d_slice, ages, z, add=TRUE, col=modelled_col, useRaster=FALSE)
     }
   }
 
