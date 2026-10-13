@@ -1,3 +1,5 @@
+# colour older-than and younger-than dates distinctly (or add an arrow)
+
 # consider setting use.raster to TRUE per default (much smaller pdfs)
 
 # added a version legend to the bottom right of the main panel. But it doesn't yet correctly reposition itself in all Plum runs

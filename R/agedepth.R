@@ -169,7 +169,6 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   outp <- paste0(set$prefix, ".out")
   if(file.exists(outp))
     set <- Bacon.AnaOut(outp, set, MCMC.resample)
-
   set$MCMCdiagnostics <- MCMC.diagnostics(set, ssize, talk=verbose)
 
   # Plum-specific

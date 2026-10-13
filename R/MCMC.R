@@ -212,9 +212,7 @@ MCMC.diagnostics <- function(set=get("info"), ssize=nrow(set$output), talk=TRUE)
   energy <- coda::as.mcmc(set$Us)
   ess <- coda::effectiveSize(energy)
   z <- abs(coda::geweke.diag(energy)$z)
-  
   ssize.warn <- paste0(" please run using more iterations (ssize >", ssize, ")")
-  
   if(length(energy) < 500) {
     message("Warning: very short MCMC chain,", ssize.warn) 
     invisible(NA)
