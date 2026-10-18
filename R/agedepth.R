@@ -79,6 +79,10 @@
 #' @param rgb.scale As alternative to 'from.col' and 'to.col', rgb.scale can be used to produce a coloured representation of all age-models. Needs 3 values for the intensity of red, green and blue. Defaults to grey-scales: \code{rgb.scale=c(0,0,0)}, but could also be, say, scales of red (\code{rgb.scale=c(1,0,0)}). 
 #' @param rgb.res Resolution of the colour spectrum depicting the age-depth model, if using 'rgb.scale'. Default \code{rgb.res=100}.
 #' @param slump.col Colour of slumps. Defaults to \code{slump.col=grey(0.8)}.
+#' @param olderthan.size size of the upward arrow to indicate `olderthan` dates (where the model goes to ages older than said date). Defaults to size 1. 
+#' @param olderthan.col colour of the upward arrow to indicate `olderthan` dates (where the model goes to ages older than said date). Defaults to black.
+#' @param youngerthan.size size of the downward arrow to indicate `youngerthan` dates (where the model goes to ages younger than said date). Defaults to size 1. 
+#' @param youngerthan.col colour of the downward arrow to indicate `youngerthan` dates (where the model goes to ages younger than said date). Defaults to black.
 #' @param normalise.dists By default, the distributions of more precise dates will cover less time and will thus peak higher than less precise dates. This can be avoided by specifying \code{normalise.dists=FALSE}.
 #' @param same.heights Plot the distributions of the dates all at the same maximum height (default \code{same.height=FALSE}).
 #' @param cc Calibration curve for 14C dates: \code{cc=1} for IntCal20 (northern hemisphere terrestrial), \code{cc=2} for Marine20 (marine), \code{cc=3} for SHCal20 (southern hemisphere terrestrial). For dates that are already on the cal BP scale use \code{cc=0}.
@@ -164,13 +168,12 @@
 #'   agedepth()
 #' }
 #' @export
-agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), mem.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, accordion=c(), plotatthesedepths=c(), age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=1, darkest=1, prob=set$prob, rounded=c(), d.res=500, age.res=500, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, use.raster=FALSE, flip.age=FALSE, flip.d=FALSE, maxcalc=500, height=1, calheight=1, ex=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, range.col=grey(.5), range.lty="12", range.lwd=1, mn.col="red", mn.lty="12", mn.lwd=1, med.col=NA, med.lty="12", med.lwd=1, C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pb.background=.5, pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), supp.col=rgb(.5,0,.5,.5), remove.tail=TRUE, MCMC.resample=TRUE, hiatus.col=grey(0.5), hiatus.lty="12", from.col="white", to.col="black", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, plot.labels=FALSE, labels=c(), label.age=1, label.size=0.8, label.col="black", label.offset=c(0,0), label.adj=c(0.5,0), label.rot=0, after=set$after, bty="l", mar.left=c(), mar.middle=c(), mar.right=c(), mar.main=c(), righthand=3, mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", MCMC.col=grey(.4), post.col=rgb(0,0,0,.2), post.border=rgb(0,0,0,.4), acc.post.col=c(), acc.post.border=c(), mem.post.col=c(), mem.post.border=c(), hiatus.post.col=c(), hiatus.post.border=c(), phi.post.col=c(), phi.post.border=c(), s.post.col=c(), s.post.border=c(), prior.col=3, prior.lwd=2, prior.fontcol=2, prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, mainpanel.tickfontsize=1, mainpanel.labelfontsize=1, acc.xlim=c(), acc.ylim=c(), mem.xlim=c(), mem.ylim=c(), hiatus.xlim=c(), hiatus.ylim=c(), phi.xlim=c(), phi.ylim=c(), supp.xlim=c(), supp.ylim=c(), xaxt="s", yaxt="s", plot.pb=TRUE, pb.lty=1, plot.pdf=FALSE, quartz=FALSE, cairo=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE, roundby=2, save.info=set$save.info, write.summary=TRUE, ssize=4e3, use.cpp=TRUE, version.legend=TRUE, version.location=c(), version.cex=0.7, version.col=grey(.5)) {
-# Load the output, if it exists
+agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), mem.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, accordion=c(), plotatthesedepths=c(), age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=1, darkest=1, prob=set$prob, rounded=c(), d.res=500, age.res=500, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, use.raster=FALSE, flip.age=FALSE, flip.d=FALSE, maxcalc=500, height=1, calheight=1, ex=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, range.col=grey(.5), range.lty="12", range.lwd=1, mn.col="red", mn.lty="12", mn.lwd=1, med.col=NA, med.lty="12", med.lwd=1, C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pb.background=.5, pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), supp.col=rgb(.5,0,.5,.5), remove.tail=TRUE, MCMC.resample=TRUE, hiatus.col=grey(0.5), hiatus.lty="12", from.col="white", to.col="black", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), olderthan.size=1, olderthan.col="black", youngerthan.size=1, youngerthan.col="black", normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, plot.labels=FALSE, labels=c(), label.age=1, label.size=0.8, label.col="black", label.offset=c(0,0), label.adj=c(0.5,0), label.rot=0, after=set$after, bty="l", mar.left=c(), mar.middle=c(), mar.right=c(), mar.main=c(), righthand=3, mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", MCMC.col=grey(.4), post.col=rgb(0,0,0,.2), post.border=rgb(0,0,0,.4), acc.post.col=c(), acc.post.border=c(), mem.post.col=c(), mem.post.border=c(), hiatus.post.col=c(), hiatus.post.border=c(), phi.post.col=c(), phi.post.border=c(), s.post.col=c(), s.post.border=c(), prior.col=3, prior.lwd=2, prior.fontcol=2, prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, mainpanel.tickfontsize=1, mainpanel.labelfontsize=1, acc.xlim=c(), acc.ylim=c(), mem.xlim=c(), mem.ylim=c(), hiatus.xlim=c(), hiatus.ylim=c(), phi.xlim=c(), phi.ylim=c(), supp.xlim=c(), supp.ylim=c(), xaxt="s", yaxt="s", plot.pb=TRUE, pb.lty=1, plot.pdf=FALSE, quartz=FALSE, cairo=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE, roundby=2, save.info=set$save.info, write.summary=TRUE, ssize=4e3, use.cpp=TRUE, version.legend=TRUE, version.location=c(), version.cex=0.7, version.col=grey(.5)) {
+  # Load the output, if it exists
   outp <- paste0(set$prefix, ".out")
   if(file.exists(outp))
     set <- Bacon.AnaOut(outp, set, MCMC.resample)
   set$MCMCdiagnostics <- MCMC.diagnostics(set, ssize, talk=verbose)
-
   # Plum-specific
   if(set$isplum) {
     outPlum <- paste0(set$prefix, "_plum.out")
@@ -460,9 +463,37 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
       calib.plot(set, dets=set$detsBacon, accordion=accordion, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes, height=height, calheight=calheight, ex=ex, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff, C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col, new.plot=FALSE, same.heights=same.heights)
 
     if(plot.pb)
-      set <- draw.pbmodelled(set, BCAD=BCAD, rotate.axes=rotate.axes, age.lim=age.lim, d.lim=c(d.min, d.max), pbmodelled.col=pbmodelled.col, pbmeasured.col=pbmeasured.col, pb.lim=pb.lim, supp.col=supp.col, mgp=mgp, pb.lty=pb.lty, save.info=save.info) # pointing to set since April 2025 
+      set <- draw.pbmodelled(set, BCAD=BCAD, rotate.axes=rotate.axes, age.lim=age.lim,
+       d.lim=c(d.min, d.max), pbmodelled.col=pbmodelled.col, 
+       pbmeasured.col=pbmeasured.col, pb.lim=pb.lim, supp.col=supp.col, 
+       mgp=mgp, pb.lty=pb.lty, save.info=save.info) # pointing to set since April 2025 
   } else
     calib.plot(set, dets=set$dets, accordion=accordion, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes, height=height, calheight=calheight, ex=ex, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff, C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col, new.plot=FALSE, same.heights=same.heights)
+
+  if(length(set$younger.than) > 0)
+    for(i in set$younger.than) {
+      d <- set$dets[i,4]
+      if(BCAD) 
+        age <- max(set$calib$probs[[i]][,1]) else 
+          age <- min(set$calib$probs[[i]][,1])
+      if(rotate.axes)
+        text(age, d, labels=expression(""%down%""), 
+          cex=youngerthan.size, col=youngerthan.col) else
+            text(d, age, labels=expression(""%down%""), 
+              cex=youngerthan.size, col=youngerthan.col)
+    }  
+  if(length(set$older.than) > 0)
+    for(i in set$older.than) {
+      d <- set$dets[i,4]
+      if(BCAD) 
+  	    age <- min(set$calib$probs[[i]][,1]) else 
+          age <- max(set$calib$probs[[i]][,1])
+      if(rotate.axes)
+        text(age, d, labels=expression(""%up%""), 
+          cex=olderthan.size, col=olderthan.col) else
+            text(d, age, labels=expression(""%up%""), 
+              cex=olderthan.size, col=olderthan.col)
+    }  
 
   if(plot.labels) {
     if(length(labels) == 0)

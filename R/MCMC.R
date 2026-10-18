@@ -210,7 +210,9 @@ Baconvergence <- function(core="MSB2K", runs=5, suggest=FALSE, verbose=TRUE, ...
 #' @export
 MCMC.diagnostics <- function(set=get("info"), ssize=nrow(set$output), talk=TRUE) {
   energy <- coda::as.mcmc(set$Us)
-  ess <- coda::effectiveSize(energy)
+  if(length(is.infinite(energy)) > 0)
+	ess <- Inf else
+      ess <- coda::effectiveSize(energy) 
   z <- abs(coda::geweke.diag(energy)$z)
   ssize.warn <- paste0(" please run using more iterations (ssize >", ssize, ")")
   if(length(energy) < 500) {

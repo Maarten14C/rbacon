@@ -1,4 +1,5 @@
-# colour older-than and younger-than dates distinctly (or add an arrow)
+
+# sometimes MCMC returns Inf when older.than is used (probably when the model is always out of support)
 
 # consider setting use.raster to TRUE per default (much smaller pdfs)
 
@@ -453,6 +454,10 @@ Bacon <- function(core="MSB2K", thick=5, coredir="", prob=0.95, d.min=NA, d.max=
     slumpdets[,4] <- toslump(slumpdets[,4], slump, remove=remove) # by default, dates within slumps are not removed
     info$slumpdets <- slumpdets[!is.na(slumpdets[,4]),]
   }
+  if(length(younger.than) > 0)
+    info$younger.than <- younger.than
+  if(length(older.than) > 0)
+    info$older.than <- older.than     
 
   ### produce files
   info$prefix <- paste0(coredir, core, "/", core, runname, "_", info$K)
