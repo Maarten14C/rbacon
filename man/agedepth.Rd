@@ -95,10 +95,10 @@ agedepth(
   label.rot = 0,
   after = set$after,
   bty = "l",
-  mar.left = c(3, 3, 1, 0.5),
-  mar.middle = c(3, 0, 1, 0.5),
-  mar.right = c(3, 0, 1, 0.5),
-  mar.main = c(3, 3, 1, 1),
+  mar.left = c(),
+  mar.middle = c(),
+  mar.right = c(),
+  mar.main = c(),
   righthand = 3,
   mgp = c(1.7, 0.7, 0),
   xaxs = "r",
@@ -339,13 +339,13 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{bty}{Type of box to be drawn around plots (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).}
 
-\item{mar.left}{Plot margins for the topleft panel (amount of white space along edges of axes 1-4). Default \code{mar.left=c(3,3,1,1)}.}
+\item{mar.left}{Plot margins for the topleft panel (amount of white space along edges of axes 1-4). If left empty, it is set to \code{mar.left=c(3,3,1,1)}.}
 
-\item{mar.middle}{Plot margins for the middle panel(s) at the top (amount of white space along edges of axes 1-4). Default \code{mar.middle=c(3,3,1,1)}.}
+\item{mar.middle}{Plot margins for the middle panel(s) at the top (amount of white space along edges of axes 1-4). If left empty, it is set to \code{mar.middle=c(3,3,1,1)}.}
 
-\item{mar.right}{Plot margins for the topright panel (amount of white space along edges of axes 1-4). Default \code{mar.right=c(3,3,1,1)}.}
+\item{mar.right}{Plot margins for the topright panel (amount of white space along edges of axes 1-4). If left empty, it is set to \code{mar.right=c(3,3,1,1)}.}
 
-\item{mar.main}{Plot margins for the main panel (amount of white space along edges of axes 1-4). Default \code{mar.main=c(3,3,1,1)}.}
+\item{mar.main}{Plot margins for the main panel (amount of white space along edges of axes 1-4). If left empty, it is set to  \code{mar.main=c(3,3,1,1)}.}
 
 \item{righthand}{Adapt the righthand margins by a certain amount (default 2) to allow a righthand axis to be plotted (for plum)}
 

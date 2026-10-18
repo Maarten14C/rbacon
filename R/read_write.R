@@ -776,6 +776,7 @@ ageranges <- function(d=c(), file=c(), sep="\t", set=get("info"), BCAD=set$BCAD,
   if(use.cpp) {
     hiatus <- set$hiatus.depths
     if(length(set$slump) > 0) {
+	  d_orig <- d # remember where you came from
       d <- toslump(d, set$slump)
       if(!is.na(hiatus[1]))
         hiatus <- set$slumphiatus
@@ -794,6 +795,8 @@ ageranges <- function(d=c(), file=c(), sep="\t", set=get("info"), BCAD=set$BCAD,
         error = function(e) {warning("C++ problem, please run again using use.cpp=FALSE"); return(NULL)}, interrupt = function(e) {stop("Operation interrupted by user")})
 
   # also needs to deal with slumps...
+  if(length(set$slump) > 0)
+    summ[,1] <- d_orig 
   if(BCAD)
     summ[,2:5] <- BCADtocalBP(summ[,2:5])
   summ[,2:5] <- round(summ[,2:5], roundby)

@@ -363,7 +363,8 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
     acc.lim <- rev(acc.lim)
 
   if(is.na(max.col))
-    col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], seq(max(accs$y[!is.na(accs$y)]), 0, length=rgb.res)) else
+    col <- rgb(rgb.scale[1], rgb.scale[2], rgb.scale[3], 
+      seq(max(accs$y[!is.na(accs$y) & !is.infinite(accs$y)]), 0, length=rgb.res)) else
       col <- col.scales(rgb.res, zero.colour=zero.col, max.colour=max.col, dark=dark, darkest=darkest)
 
   if(rotate.axes) {

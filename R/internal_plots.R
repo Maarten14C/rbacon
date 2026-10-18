@@ -84,8 +84,9 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
   z[z>1] <- 1
   z[z > dark] <- dark
   #z <- z/max(z)
-  z[z<cutoff] <- NA # do not plot pixels with probs very close to 0
+  z[is.infinite(z)] <- 0 # new Oct 2026
   z[is.na(z)] <- 0
+  z[z<cutoff] <- NA # do not plot pixels with probs very close to 0
   
   if(flip.d)
     z <- z[nrow(z):1,] 
@@ -179,7 +180,7 @@ col.scales <- function(n, zero.colour="white", max.colour="black", space="Lab", 
 PlotLogPost <- function(set, from=0, to=set$Tr, xaxs="i", yaxs="i", panel.size=.9, col=grey(0.4)) {
   y <- -set$Us[(from+1):to]
   y[is.infinite(y)] <- NA
-  plot(from:(to-1), y, type="l",
+  plot(from:(to-1), y, type="l", xlim=c(0, set$Tr),
     ylab="Log of Objective", xlab="Iteration", main="", xaxs=xaxs, yaxs=yaxs, col=col, cex.axis=panel.size)
 }
 
@@ -298,10 +299,10 @@ PlotPhiPrior <- function(s, mn, set=get('info'), depth.unit=depth.unit, age.unit
 
 
 # plot the posterior (and prior) of the accumulation rate
-PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main="", depth.unit=set$depth.unit, age.unit=set$age.unit, ylab="Frequency", xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, acc.xlim=c(), acc.ylim=c(), acc.lab=c(), line.col=3, line.width=2, text.col=2, hist.col=rgb(0,0,0,0.2), hist.border=grey(0.4)) {
+PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main="", depth.unit=set$depth.unit, age.unit=set$age.unit, ylab="Frequency", xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, acc.xlim=c(), acc.ylim=c(), acc.lab=c(), line.col=3, line.width=2, text.col=2, hist.col=rgb(0,0,0,0.2), hist.border=grey(0.4), its=NA, j=NA) {
   hi.full <- 2:(set$K - 1) # the accrate columns of the MCMC output (.out file)
 
-  if(!is.na(set$hiatus.depths[1])) { # we are in fact dealing with hiatuses
+  if(!is.na(set$hiatus.depths[1])) { # we have hiatuses
     if(length(set$slump) > 0)
       hiatus <- set$slumphiatus else
         hiatus <- set$hiatus.depths
@@ -323,13 +324,17 @@ PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main=
   post <- c() 
 
   if(is.na(set$hiatus.depths[1])) {
-    post.all <- unlist(set$output[,hi.full])
+    if(anyNA(its))
+      post.all <- unlist(set$output[,hi.full]) else
+        post.all <- unlist(set$output[its,1+j]) # only specific iterations (its) / sections (j)
     accseq <- seq(min(post.all), max(post.all), length=500) 
     xpol <- c(min(post.all), accseq, max(post.all))
     post.mn[1] <- mean(post.all)
     post.shape[1] <- post.mn[1]^2 / var(post.all)
     post.sd[1] <- sd(post.all)
-    post.dens <- density(post.all, from=min(xpol), to=max(xpol), n=500)$y
+    if(length(post.all) == 1)
+      post.dens <- rep(1, length(xpol)-2) else
+        post.dens <- density(post.all, from=min(xpol), to=max(xpol), n=500)$y
     post <- cbind(xpol, c(0, post.dens, 0)) # single polygon
   } else {
     out.rng <- range(unlist(set$output[,unlist(segments)]))
@@ -366,32 +371,42 @@ PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main=
       for(i in 1:(ncol(post)-1))
         polygon(cbind(post[,1], post[,i+1]), col=hist.col[i], border=hist.border[i])
   PlotAccPrior(s, mn, add=TRUE, xlim=acc.xlim, xlab="", ylab=ylab, main=main, csize=prior.size, line.col=line.col, line.width=line.width, text.col=text.col)
+  if(!anyNA(its))
+	abline(v=post.all[j], col="orange")  
   invisible(cbind(post.mn, post.shape))
 }
 
 
 
 # plot the posterior (and prior) of the memory
-PlotMemPost <- function(set=get('info'), corenam, K, main="", s=set$mem.strength, mn=set$mem.mean, ylab="Density", ds=1, thick, xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, mem.xlim=c(), mem.ylim=c(), mem.lab=c(), line.col=3, line.width=2, text.col=2, hist.col=grey(0.8), hist.border=grey(0.4)) {
+PlotMemPost <- function(set=get('info'), corenam, K, main="", s=set$mem.strength, mn=set$mem.mean, its=NA, ylab="Density", ds=1, thick=set$thick, xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, mem.xlim=c(), mem.ylim=c(), mem.lab=c(), line.col=3, line.width=2, text.col=2, hist.col=grey(0.8), hist.border=grey(0.4)) {
+  maxprior <- max(dbeta((0:100)/100, s*mn, s*(1-mn)))
   post <- set$output[,2+set$K]^(1/set$thick)
+  if(!anyNA(its))
+   post <- post[its]
   post.mn <- mean(post)
   post.strength <- post.mn * (1-post.mn) / var(post)-1
-  
-  post <- density(post, from=0, to=1) # was output[,set$n] but not ok for rplum
-  post <- cbind(c(min(post$x), post$x, max(post$x)), c(0, post$y, 0))
-  maxprior <- max(dbeta((0:100)/100, s*mn, s*(1-mn)))
+
+  if(length(post)==1) 
+    dpost <- cbind(c(0,post,1), c(0,maxprior,0)) else {
+      dpost <- density(post, from=0, to=1) # was output[,set$n] but not ok for rplum
+      dpost <- cbind(c(min(dpost$x), dpost$x, max(dpost$x)), c(0, dpost$y, 0))
+    }  
   if(length(mem.xlim) == 0)
-    mem.xlim <- range(post[,1])
+    mem.xlim <- range(dpost[,1])
   if(is.infinite(max(maxprior)))
-    max.y <- max(post[,2]) else
-      max.y <- max(maxprior, max(post[,2]))
+    max.y <- max(dpost[,2]) else
+      max.y <- max(maxprior, max(dpost[,2]))
   if(length(mem.ylim) == 0)
     mem.ylim <- c(0, 1.05*max.y)
   if(length(mem.lab) == 0)
     mem.lab <- "Memory"
   plot(0, type="n", xlab=mem.lab, xlim=mem.xlim, ylim=mem.ylim, ylab="", main="", xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
-  polygon(post, col=hist.col, border=hist.border)
+  polygon(dpost, col=hist.col, border=hist.border)
   PlotMemPrior(s, mn, thick, set, add=TRUE, xlab="", ylab=ylab, main=main, csize=prior.size, line.col=line.col, line.width=line.width, text.col=text.col)
+  if(!anyNA(its))
+	abline(v=post[its], col="orange")  
+  
   invisible(c(post.mn, post.strength))
 }
 

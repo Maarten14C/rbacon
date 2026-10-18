@@ -524,7 +524,7 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
       cc.used <- unique(set$dets[which(set$dets[,5]>0),5]) else
         cc.used <- cc
     if(set$postbomb > 0)
-      pb.used <- postbomb
+      pb.used <- set$postbomb
     if(1 %in% cc.used)
       cc.label <- c(cc.label, "IntCal20 (Reimer et al. 2020)")
     if(2 %in% cc.used)

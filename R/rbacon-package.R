@@ -8,7 +8,7 @@
 #' @importFrom grDevices dev.cur dev.interactive dev.list dev.copy dev.off extendrange grey pdf cairo_pdf rgb colorRampPalette colours
 #' @importFrom graphics abline axis box curve hist image layout legend lines mtext par plot points polygon rect segments text locator
 #' @importFrom stats approx coef dbeta density dgamma dnorm dunif lm median quantile rnorm weighted.mean var sd approxfun setNames na.omit
-#' @importFrom utils packageName read.csv read.table setTxtProgressBar txtProgressBar write.table head
+#' @importFrom utils packageName packageVersion read.csv read.table setTxtProgressBar txtProgressBar write.table head
 #' @importFrom Rcpp evalCpp
 #' @importFrom coda as.mcmc gelman.diag mcmc.list effectiveSize geweke.diag
 #' @importFrom data.table fread fwrite

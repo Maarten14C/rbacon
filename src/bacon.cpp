@@ -46,8 +46,8 @@ the files:
 
 // [[Rcpp::export]]
 int bacon( std::string inputfile1, std::string outputfile1, int ssize, std::string dircc) {// Command line: bacon inputfile outputfile
-	
-	char *inputfile = new char[inputfile1.length() + 1];
+
+  char *inputfile = new char[inputfile1.length() + 1];
   strcpy(inputfile, inputfile1.c_str());
 
 

@@ -50,4 +50,4 @@ LinkingTo: Rcpp
 Suggests: knitr, rmarkdown, utf8
 VignetteBuilder: knitr
 Maintainer: Maarten Blaauw <maarten.blaauw@qub.ac.uk>
-Config/roxygen2/version: 8.1.0
+Config/roxygen2/version: 8.1.1
