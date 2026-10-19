@@ -1,6 +1,6 @@
 # rbacon 4.0.1
 * depths are now reported correctly when using slumps and `use.cpp=TRUE`.
-* added a version legend to the main age-depth model plot.
+* added a version legend to the main age-depth model plot (optional).
 * new option `fast`, which enables (TRUE; default) or disables (FALSE) the use of the fread and fwrite functions within the data.table R package to speed up reading/writing to files. Disabling can help with issues in reading files in uncommon encoding (e.g. Latin-1).
 * `older.than` and `younger.than` dates are now indicated by upward respectively downward arrows.
 

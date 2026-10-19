@@ -1,11 +1,5 @@
 
-# sometimes MCMC returns Inf when older.than is used (probably when the model is always out of support)
-
-# consider setting use.raster to TRUE per default (much smaller pdfs)
-
-# added a version legend to the bottom right of the main panel. But it doesn't yet correctly reposition itself in all Plum runs
-
-# new option `fast` that enables a user not to use fread (which can cause issues with unexpected characters within .csv files)
+# consider setting use.raster to TRUE per default (much smaller pdfs). Keeping to FALSE for now. 
 
 # check if cc4 can be hacked to build a tailor-made curve that contains potentially asymmetric, multimodal age distributions (e.g., tephra ages). (column 3 can be set to 0)
 
@@ -161,8 +155,8 @@
 #' @param yr.res Deprecated - use age.res instead
 #' @param close.connections Internal option to close connections after a run. Default \code{close.connections=TRUE}.
 #' @param save.info By default, a variable called `info' with relevant information about the run (e.g., core name, priors, settings, ages, output) is saved into the working directory. Note that this will overwrite any existing variable with the same name - as an alternative, one could run, e.g., \code{myvar <- Bacon()}, followed by supplying the variable \code{myvar} in any subsequent commands.
-#' @param older.than an option to enable dates at the limit of C-14 dating. If there are older.than dates, they tell us that the core should be older than a certain age at that depth. For example, if the 7th and 8th dates in the core's .csv file are older-than dates, use as \code{older.than=c(7,8)}. The MCMC run could be problematic if the older-than ages do not fit with the other information.
-#' @param younger.than an option to provide younger-than ages, for example a historical pollen marker. If there are younger-than dates, they tell us that the core should be younger than a certain age at that depth. For example, if the 7th and 8th dates in the core's .csv file are younger.than dates, use as \code{younger.than=c(7,8)}. The MCMC run could be problematic if the younger.than ages do not fit with the other information.
+#' @param older.than an option to enable dates at the limit of C-14 dating. If there are older.than dates, they tell us that the core should be older than a certain age at that depth. For example, if the 7th and 8th dates in the core's .csv file are older-than dates, use as \code{older.than=c(7,8)}. The MCMC run could be problematic if the older-than ages do not fit with the other information. If so, then use the `set.initvals()` function to manually provide initial ballpark values for the age-depth model, at the older end.
+#' @param younger.than an option to provide younger-than ages, for example a historical pollen marker. If there are younger-than dates, they tell us that the core should be younger than a certain age at that depth. For example, if the 7th and 8th dates in the core's .csv file are younger.than dates, use as \code{younger.than=c(7,8)}. The MCMC run could be problematic if the younger.than ages do not fit with the other information. If so, then use the `set.initvals()` function to manually provide initial ballpark values for the age-depth model, at the younger end.
 #' @param save.elbowages If you want to have a file with the MCMC-derived ages for all the age-depth model's elbows, set \code{save.elbowages=TRUE} and a file with the ages will be saved in the core's folder, starting with the core name, followed by its number of sections, d.min, and section thickness, and ending in "_elbowages.txt".
 #' @param verbose Provide feedback on what is happening (default \code{verbose=TRUE}).
 #' @param use.cpp Whether or not to use a cpp function to calculate the ages. Defaults to TRUE, but can be set to FALSE (much slower but less experimental)

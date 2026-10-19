@@ -730,8 +730,8 @@ Plum.AnaOut <- function(fnam, set=get('info'), MCMC.resample=TRUE) {
   n <- ncol(out)-1
   set$nPs <- n
   set$TrPs <- nrow(out)
-  set$phi  <- out[,1]
-  set$ps   <- out[,2:(n+1)]
+  set$phi <- out[,1]
+  set$ps <- out[,2:(n+1)]
   return(set)
 }
 

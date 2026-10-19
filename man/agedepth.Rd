@@ -233,7 +233,7 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{rev.d}{The direction of the depth axis, which can be reversed using \code{rev.d=TRUE}.}
 
-\item{use.raster}{Rasters can be aligned or not in the underlying image function. Setting \code{use.raster=FALSE, default} takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. However, the alternative of \code{use.raster=TRUE} causes greyscales on some devices (e.g., OSX quartz) to 'flip'. If this is the case, use 'flip.acc=TRUE'.}
+\item{use.raster}{Raster output (\code{use.raster=TRUE}) is often faster and can avoid anti-aliasing artefacts (such as faint lines between cells) seen with vector rendering. However, some graphics devices may render greyscales incorrectly or invert colour scales. If this occurs, set use.raster=FALSE or try flip.acc=TRUE. Defaults to \code{use.raster=FALSE}.}
 
 \item{flip.age}{When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.age=TRUE} can flip the ages back again.}
 

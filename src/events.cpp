@@ -144,7 +144,6 @@ public:
 
 };
 
-
 // [[Rcpp::export]]
 void events(double th1, double th2,double th_shift,double window, std::string outputfname1, std::string MCMCsamplesfname1, int  samplesize,int  K, double c0, double Dc, std::string eventprobsfname1, int  depths_size) {
 
