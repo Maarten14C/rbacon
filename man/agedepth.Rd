@@ -79,6 +79,10 @@ agedepth(
   rgb.scale = c(0, 0, 0),
   rgb.res = 100,
   slump.col = grey(0.8),
+  olderthan.size = 1,
+  olderthan.col = "black",
+  youngerthan.size = 1,
+  youngerthan.col = "black",
   normalise.dists = TRUE,
   same.heights = FALSE,
   cc = set$cc,
@@ -306,6 +310,14 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 \item{rgb.res}{Resolution of the colour spectrum depicting the age-depth model, if using 'rgb.scale'. Default \code{rgb.res=100}.}
 
 \item{slump.col}{Colour of slumps. Defaults to \code{slump.col=grey(0.8)}.}
+
+\item{olderthan.size}{size of the upward arrow to indicate `olderthan` dates (where the model goes to ages older than said date). Defaults to size 1.}
+
+\item{olderthan.col}{colour of the upward arrow to indicate `olderthan` dates (where the model goes to ages older than said date). Defaults to black.}
+
+\item{youngerthan.size}{size of the downward arrow to indicate `youngerthan` dates (where the model goes to ages younger than said date). Defaults to size 1.}
+
+\item{youngerthan.col}{colour of the downward arrow to indicate `youngerthan` dates (where the model goes to ages younger than said date). Defaults to black.}
 
 \item{normalise.dists}{By default, the distributions of more precise dates will cover less time and will thus peak higher than less precise dates. This can be avoided by specifying \code{normalise.dists=FALSE}.}
 
