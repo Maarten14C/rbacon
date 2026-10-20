@@ -551,9 +551,15 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
   if(version.legend) {
     cc.used <- c(); pb.used <- 0; cc.label <- c()
-    if(ncol(set$dets) > 4)
-      cc.used <- unique(set$dets[which(set$dets[,5]>0),5]) else
-        cc.used <- cc
+    if(set$isplum) {
+      if(set$hasBaconData) # then check for any radiocarbon dates
+        if(ncol(set$detsBacon) > 4)
+          cc.used <- unique(set$detsBacon[which(set$detsBacon[,5]>0),5]) else
+            cc.used <- cc
+    } else # not plum
+        if(ncol(set$dets) > 4)
+          cc.used <- unique(set$dets[which(set$dets[,5]>0),5]) else
+            cc.used <- cc
     if(set$postbomb > 0)
       pb.used <- set$postbomb
     if(1 %in% cc.used)

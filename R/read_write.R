@@ -300,7 +300,7 @@ read.dets <- function(core, coredir, othername=c(), set=get('info'), fast=TRUE, 
         }
     }
   if(changed == 1)
-    message(paste("I cleaned up ", csv.file))
+    message(paste("I cleaned up", csv.file))
 
   name <- tolower(names(dets))
   commas <- grep(",,", readLines(csv.file)) # check if there are too many commas (e.g., lines with just commas)

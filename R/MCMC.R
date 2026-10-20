@@ -211,7 +211,7 @@ Baconvergence <- function(core="MSB2K", runs=5, suggest=FALSE, verbose=TRUE, ...
 MCMC.diagnostics <- function(set=get("info"), ssize=nrow(set$output), talk=TRUE) {
   energy <- coda::as.mcmc(set$Us)
   if(length(is.infinite(energy)) > 0)
-	ess <- Inf else
+    ess <- Inf else
       ess <- coda::effectiveSize(energy) 
   z <- abs(coda::geweke.diag(energy)$z)
   ssize.warn <- paste0(" please run using more iterations (ssize >", ssize, ")")
@@ -347,8 +347,8 @@ model.dates.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE
     depths <- toslump(depths, set$slump, remove=FALSE)
   dates <- 1:length(depths)
 
-  get.modelages <- function(i) {
-    depth.age <- density(Bacon.Age.d(depths[i], set), na.rm=TRUE)
+  get.modelages <- function(i) { # works in cal BP
+    depth.age <- density(Bacon.Age.d(depths[i], set, BCAD=FALSE), na.rm=TRUE)
     cbind(depth.age$x, depth.age$y/sum(depth.age$y))
   }
 
@@ -360,7 +360,9 @@ model.dates.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE
   inorout <- sapply(dates, this.overlap)
   frac.in <- length(which(inorout==TRUE)) / length(depths)
   
-  string <- paste0(if(frac.in < .80) "Warning! Only ", round(100*frac.in, decimals), "% of the dates (", length(which(inorout==TRUE)), "/", length(depths), ") overlap with the age-depth model (", 100*set$prob, "% hpd ranges)")
+  string <- paste0(if(frac.in < .80) "Warning! Only ", round(100*frac.in, decimals),
+    "% of the dates (", length(which(inorout==TRUE)), "/", length(depths),
+    ") overlap with the age-depth model (", 100*set$prob, "% hpd ranges)")
   
   if(verbose) 
     message(string)
@@ -373,6 +375,9 @@ model.dates.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE
 # calculate the proportion of dates that are within the age-depth model's confidence ranges
 overlap.intervals <- function(set=get('info'), digits=0, verbose=TRUE) {
   d <- set$dets[,4]
+  if(set$isplum)
+    if(set$hasBaconData)
+      depths <- set$detsBacon[,4]
   top <- ifelse(length(set$d.min) == 0, 1, min(which(d >= set$d.min)))
   bottom <- ifelse(length(set$d.max) == 0, length(d), max(which(d <= set$d.max)))
   these <- top:bottom
