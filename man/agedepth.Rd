@@ -40,7 +40,7 @@ agedepth(
   rev.age = FALSE,
   rev.yr = rev.age,
   rev.d = FALSE,
-  use.raster = FALSE,
+  use.raster = TRUE,
   flip.age = FALSE,
   flip.d = FALSE,
   maxcalc = 500,
@@ -233,7 +233,7 @@ and its name should start with the core's name and end with '_depths.txt'. Then 
 
 \item{rev.d}{The direction of the depth axis, which can be reversed using \code{rev.d=TRUE}.}
 
-\item{use.raster}{Raster output (\code{use.raster=TRUE}) is often faster and can avoid anti-aliasing artefacts (such as faint lines between cells) seen with vector rendering. However, some graphics devices may render greyscales incorrectly or invert colour scales. If this occurs, set use.raster=FALSE or try flip.acc=TRUE. Defaults to \code{use.raster=FALSE}.}
+\item{use.raster}{Raster output (\code{use.raster=TRUE}, default) is often faster and can avoid anti-aliasing artefacts (such as faint lines between cells) seen with vector rendering. However, some graphics devices may render greyscales incorrectly or invert colour scales. If this occurs, set use.raster=FALSE or try flip.acc=TRUE. Defaults to \code{use.raster=FALSE}. Playing around with this option could be useful if pdf copies of the graph cause large file sizes.}
 
 \item{flip.age}{When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.age=TRUE} can flip the ages back again.}
 
