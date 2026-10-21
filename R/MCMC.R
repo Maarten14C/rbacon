@@ -347,7 +347,7 @@ model.dates.hpd <- function(set=get('info'), prob=0.95, decimals=1, verbose=TRUE
     depths <- toslump(depths, set$slump, remove=FALSE)
   dates <- 1:length(depths)
 
-  get.modelages <- function(i) { # works in cal BP
+  get.modelages <- function(i) { # always works in cal BP
     depth.age <- density(Bacon.Age.d(depths[i], set, BCAD=FALSE), na.rm=TRUE)
     cbind(depth.age$x, depth.age$y/sum(depth.age$y))
   }

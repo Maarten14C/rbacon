@@ -94,7 +94,7 @@ NumericMatrix depths_ageranges(
     quantiles(i, 4) = mean;
   }
 
-  colnames(quantiles) = CharacterVector::create("depths", "qmin", "qmax", "median", "mean");
+  colnames(quantiles) = CharacterVector::create("depth", "qmin", "qmax", "median", "mean");
   return quantiles;
 }
 

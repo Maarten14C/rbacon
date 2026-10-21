@@ -3,6 +3,8 @@
 * added a version legend to the main age-depth model plot (optional).
 * new option `fast`, which enables (TRUE; default) or disables (FALSE) the use of the fread and fwrite functions within the data.table R package to speed up reading/writing to files. Disabling can help with issues in reading files in uncommon encoding (e.g. Latin-1).
 * `older.than` and `younger.than` dates are now indicated by upward respectively downward arrows.
+* `age.ranges` now works better when `use.cpp=TRUE` and `BCAD=TRUE`. This also results in better drawing of the top parts of Plum age-depth models.
+* the `use.raster` option in `agedepth` now defaults to TRUE, since it results in smaller file sizes when copying the device to a pdf, and causes fewer issues with drawing artefacts such as faint white lines. Please report any unexpected behaviour.
 
 # rbacon 4.0.0
 

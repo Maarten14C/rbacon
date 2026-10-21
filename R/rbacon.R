@@ -1,5 +1,5 @@
 
-# consider setting use.raster to TRUE per default (much smaller pdfs). Keeping to FALSE for now. 
+# consider setting use.raster to TRUE per default (generates much smaller pdfs). Keeping to FALSE for now.
 
 # check if cc4 can be hacked to build a tailor-made curve that contains potentially asymmetric, multimodal age distributions (e.g., tephra ages). (column 3 can be set to 0)
 

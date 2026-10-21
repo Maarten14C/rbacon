@@ -3,24 +3,29 @@
 #################### user-invisible plot functions ####################
 
 # to plot greyscale/ghost graphs of the age-depth model
-agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, accordion=c(), BCAD=set$BCAD, rotate.axes=FALSE, rev.d=FALSE, rev.age=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), from.col=NA, to.col="black", col.res=256, rgb.scale=c(0,0,0), cutoff=0.001, age.lim=c(), use.raster=FALSE, flip.d=FALSE, flip.age=FALSE, verbose=TRUE, grid=FALSE, use.cpp=TRUE) {
+agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set$d.max, accordion=c(), BCAD=set$BCAD, rotate.axes=FALSE,
+  rev.d=FALSE, rev.age=FALSE, d.res=400, age.res=400, rgb.res=100, dark=c(), from.col=NA, to.col="black", col.res=256, rgb.scale=c(0,0,0),
+  cutoff=0.001, age.lim=c(), use.raster=FALSE, flip.d=FALSE, flip.age=FALSE, verbose=TRUE, grid=FALSE, use.cpp=TRUE) {
+
+  # I tried working with par('usr') but the greyscale ghost is usually limited to within (not at) the axis limits
+
   if(length(dseq) == 0)
     dseq <- seq(d.min, d.max, length=d.res)
   # d.lim <- range(d.seq)
 
   if(length(age.lim) == 0) {
-    ds <- max(1, min(which(set$ranges[,1] >= min(dseq)))) : 
+    ds <- max(1, min(which(set$ranges[,1] >= min(dseq)))) :
       min(nrow(set$ranges), max(which(set$ranges[,1] <= max(dseq))))
-    age.lim <- range(set$ranges[ds,2:3]) # 95% age ranges 
+    age.lim <- range(set$ranges[ds,2:3]) # 95% age ranges
   }
   if((!set$BCAD && BCAD) || (set$BCAD && BCAD))
     age.lim <- rice::BCADtocalBP(age.lim)
   age.seq <- seq(min(age.lim), max(age.lim), length=age.res)
-  
-  if(set$isplum) # plum has a strange feature with a grey shape appearing
-    dseq <- dseq[-1] # at dmin. Thus removing the first depth
 
- if(length(accordion) == 2) # but will not work with image since constant bins required
+  #if(set$isplum) # plum has a strange feature with a grey shape appearing
+  #  dseq <- dseq[-1] # at dmin. Thus removing the first depth
+
+  if(length(accordion) == 2) # but will not work with image since constant bins required
     dseq <- squeeze(dseq, accordion[1], accordion[2])
 
   if(use.cpp) {
@@ -38,12 +43,13 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
 
     hists <- tryCatch({
       if(is.na(set$hiatus.depths[1]))
-        depths_agegrid(d, out=as.matrix(set$output), elbows=set$elbows, hist_n=age.res, min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95) else
-          depths_agegrid_hiatus(d, out=as.matrix(set$output), elbows=set$elbows,
-            hiatus_depths=hiatus, slopes_above=set$slope.above,
-            slopes_below=set$slope.below, elbow_above_hiatus=set$elbow.above,
-            elbow_below_hiatus=set$elbow.below, hist_n=age.res,
-            min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95)
+        depths_agegrid(d, out=as.matrix(set$output), elbows=set$elbows, hist_n=age.res,
+          min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95) else
+            depths_agegrid_hiatus(d, out=as.matrix(set$output), elbows=set$elbows,
+              hiatus_depths=hiatus, slopes_above=set$slope.above,
+              slopes_below=set$slope.below, elbow_above_hiatus=set$elbow.above,
+              elbow_below_hiatus=set$elbow.below, hist_n=age.res,
+              min_age=min(age.lim), max_age=max(age.lim), n_rows=set$Tr, prob=.95)
     }, 
       error = function(e) {
        warning("C++ problem, please run again using use.cpp=FALSE"); return(NULL)
@@ -187,7 +193,8 @@ PlotLogPost <- function(set, from=0, to=set$Tr, xaxs="i", yaxs="i", panel.size=.
 
 
 # plot the prior for the accumulation rate
-PlotAccPrior <- function(s, mn, set=get('info'), depth.unit=set$depth.unit, age.unit=set$age.unit, main="", xlim=c(0, 3*max(mn)), xlab=c(), ylab="Density", add=FALSE, legend=TRUE, csize=.9, line.col=3, line.width=2, text.col=2) {
+PlotAccPrior <- function(s, mn, set=get('info'), depth.unit=set$depth.unit, age.unit=set$age.unit, main="",
+  xlim=c(0, 3*max(mn)), xlab=c(), ylab="Density", add=FALSE, legend=TRUE, csize=.9, line.col=3, line.width=2, text.col=2) {
   o <- order(s, decreasing=TRUE)
 #  priors <- unique(cbind(s[o],mn[o])[,1:2])
   priors <- cbind(unique(s[o]), unique(mn[o]))[,1:2]
@@ -372,7 +379,7 @@ PlotAccPost <- function(set=get('info'), s=set$acc.shape, mn=set$acc.mean, main=
         polygon(cbind(post[,1], post[,i+1]), col=hist.col[i], border=hist.border[i])
   PlotAccPrior(s, mn, add=TRUE, xlim=acc.xlim, xlab="", ylab=ylab, main=main, csize=prior.size, line.col=line.col, line.width=line.width, text.col=text.col)
   if(!anyNA(its))
-	abline(v=post.all[j], col="orange")  
+    abline(v=post.all[j], col="orange")
   invisible(cbind(post.mn, post.shape))
 }
 
@@ -405,7 +412,7 @@ PlotMemPost <- function(set=get('info'), corenam, K, main="", s=set$mem.strength
   polygon(dpost, col=hist.col, border=hist.border)
   PlotMemPrior(s, mn, thick, set, add=TRUE, xlab="", ylab=ylab, main=main, csize=prior.size, line.col=line.col, line.width=line.width, text.col=text.col)
   if(!anyNA(its))
-	abline(v=post[its], col="orange")  
+    abline(v=post[its], col="orange")
   
   invisible(c(post.mn, post.strength))
 }
@@ -413,7 +420,9 @@ PlotMemPost <- function(set=get('info'), corenam, K, main="", s=set$mem.strength
 
 
 # plot the posterior (and prior) of the hiatus
-PlotHiatusPost <- function(set=get('info'), mn=set$hiatus.mean, main="", xlab=paste0("Hiatus size (", set$age.unit, ")"), ylab="Frequency", after=set$after, xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, hiatus.xlim=c(), hiatus.ylim=c(), line.col=3, line.width=2, text.col=2, hist.col=grey(0.8), hist.border=grey(0.4)) {
+PlotHiatusPost <- function(set=get('info'), mn=set$hiatus.mean, main="", xlab=paste0("Hiatus size (", set$age.unit, ")"),
+  ylab="Frequency", after=set$after, xaxs="i", yaxs="i", yaxt="n", prior.size=.9, panel.size=.9, hiatus.xlim=c(), hiatus.ylim=c(),
+  line.col=3, line.width=2, text.col=2, hist.col=grey(0.8), hist.border=grey(0.4)) {
   gaps <- set$hiatus.start - set$hiatus.end
   post.mn <- mean(gaps)
   post.shape <- post.mn^2 / var(gaps)
@@ -437,7 +446,8 @@ PlotHiatusPost <- function(set=get('info'), mn=set$hiatus.mean, main="", xlab=pa
   if(length(hiatus.ylim) == 0)
     hiatus.ylim <- c(0, max.y)
 
-  plot(0, type="n", main="", xlab=xlab, xlim=hiatus.xlim, ylab=ylab, ylim=hiatus.ylim, xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
+  plot(0, type="n", main="", xlab=xlab, xlim=hiatus.xlim, ylab=ylab, ylim=hiatus.ylim,
+    xaxs=xaxs, yaxs=yaxs, yaxt=yaxt, cex.axis=panel.size)
 #  if(length(gaps) > 1)
 #    polygon(cbind(c(min(gaps$x), gaps$x, max(gaps$x)), c(0,gaps$y,0)),
 #      col=hist.col, border=hist.border)
@@ -448,7 +458,8 @@ PlotHiatusPost <- function(set=get('info'), mn=set$hiatus.mean, main="", xlab=pa
         c(0, densities[[i]]$y, 0),
         col=hist.col[min(i,length(hist.col))],
         border=hist.border[min(i,length(hist.border))])
- PlotHiatusPrior(add=TRUE, xlab="", ylab=ylab, main=main, xlim=hiatus.xlim, csize=prior.size, line.col=line.col, line.width=line.width, text.col=text.col)
+  PlotHiatusPrior(add=TRUE, xlab="", ylab=ylab, main=main, xlim=hiatus.xlim, csize=prior.size,
+    line.col=line.col, line.width=line.width, text.col=text.col)
 
   invisible(list(post.mn=post.mn, post.shape=post.shape, gaps=raw.gaps))
 }
@@ -456,7 +467,9 @@ PlotHiatusPost <- function(set=get('info'), mn=set$hiatus.mean, main="", xlab=pa
 
 
 # plot the Supported data (for plum)
-PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, supp.xlim=c(), supp.ylim=c(), yaxt="n", prior.size=.9, panel.size=.9, line.col=3, line.width=2, text.col=2, hist.col=grey(0.8), hist.border=grey(0.4), data.col=rgb(.5,0,.5,.5)) {
+PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, supp.xlim=c(), supp.ylim=c(),
+  yaxt="n", prior.size=.9, panel.size=.9, line.col=3, line.width=2,
+  text.col=2, hist.col=grey(0.8), hist.border=grey(0.4), data.col=rgb(.5,0,.5,.5)) {
   lab <- ifelse(set$Bqkg, "Bq/kg", "dpm/g")
 
   if(length(supp.xlim) == 0)
@@ -488,7 +501,8 @@ PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, supp.
 
     plot(post, type="n", xlab=lab, xlim=rng, main="", ylab="", yaxt=yaxt, cex.axis=panel.size)
     polygon(post, col=hist.col, border=hist.border)
-    lines(seq(min(set$ps),max(set$ps),.05), dgamma(seq(min(set$ps), max(set$ps), .05), shape=set$s.shape, scale=set$s.mean/set$s.shape), col=line.col, lwd=line.width)
+    lines(seq(min(set$ps),max(set$ps),.05), dgamma(seq(min(set$ps), max(set$ps), .05),
+      shape=set$s.shape, scale=set$s.mean/set$s.shape), col=line.col, lwd=line.width)
 
     # plot the measurements of supported
     # extend the plot's horizontal axis, range(...)
@@ -507,7 +521,9 @@ PlotSuppPost <- function(set=get('info'), xaxs="i", yaxs="i", legend=TRUE, supp.
 
 
 # plot the Supply data (for plum)
-PlotPhiPost <- function(set=get('info'), xlab=paste0("Bq/",expression(m^2)," yr"), ylab="", xaxs="i", yaxs="i", legend=TRUE, yaxt="n", csize=.8, prior.size=.9, panel.size=.9, phi.xlim=c(), phi.ylim=c(), line.col=3, line.width=2, text.col=2, hist.col=grey(0.8), hist.border=grey(0.4)) {
+PlotPhiPost <- function(set=get('info'), xlab=paste0("Bq/",expression(m^2)," yr"), ylab="", xaxs="i", yaxs="i",
+  legend=TRUE, yaxt="n", csize=.8, prior.size=.9, panel.size=.9, phi.xlim=c(), phi.ylim=c(), line.col=3, line.width=2,
+  text.col=2, hist.col=grey(0.8), hist.border=grey(0.4)) {
   post.mn <- mean(unlist(set$phi))
   post.shape <- post.mn^2 / var(unlist(set$phi))
   

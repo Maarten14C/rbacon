@@ -37,7 +37,7 @@
 #' @param rev.age The direction of the age axis, which can be reversed using \code{rev.age=TRUE}.
 #' @param rev.yr Deprecated - use rev.age instead.
 #' @param rev.d The direction of the depth axis, which can be reversed using \code{rev.d=TRUE}.
-#' @param use.raster Raster output (\code{use.raster=TRUE}) is often faster and can avoid anti-aliasing artefacts (such as faint lines between cells) seen with vector rendering. However, some graphics devices may render greyscales incorrectly or invert colour scales. If this occurs, set use.raster=FALSE or try flip.acc=TRUE. Defaults to \code{use.raster=FALSE}.
+#' @param use.raster Raster output (\code{use.raster=TRUE}, default) is often faster and can avoid anti-aliasing artefacts (such as faint lines between cells) seen with vector rendering. However, some graphics devices may render greyscales incorrectly or invert colour scales. If this occurs, set use.raster=FALSE or try flip.acc=TRUE. Defaults to \code{use.raster=FALSE}. Playing around with this option could be useful if pdf copies of the graph cause large file sizes.
 #' @param flip.age When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.age=TRUE} can flip the ages back again. 
 #' @param flip.d When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.d=TRUE} can flip the depths back again. 
 #' @param depth.unit Units of the depths. Defaults to the one provided in the Bacon() command, \code{depth.unit=set$depth.unit}.
@@ -168,7 +168,27 @@
 #'   agedepth()
 #' }
 #' @export
-agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit, d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), mem.lab=c(), d.min=c(), d.max=c(), d.by=c(), depths=set$depths, depths.file=FALSE, accordion=c(), plotatthesedepths=c(), age.min=c(), yr.min=age.min, age.max=c(), yr.max=age.max, hiatus.option=1, dark=1, darkest=1, prob=set$prob, rounded=c(), d.res=500, age.res=500, yr.res=age.res, date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, use.raster=FALSE, flip.age=FALSE, flip.d=FALSE, maxcalc=500, height=1, calheight=1, ex=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, range.col=grey(.5), range.lty="12", range.lwd=1, mn.col="red", mn.lty="12", mn.lwd=1, med.col=NA, med.lty="12", med.lwd=1, C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5), cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pb.background=.5, pbmodelled.col=function(x) rgb(0,0,1,.5*x), pbmeasured.col="blue", pb.lim=c(), supp.col=rgb(.5,0,.5,.5), remove.tail=TRUE, MCMC.resample=TRUE, hiatus.col=grey(0.5), hiatus.lty="12", from.col="white", to.col="black", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), olderthan.size=1, olderthan.col="black", youngerthan.size=1, youngerthan.col="black", normalise.dists=TRUE, same.heights=FALSE, cc=set$cc, title=set$core, title.location="topleft", title.size=1.5, plot.labels=FALSE, labels=c(), label.age=1, label.size=0.8, label.col="black", label.offset=c(0,0), label.adj=c(0.5,0), label.rot=0, after=set$after, bty="l", mar.left=c(), mar.middle=c(), mar.right=c(), mar.main=c(), righthand=3, mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", MCMC.col=grey(.4), post.col=rgb(0,0,0,.2), post.border=rgb(0,0,0,.4), acc.post.col=c(), acc.post.border=c(), mem.post.col=c(), mem.post.border=c(), hiatus.post.col=c(), hiatus.post.border=c(), phi.post.col=c(), phi.post.border=c(), s.post.col=c(), s.post.border=c(), prior.col=3, prior.lwd=2, prior.fontcol=2, prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, mainpanel.tickfontsize=1, mainpanel.labelfontsize=1, acc.xlim=c(), acc.ylim=c(), mem.xlim=c(), mem.ylim=c(), hiatus.xlim=c(), hiatus.ylim=c(), phi.xlim=c(), phi.ylim=c(), supp.xlim=c(), supp.ylim=c(), xaxt="s", yaxt="s", plot.pb=TRUE, pb.lty=1, plot.pdf=FALSE, quartz=FALSE, cairo=FALSE, dates.only=FALSE, model.only=FALSE, verbose=TRUE, roundby=2, save.info=set$save.info, write.summary=TRUE, ssize=4e3, use.cpp=TRUE, version.legend=TRUE, version.location=c(), version.cex=0.7, version.col=grey(.5)) {
+agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, age.unit="yr", unit=depth.unit,
+  d.lab=c(), age.lab=c(), yr.lab=age.lab, kcal=FALSE, acc.lab=c(), mem.lab=c(), d.min=c(), d.max=c(), d.by=c(),
+  depths=set$depths, depths.file=FALSE, accordion=c(), plotatthesedepths=c(), age.min=c(), yr.min=age.min, age.max=c(),
+  yr.max=age.max, hiatus.option=1, dark=1, darkest=1, prob=set$prob, rounded=c(), d.res=500, age.res=500, yr.res=age.res,
+  date.res=100, rotate.axes=FALSE, rev.age=FALSE, rev.yr=rev.age, rev.d=FALSE, use.raster=TRUE, flip.age=FALSE, flip.d=FALSE,
+  maxcalc=500, height=1, calheight=1, ex=1, mirror=TRUE, up=TRUE, cutoff=.1, plot.range=TRUE, range.col=grey(.5), range.lty="12",
+  range.lwd=1, mn.col="red", mn.lty="12", mn.lwd=1, med.col=NA, med.lty="12", med.lwd=1, C14.col=rgb(0,0,1,.35), C14.border=rgb(0,0,1,.5),
+  cal.col=rgb(0,.5,.5,.35), cal.border=rgb(0,.5,.5,.5), dates.col=c(), pb.background=.5, pbmodelled.col=function(x) rgb(0,0,1,.5*x),
+  pbmeasured.col="blue", pb.lim=c(), supp.col=rgb(.5,0,.5,.5), remove.tail=TRUE, MCMC.resample=TRUE, hiatus.col=grey(0.5),
+  hiatus.lty="12", from.col="white", to.col="black", rgb.scale=c(0,0,0), rgb.res=100, slump.col=grey(0.8), olderthan.size=1,
+  olderthan.col="black", youngerthan.size=1, youngerthan.col="black", normalise.dists=TRUE, same.heights=FALSE, cc=set$cc,
+  title=set$core, title.location="topleft", title.size=1.5, plot.labels=FALSE, labels=c(), label.age=1, label.size=0.8,
+  label.col="black", label.offset=c(0,0), label.adj=c(0.5,0), label.rot=0, after=set$after, bty="l", mar.left=c(), mar.middle=c(),
+  mar.right=c(), mar.main=c(), righthand=3, mgp=c(1.7,.7,.0), xaxs="r", yaxs="i", MCMC.col=grey(.4), post.col=rgb(0,0,0,.2),
+  post.border=rgb(0,0,0,.4), acc.post.col=c(), acc.post.border=c(), mem.post.col=c(), mem.post.border=c(), hiatus.post.col=c(),
+  hiatus.post.border=c(), phi.post.col=c(), phi.post.border=c(), s.post.col=c(), s.post.border=c(), prior.col=3, prior.lwd=2,
+  prior.fontcol=2, prior.ticks="n", prior.fontsize=0.9, toppanel.fontsize=0.9, mainpanel.tickfontsize=1, mainpanel.labelfontsize=1,
+  acc.xlim=c(), acc.ylim=c(), mem.xlim=c(), mem.ylim=c(), hiatus.xlim=c(), hiatus.ylim=c(), phi.xlim=c(), phi.ylim=c(), supp.xlim=c(),
+  supp.ylim=c(), xaxt="s", yaxt="s", plot.pb=TRUE, pb.lty=1, plot.pdf=FALSE, quartz=FALSE, cairo=FALSE, dates.only=FALSE,
+  model.only=FALSE, verbose=TRUE, roundby=2, save.info=set$save.info, write.summary=TRUE, ssize=4e3, use.cpp=TRUE,
+  version.legend=TRUE, version.location=c(), version.cex=0.7, version.col=grey(.5)) {
   # Load the output, if it exists
   outp <- paste0(set$prefix, ".out")
   if(file.exists(outp))
@@ -246,8 +266,12 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     if(length(s.post.border) == 0)
       s.post.border <- post.border
 
-    set$post.acc <- PlotAccPost(set, depth.unit=depth.unit, age.unit=age.unit, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, acc.xlim=acc.xlim, acc.ylim=acc.ylim, acc.lab=acc.lab, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=acc.post.col, hist.border=acc.post.border)
-    set$post.mem <- PlotMemPost(set, set$core, set$K, "", set$mem.strength, set$mem.mean, ds=1, thick=set$thick, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, mem.xlim=mem.xlim, mem.ylim=mem.ylim, mem.lab=mem.lab, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=mem.post.col, hist.border=mem.post.border)
+    set$post.acc <- PlotAccPost(set, depth.unit=depth.unit, age.unit=age.unit, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks,
+      prior.size=prior.fontsize, panel.size=toppanel.fontsize, acc.xlim=acc.xlim, acc.ylim=acc.ylim, acc.lab=acc.lab,
+      line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=acc.post.col, hist.border=acc.post.border)
+    set$post.mem <- PlotMemPost(set, set$core, set$K, "", set$mem.strength, set$mem.mean, ds=1, thick=set$thick, xaxs=xaxs,
+      yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, mem.xlim=mem.xlim, mem.ylim=mem.ylim,
+      mem.lab=mem.lab, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=mem.post.col, hist.border=mem.post.border)
 
     if(!is.na(set$hiatus.depths[1]))
       if(is.na(set$boundary[1])) {
@@ -258,13 +282,17 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
     }
 
     if(set$isplum) {
-       set$post.phi <- PlotPhiPost(set, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, phi.xlim=phi.xlim, phi.ylim=phi.ylim, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=phi.post.col, hist.border=phi.post.border)
+       set$post.phi <- PlotPhiPost(set, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize,
+         panel.size=toppanel.fontsize, phi.xlim=phi.xlim, phi.ylim=phi.ylim, line.col=prior.col, line.width=prior.lwd,
+         text.col=prior.fontcol, hist.col=phi.post.col, hist.border=phi.post.border)
        if(set$nPs > 1)
          prior.ticks <- "s" # because with varying supported Pb, the y-axis is important
 
        par(mar=mar.right)
 
-       set$post.supp <- PlotSuppPost(set, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize, panel.size=toppanel.fontsize, supp.xlim=supp.xlim, supp.ylim=supp.ylim, line.col=prior.col, line.width=prior.lwd, text.col=prior.fontcol, hist.col=s.post.col, hist.border=s.post.border, data.col=supp.col)
+       set$post.supp <- PlotSuppPost(set, xaxs=xaxs, yaxs=yaxs, yaxt=prior.ticks, prior.size=prior.fontsize,
+         panel.size=toppanel.fontsize, supp.xlim=supp.xlim, supp.ylim=supp.ylim, line.col=prior.col, line.width=prior.lwd,
+         text.col=prior.fontcol, hist.col=s.post.col, hist.border=s.post.border, data.col=supp.col)
 
       if(rotate.axes)
         mar.main[3] <- mar.main[3] + righthand else
@@ -417,8 +445,10 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   }
 
   if(rotate.axes)
-    plot(0, type="n", ylim=depth.limits, xlim=age.limits, ylab=d.lab, xlab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt, mar=mar.main, cex.axis=mainpanel.tickfontsize, cex.lab=mainpanel.labelfontsize) else
-      plot(0, type="n", xlim=depth.limits[2:1], ylim=age.limits, xlab=d.lab, ylab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt, mar=mar.main, cex.axis=mainpanel.tickfontsize, cex.lab=mainpanel.labelfontsize)
+    plot(0, type="n", ylim=depth.limits, xlim=age.limits, ylab=d.lab, xlab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt,
+      mar=mar.main, cex.axis=mainpanel.tickfontsize, cex.lab=mainpanel.labelfontsize) else
+      plot(0, type="n", xlim=depth.limits[2:1], ylim=age.limits, xlab=d.lab, ylab=age.lab, bty="n", xaxt=xaxt, yaxt=yaxt,
+        mar=mar.main, cex.axis=mainpanel.tickfontsize, cex.lab=mainpanel.labelfontsize)
   if(kcal)
     axis(ifelse(rotate.axes, 1, 2), pretty(age.lim), pretty(age.lim/1e3), cex.axis=mainpanel.labelfontsize)
 
@@ -441,7 +471,9 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
   if(!dates.only) {
     if(verbose && !use.cpp)
       message("Preparing ghost graph... ")
-    agedepth.ghost(set, rotate.axes=rotate.axes, accordion=accordion, BCAD=BCAD, d.min=d.min, d.max=d.max, d.res=d.res, age.res=age.res, rev.d=rev.d, rev.age=rev.age, rgb.res=rgb.res, dark=dark, from.col=from.col, to.col=to.col, rgb.scale=rgb.scale, age.lim=age.limits, use.raster=use.raster, flip.age=flip.age, flip.d=flip.d, verbose=verbose, use.cpp=use.cpp)
+    agedepth.ghost(set, rotate.axes=rotate.axes, accordion=accordion, BCAD=BCAD, d.min=d.min, d.max=d.max, d.res=d.res,
+      age.res=age.res, rev.d=rev.d, rev.age=rev.age, rgb.res=rgb.res, dark=dark, from.col=from.col, to.col=to.col, rgb.scale=rgb.scale,
+      age.lim=age.limits, use.raster=use.raster, flip.age=flip.age, flip.d=flip.d, verbose=verbose, use.cpp=use.cpp)
   }
 
   if(length(set$slump) > 0 )
@@ -460,15 +492,21 @@ agedepth <- function(set=get('info'), BCAD=set$BCAD, depth.unit=set$depth.unit, 
 
   if(set$isplum) {
     if(set$hasBaconData)
-      calib.plot(set, dets=set$detsBacon, accordion=accordion, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes, height=height, calheight=calheight, ex=ex, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff, C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col, new.plot=FALSE, same.heights=same.heights)
+      calib.plot(set, dets=set$detsBacon, accordion=accordion, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes,
+        height=height, calheight=calheight, ex=ex, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff,
+        C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col,
+        new.plot=FALSE, same.heights=same.heights)
 
     if(plot.pb)
-      set <- draw.pbmodelled(set, BCAD=BCAD, rotate.axes=rotate.axes, age.lim=age.lim,
+      set <- draw.pbmodelled(set, BCAD=BCAD, rotate.axes=rotate.axes, age.lim=age.limits,
        d.lim=c(d.min, d.max), pbmodelled.col=pbmodelled.col, 
        pbmeasured.col=pbmeasured.col, pb.lim=pb.lim, supp.col=supp.col, 
        mgp=mgp, pb.lty=pb.lty, save.info=save.info) # pointing to set since April 2025 
   } else
-    calib.plot(set, dets=set$dets, accordion=accordion, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes, height=height, calheight=calheight, ex=ex, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff, C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col, new.plot=FALSE, same.heights=same.heights)
+    calib.plot(set, dets=set$dets, accordion=accordion, BCAD=BCAD, cc=cc, rotate.axes=rotate.axes,
+      height=height, calheight=calheight, ex=ex, mirror=mirror, up=up, date.res=date.res, cutoff=cutoff,
+      C14.col=C14.col, C14.border=C14.border, cal.col=cal.col, cal.border=cal.border, dates.col=dates.col,
+      new.plot=FALSE, same.heights=same.heights)
 
   if(length(set$younger.than) > 0)
     for(i in set$younger.than) {
