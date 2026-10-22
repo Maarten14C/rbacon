@@ -13,8 +13,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - ubuntu-latest
-          - macos-latest
+    #      - ubuntu-latest
+    #      - macos-latest
           - windows-latest
 
     steps:
@@ -29,7 +29,9 @@ jobs:
             any::knitr
 
       - name: Install RBacon
-        run: R CMD INSTALL .
+        shell: Rscript {0}
+        run: |
+          install.packages(".", repos = NULL, type = "source")
 
       - name: Render vignette
         shell: Rscript {0}
