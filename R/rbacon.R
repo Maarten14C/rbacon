@@ -1,7 +1,7 @@
 
 # consider setting use.raster to TRUE per default (generates much smaller pdfs). Keeping to FALSE for now.
 
-# check if cc4 can be hacked to build a tailor-made curve that contains potentially asymmetric, multimodal age distributions (e.g., tephra ages). (column 3 can be set to 0)
+# check if cc4 can be hacked to build a tailor-made curve that contains potentially asymmetric, multimodal age distributions (e.g., tephra ages). (column 3 can be set to 0). Could also be used to provide a Cs curve
 
 # check doi:10.1016/j.quageo.2016.01.001 as example of using strat to inform age-depth model
 # make a function to include e.g. cumulative weight/pollen instead of depths - 'fake' depths. Should work in a new core directoy. And then, how to find the original depths? Needs a smoothing function as well.

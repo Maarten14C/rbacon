@@ -1,0 +1,215 @@
+---
+title: "rbacon plot tests"
+---
+
+```{r default, results="hide"}
+require(rbacon)
+#require(devtools)
+#load_all("~/Dropbox/devsoftware/rbacon")
+fry <- tempdir()
+Bacon(run=FALSE, ask=FALSE, coredir=fry, ssize=500, BCAD=FALSE)
+agedepth()
+```
+
+```{r rotate.axes, results="hide"}
+png("plot01.png", width=1200, height=800)
+agedepth(rotate.axes=TRUE)
+dev.off()
+```
+
+```{r BCAD, results="hide"}
+png("plot02.png", width=1200, height=800)
+agedepth(BCAD=TRUE)
+dev.off()
+```
+
+```{r rotate.axes and BCAD, results="hide"}
+png("plot03.png", width=1200, height=800)
+agedepth(rotate.axes=TRUE, BCAD=TRUE)
+dev.off()
+```
+
+```{r rev.d, results="hide"}
+png("plot04.png", width=1200, height=800)
+agedepth(rev.d=TRUE)
+dev.off()
+```
+
+```{r rev.age, results="hide"}
+png("plot05.png", width=1200, height=800)
+agedepth(rev.age=TRUE)
+dev.off()
+```
+
+```{r rev.d and rev.age, results="hide"}
+png("plot06.png", width=1200, height=800)
+agedepth(rev.d=TRUE, rev.age=TRUE)
+dev.off()
+```
+
+```{r rotate and rev, results="hide"}
+png("plot07.png", width=1200, height=800)
+agedepth(rotate.axes=TRUE, rev.d=TRUE, rev.age=TRUE)
+dev.off()
+```
+
+```{r BCAD and rev.age, results="hide"}
+png("plot08.png", width=1200, height=800)
+agedepth(BCAD=TRUE, rev.age=TRUE)
+dev.off()
+```
+
+```{r no BCAD, results="hide"}
+png("plot09.png", width=1200, height=800)
+agedepth(BCAD=FALSE)
+dev.off()
+```
+
+```{r proxy.ghost, results="hide"}
+png("plot10.png", width=1200, height=800)
+proxy.ghost()
+dev.off()
+```
+
+```{r accrate.depth.ghost, results="hide"}
+png("plot11.png", width=1200, height=800)
+layout(1)
+accrate.depth.ghost()
+dev.off()
+```
+
+```{r accrate.depth.ghost with rotated axes, results="hide"}
+png("plot12.png", width=1200, height=800)
+accrate.depth.ghost(rotate.axes=TRUE)
+dev.off()
+```
+
+```{r accrate.depth.ghost with rev.d, results="hide"}
+png("plot13.png", width=1200, height=800)
+accrate.depth.ghost(rev.d=TRUE)
+dev.off()
+```
+
+```{r accrate.depth.ghost with rev.acc, results="hide"}
+png("plot14.png", width=1200, height=800)
+accrate.depth.ghost(rev.acc=TRUE)
+dev.off()
+```
+
+```{r accrate.depth.ghost with rev.d and rev.acc, results="hide"}
+png("plot15.png", width=1200, height=800)
+accrate.depth.ghost(rev.d=TRUE, rev.acc=TRUE)
+dev.off()
+```
+
+```{r accrate.depth.ghost rotated and reversed, results="hide"}
+png("plot16.png", width=1200, height=800)
+accrate.depth.ghost(rev.d=TRUE, rev.acc=TRUE, rotate.axes=TRUE)
+dev.off()
+```
+
+```{r accrate.age.ghost, results="hide"}
+png("plot17.png", width=1200, height=800)
+accrate.age.ghost()
+dev.off()
+```
+
+```{r accrate.age.ghost rotated, results="hide"}
+png("plot18.png", width=1200, height=800)
+accrate.age.ghost(rotate.axes=TRUE)
+dev.off()
+```
+
+```{r accrate.age.ghost rev.age, results="hide"}
+png("plot19.png", width=1200, height=800)
+accrate.age.ghost(rev.age=TRUE)
+dev.off()
+```
+
+```{r accrate.age.ghost rev.acc, results="hide"}
+png("plot20.png", width=1200, height=800)
+accrate.age.ghost(rev.acc=TRUE)
+dev.off()
+```
+
+```{r accrate.age.ghost BCAD, results="hide"}
+png("plot21.png", width=1200, height=800)
+accrate.age.ghost(BCAD=TRUE)
+dev.off()
+```
+
+```{r accrate.age.ghost BCAD and reversed, results="hide"}
+png("plot22.png", width=1200, height=800)
+accrate.age.ghost(BCAD=T, rev.acc=TRUE, rev.age=TRUE)
+dev.off()
+```
+
+```{r accrate.age.ghost both reversed, results="hide"}
+png("plot23.png", width=1200, height=800)
+accrate.age.ghost(rev.age=T, rev.acc=TRUE)
+dev.off()
+```
+
+```{r, accrate.age.ghost reversed and rotated, results="hide"}
+png("plot24.png", width=1200, height=800)
+accrate.age.ghost(rev.age=T, rev.acc=T, rotate.axes=TRUE)
+dev.off()
+```
+
+```{r flux.age.ghost, results="hide"}
+png("plot25.png", width=1200, height=800)
+myflux <- cbind(2:100, rnorm(99, 100, 5))
+flux.age.ghost(flux=myflux)
+dev.off()
+```
+
+```{r flux.age.ghost rotated, results="hide"}
+png("plot26.png", width=1200, height=800)
+flux.age.ghost(rotate.axes=T, flux=myflux)
+dev.off()
+```
+
+```{r flux.rate.ghost flux reversed, results="hide"}
+png("plot27.png", width=1200, height=800)
+flux.age.ghost(flux.rev=T, flux=myflux)
+dev.off()
+```
+
+```{r flux.rate.ghost age reversed, results="hide"}
+png("plot28.png", width=1200, height=800)
+flux.age.ghost(age.rev=T, flux=myflux)
+dev.off()
+```
+
+```{r Bacon slump, results="hide"}
+png("plot29.png", width=1200, height=800)
+Bacon(slump=c(20,21), ssize=500, coredir=fry, ask=FALSE)
+dev.off()#agedepth()
+```
+
+```{r Bacon hiatus, results="hide"}
+png("plot30.png", width=1200, height=800)
+Bacon(hiatus.depths=c(20,51), ssize=500, coredir=fry, ask=FALSE)
+dev.off()#agedepth()
+```
+
+```{r Bacon boundary, results="hide"}
+png("plot31.png", width=1200, height=800)
+Bacon(boundary=c(20,51), ssize=500, coredir=fry, ask=FALSE)
+dev.off()
+#agedepth()
+```
+
+```{r RLGH3, results="hide"}
+png("plot32.png", width=1200, height=800)
+Bacon("RLGH3", coredir=fry, accept.suggestions=T, ask=FALSE)
+dev.off()
+#agedepth()
+```
+
+
+```{r accrate.age.ghost BCAD with RLGH3, results="hide"}
+png("plot33.png", width=1200, height=800)
+accrate.age.ghost(BCAD=TRUE)
+dev.off()
+```
