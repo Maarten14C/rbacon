@@ -1,0 +1,151 @@
+---
+title: "rbacon plot tests"
+---
+
+```{r default, results="hide"}
+require(rbacon)
+#require(devtools)
+#load_all("~/Dropbox/devsoftware/rbacon")
+fry <- tempdir()
+Bacon(run=FALSE, ask=FALSE, coredir=fry, ssize=500, BCAD=FALSE)
+agedepth()
+```
+
+```{r rotate.axes, results="hide"}
+agedepth(rotate.axes=TRUE)
+```
+
+```{r BCAD, results="hide"}
+agedepth(BCAD=TRUE)
+```
+
+```{r rotate.axes and BCAD, results="hide"}
+agedepth(rotate.axes=TRUE, BCAD=TRUE)
+```
+
+```{r rev.d, results="hide"}
+agedepth(rev.d=TRUE)
+```
+
+```{r rev.age, results="hide"}
+agedepth(rev.age=TRUE)
+```
+
+```{r rev.d and rev.age, results="hide"}
+agedepth(rev.d=TRUE, rev.age=TRUE)
+```
+
+```{r rotate and rev, results="hide"}
+agedepth(rotate.axes=TRUE, rev.d=TRUE, rev.age=TRUE)
+```
+
+```{r BCAD and rev.age, results="hide"}
+agedepth(BCAD=TRUE, rev.age=TRUE)
+```
+
+```{r no BCAD, results="hide"}
+agedepth(BCAD=FALSE)
+```
+
+```{r proxy.ghost, results="hide"}
+proxy.ghost()
+```
+
+```{r accrate.depth.ghost, results="hide"}
+layout(1)
+accrate.depth.ghost()
+```
+
+```{r accrate.depth.ghost with rotated axes, results="hide"}
+accrate.depth.ghost(rotate.axes=TRUE)
+```
+
+```{r accrate.depth.ghost with rev.d, results="hide"}
+accrate.depth.ghost(rev.d=TRUE)
+```
+
+```{r accrate.depth.ghost with rev.acc, results="hide"}
+accrate.depth.ghost(rev.acc=TRUE)
+```
+
+```{r accrate.depth.ghost with rev.d and rev.acc, results="hide"}
+accrate.depth.ghost(rev.d=TRUE, rev.acc=TRUE)
+```
+
+```{r accrate.depth.ghost rotated and reversed, results="hide"}
+accrate.depth.ghost(rev.d=TRUE, rev.acc=TRUE, rotate.axes=TRUE)
+```
+
+```{r accrate.age.ghost, results="hide"}
+accrate.age.ghost()
+```
+
+```{r accrate.age.ghost rotated, results="hide"}
+accrate.age.ghost(rotate.axes=TRUE)
+```
+
+```{r accrate.age.ghost rev.age, results="hide"}
+accrate.age.ghost(rev.age=TRUE)
+```
+
+```{r accrate.age.ghost rev.acc, results="hide"}
+accrate.age.ghost(rev.acc=TRUE)
+```
+
+```{r accrate.age.ghost BCAD, results="hide"}
+accrate.age.ghost(BCAD=TRUE)
+```
+
+```{r accrate.age.ghost BCAD and reversed, results="hide"}
+accrate.age.ghost(BCAD=T, rev.acc=TRUE, rev.age=TRUE)
+```
+
+```{r accrate.age.ghost both reversed, results="hide"}
+accrate.age.ghost(rev.age=T, rev.acc=TRUE)
+```
+
+```{r, accrate.age.ghost reversed and rotated, results="hide"}
+accrate.age.ghost(rev.age=T, rev.acc=T, rotate.axes=TRUE)
+```
+
+```{r flux.age.ghost, results="hide"}
+myflux <- cbind(2:100, rnorm(99, 100, 5))
+flux.age.ghost(flux=myflux)
+```
+
+```{r flux.age.ghost rotated, results="hide"}
+flux.age.ghost(rotate.axes=T, flux=myflux)
+```
+
+```{r flux.rate.ghost flux reversed, results="hide"}
+flux.age.ghost(flux.rev=T, flux=myflux)
+```
+
+```{r flux.rate.ghost age reversed, results="hide"}
+flux.age.ghost(age.rev=T, flux=myflux)
+```
+
+```{r Bacon slump, results="hide"}
+Bacon(slump=c(20,21), ssize=500, coredir=fry, ask=FALSE)
+#agedepth()
+```
+
+```{r Bacon hiatus, results="hide"}
+Bacon(hiatus.depths=c(20,51), ssize=500, coredir=fry, ask=FALSE)
+#agedepth()
+```
+
+```{r Bacon boundary, results="hide"}
+Bacon(boundary=c(20,51), ssize=500, coredir=fry, ask=FALSE)
+#agedepth()
+```
+
+```{r RLGH3, results="hide"}
+Bacon("RLGH3", coredir=fry, accept.suggestions=T, ask=FALSE)
+#agedepth()
+```
+
+
+```{r accrate.age.ghost BCAD with RLGH3, results="hide"}
+accrate.age.ghost(BCAD=TRUE)
+```
