@@ -113,7 +113,7 @@ agedepth.ghost <- function(set=get('info'), dseq=c(), d.min=set$d.min, d.max=set
 
 
 
-# OSX's quartz device sometimes flips greyscale plots around on the y scale
+# Mac's quartz device sometimes flips greyscale plots around on the y scale
 deviceIsQuartz <- function() {
   .Platform$OS.type == "unix" &&
     grepl("darwin", R.version$platform) &&

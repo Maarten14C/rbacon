@@ -286,7 +286,7 @@ accrates.core <- function(dseq=c(), set=get('info'), cmyr=FALSE, remove.hiatuses
 #' @param yaxs Extension of y-axis. By default, add no extra white-space at both extremes (\code{yaxs="i"}). See ?par for other options.
 #' @param bty Type of box to be drawn around the plot (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).
 #' @param remove.laststep Add a white line to remove spurious lines at the extreme of the graph. Defaults to TRUE.
-#' @param use.raster Rasters can be aligned or not in the underlying image function. Setting \code{use.raster=FALSE, default} takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. However, the alternative of \code{use.raster=TRUE} causes greyscales on some devices (e.g., OSX quartz) to 'flip'. If this is the case, use 'flip.acc=TRUE'.
+#' @param use.raster Rasters can be aligned or not in the underlying image function. Setting \code{use.raster=FALSE, default} takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. However, the alternative of \code{use.raster=TRUE} causes greyscales on some devices (e.g., Mac OS quartz) to 'flip'. If this is the case, use 'flip.acc=TRUE'.
 #' @param flip.acc When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.acc=TRUE} solves this. 
 #' @param remove.hiatuses Any hiatuses will affect apparent accumulation rates within sections. Therefore, by default the hiatus jumps will be removed from the accumulation rates within sections containing hiatuses.
 #' @author Maarten Blaauw, J. Andres Christen
@@ -477,7 +477,7 @@ accrate.depth.ghost <- function(set=get('info'), d=set$elbows, d.lim=c(), acc.li
 #' @param xaxs Extension of the x-axis. White space can be added to the vertical axis using \code{xaxs="r"}.
 #' @param yaxs Extension of the y-axis. White space can be added to the vertical axis using \code{yaxs="r"}.
 #' @param bty Type of box to be drawn around the plot (\code{"n"} for none, and \code{"l"} (default), \code{"7"}, \code{"c"}, \code{"u"}, or \code{"o"} for correspondingly shaped boxes).
-#' @param use.raster Rasters can be aligned or not in the underlying image function. Setting \code{use.raster=FALSE} takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. Therefore, \code{use.raster=TRUE} is the default, however on some devices (e.g., OSX quartz) this causes greyscales to 'flip'. If this is the case, use 'flip.acc=TRUE'.
+#' @param use.raster Rasters can be aligned or not in the underlying image function. Setting \code{use.raster=FALSE} takes a bit longer to draw and sometimes causes strange lines owing to anti-aliasing. Therefore, \code{use.raster=TRUE} is the default, however on some devices (e.g., Mac OS quartz) this causes greyscales to 'flip'. If this is the case, use 'flip.acc=TRUE'.
 #' @param flip.acc When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.acc=TRUE} solves this. 
 #' @param flip.age When using \code{use.raster=TRUE}, sometimes greyscales are flipped. If this is the case, see if setting \code{flip.age=TRUE} solves this. 
 #' @author Maarten Blaauw, J. Andres Christen
