@@ -1,3 +1,6 @@
+# rbacon 4.0.2
+* removed the testBaconplots.Rmd file from vignettes
+
 # rbacon 4.0.1
 * depths are now reported correctly when using slumps and `use.cpp=TRUE`.
 * added a version legend to the main age-depth model plot (optional).
